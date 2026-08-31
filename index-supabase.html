@@ -542,6 +542,7 @@ main{flex:1;width:100%;max-width:1080px;margin:0 auto;overflow-x:hidden;min-widt
 <div class="sciacquone" id="sciacquone" hidden aria-hidden="true"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 /* =====================================================================
    MERDIANO — app a pagina unica
@@ -587,23 +588,48 @@ const DISTINTIVI = [
 
 const RIS = ['💩','🤢','🏆'];
 
-/* ---------- 2. Deposito dati ---------- */
-/* Nell'artifact di Claude usa window.storage (condiviso fra tutti).
-   Se l'app è ospitata altrove ricade su localStorage, così resta usabile. */
-const K_FEED = 'merdiano:feed:v1';
-const K_FOTO = 'merdiano:foto:v1:';
-const K_IO   = 'merdiano:io:v1';
-const nativo = typeof window.storage !== 'undefined' && window.storage;
+/* ---------- 2. Deposito dati: Supabase ---------- */
+/* >>> LE UNICHE DUE RIGHE DA COMPILARE <<<
+   Le trovi in Supabase: Project Settings -> API
+   La chiave "anon" è pubblica per progetto: a proteggere i dati sono le
+   policy RLS che imposti con lo script SQL, non il segreto della chiave. */
+const SUPABASE_URL  = 'INCOLLA_QUI_IL_PROJECT_URL';
+const SUPABASE_ANON = 'INCOLLA_QUI_LA_CHIAVE_ANON';
 
-async function leggi(chiave, condiviso){
-  try{
-    if(nativo){ const r = await window.storage.get(chiave, !!condiviso); return r ? r.value : null; }
-    return window.localStorage.getItem(chiave);
-  }catch(e){ return null; }
+const K_IO = 'merdiano:io:v1';
+const configurato = !SUPABASE_URL.startsWith('INCOLLA');
+const db = configurato ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON) : null;
+
+/* l'identità resta sul telefono: è tua, non del gruppo */
+async function leggi(chiave){ try{ return localStorage.getItem(chiave); }catch(e){ return null; } }
+async function scrivi(chiave, valore){ try{ localStorage.setItem(chiave, valore); }catch(e){} return true; }
+
+/* traduzione fra la riga del database e l'oggetto usato dall'app */
+function daRiga(x){
+  return {id:x.id, nome:x.nome, faccia:x.faccia, autoreId:x.autore_id, ts:Number(x.ts), luogo:x.luogo, titolo:x.titolo,
+    testo:x.testo, voti:x.voti||{}, tipo:x.tipo, tag:x.tag||[], durata:x.durata, lat:x.lat, lng:x.lng,
+    paese:x.paese, haFoto:!!x.foto_url, fotoUrl:x.foto_url, reaz:x.reaz||{}};
 }
-async function scrivi(chiave, valore, condiviso){
-  if(nativo){ await window.storage.set(chiave, valore, !!condiviso); return true; }
-  window.localStorage.setItem(chiave, valore); return true;
+function aRiga(r){
+  return {id:r.id, nome:r.nome, faccia:r.faccia, autore_id:r.autoreId||null, ts:r.ts, luogo:r.luogo, titolo:r.titolo, testo:r.testo,
+    voti:r.voti, tipo:r.tipo, tag:r.tag, durata:r.durata, lat:r.lat, lng:r.lng, paese:r.paese,
+    foto_url:r.fotoUrl||null, reaz:r.reaz||{}};
+}
+
+async function inserisci(r){
+  const {error} = await db.from('recensioni').insert(aRiga(r));
+  if(error) throw error;
+}
+async function aggiornaReazioni(r){
+  if(!db) return;
+  await db.from('recensioni').update({reaz:r.reaz}).eq('id', r.id);
+}
+async function caricaFotoSuServer(id, dataURL){
+  const blob = await (await fetch(dataURL)).blob();
+  const nome = id + '.jpg';
+  const {error} = await db.storage.from('foto').upload(nome, blob, {contentType:'image/jpeg', upsert:true});
+  if(error) throw error;
+  return db.storage.from('foto').getPublicUrl(nome).data.publicUrl;
 }
 
 /* ---------- 3. Stato ---------- */
@@ -806,10 +832,8 @@ function volaA(id){
 }
 /* ---------- 7. Foto (caricate solo quando servono) ---------- */
 async function fotoDi(id){
-  if(S.foto.has(id)) return S.foto.get(id);
-  const d = await leggi(K_FOTO+id, true);
-  S.foto.set(id, d);
-  return d;
+  const r = S.recensioni.find(x => x.id === id);
+  return r && r.fotoUrl ? r.fotoUrl : null;
 }
 async function caricaFotoIn(id, idImg){
   const d = await fotoDi(id); const img = document.getElementById(idImg);
@@ -883,7 +907,7 @@ async function reagisci(id, emoji){
   const i = chi.indexOf(S.io.nome);
   if(i>=0) chi.splice(i,1); else chi.push(S.io.nome);
   disegnaBacheca();
-  await salvaFeed();
+  await aggiornaReazioni(r);
 }
 
 /* ---------- 9. Classifica ---------- */
@@ -1094,10 +1118,9 @@ $('#salva').addEventListener('click', async ()=>{
     paese:S.bozza.paese, haFoto:!!S.bozza.foto, reaz:{}
   };
   try{
-    if(S.bozza.foto){ await scrivi(K_FOTO+id, S.bozza.foto, true); S.foto.set(id, S.bozza.foto); }
-    await caricaFeed();
+    if(S.bozza.foto) r.fotoUrl = await caricaFotoSuServer(id, S.bozza.foto);
+    await inserisci(r);
     S.recensioni.unshift(r);
-    await salvaFeed();
     chiudiPannello(); sciacquone();
     disegnaFiltri(); disegnaMappa(); disegnaBacheca(); disegnaProfilo();
     toast('Registrata. Il mondo ne è al corrente.');
@@ -1122,11 +1145,27 @@ function sciacquone(){
 
 /* ---------- 12. Sincronizzazione ---------- */
 async function caricaFeed(){
-  const grezzo = await leggi(K_FEED, true);
-  if(grezzo){ try{ S.recensioni = JSON.parse(grezzo) || []; }catch(e){ S.recensioni = []; } }
-  S.recensioni.sort((a,b)=>b.ts-a.ts);
+  if(!db) return;
+  const {data, error} = await db.from('recensioni').select('*').order('ts',{ascending:false}).limit(500);
+  if(error){ console.warn('Supabase:', error.message); return; }
+  S.recensioni = (data||[]).map(daRiga);
 }
-async function salvaFeed(){ await scrivi(K_FEED, JSON.stringify(S.recensioni.slice(0,500)), true); }
+
+/* aggiornamento in tempo reale: la cagata di un amico compare senza ricaricare */
+function ascoltaGliAltri(){
+  if(!db) return;
+  try{
+    db.channel('merdiano')
+      .on('postgres_changes', {event:'*', schema:'public', table:'recensioni'}, async () => {
+        await caricaFeed();
+        disegnaFiltri(); disegnaMappa();
+        if(S.vista==='bacheca') disegnaBacheca();
+        if(S.vista==='classifica') disegnaClassifica();
+        if(S.vista==='profilo') disegnaProfilo();
+      })
+      .subscribe();
+  }catch(e){ console.warn('tempo reale non disponibile', e); }
+}
 
 /* ---------- 13. PWA ---------- */
 let promptInstalla = null;
@@ -1148,6 +1187,8 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
   try{ creaMappa(); }catch(e){ console.warn('mappa non disponibile',e); }
   disegnaFiltri(); disegnaMappa();
   if(S.io){ mostraIo(); } else { apriIngresso(); }
+  ascoltaGliAltri();
+  if(!configurato) setTimeout(()=>toast('Manca la configurazione Supabase in index.html'), 1200);
   // aggiorna quello che scrivono gli altri
   setInterval(async ()=>{
     if(!$('#pannello').hidden) return;

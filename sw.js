@@ -1,6 +1,6 @@
 /* Merdiano — service worker.
    Guscio in cache-first, mappe e API in network-first. */
-const CACHE = 'merdiano-v1';
+const CACHE = 'merdiano-v2';
 const GUSCIO = [
   './', './index.html', './manifest.json',
   './icon-192.png', './icon-512.png',
@@ -37,6 +37,18 @@ self.addEventListener('fetch', e => {
         caches.open(CACHE).then(c => c.put(req, copia));
         return r;
       }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // la pagina: prima la rete, così un nuovo deploy si vede subito; la cache è la riserva offline
+  if (req.mode === 'navigate' || (req.destination === 'document')) {
+    e.respondWith(
+      fetch(req).then(r => {
+        const copia = r.clone();
+        caches.open(CACHE).then(c => c.put('./index.html', copia));
+        return r;
+      }).catch(() => caches.match('./index.html'))
     );
     return;
   }

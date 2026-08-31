@@ -10,6 +10,8 @@ La mappa mondiale delle cagate. App a pagina unica, installabile, con recensioni
 | `manifest.json` | Nome, icone, colori: serve per l'installazione sul telefono. |
 | `sw.js` | Service worker: guscio in cache, funziona anche senza rete. |
 | `icon-192.png`, `icon-512.png`, `icon-maskable-512.png` | Icone dell'app. |
+| `index-supabase.html` | La stessa app con backend condiviso vero (vedi `CONDIVISIONE.md`). |
+| `PUBBLICARE.md` | **Guida passo passo** per pubblicare con il database condiviso. |
 | `README.md` | Questo file. |
 
 ## Partire dal repo
@@ -49,7 +51,7 @@ L'app usa un livello di archiviazione con due modalità:
 1. **Dentro un artifact di Claude** usa lo storage condiviso integrato: tutti quelli che aprono l'artifact vedono le stesse recensioni. Zero configurazione.
 2. **Ospitata altrove** ricade su `localStorage`, quindi i dati restano sul singolo dispositivo.
 
-Per condividere davvero le recensioni fra amici su un dominio tuo, sostituisci le due funzioni `leggi()` e `scrivi()` in `index.html` (sezione *2. Deposito dati*) con chiamate a un backend. Con Supabase bastano una tabella `recensioni` e una `foto`, più queste due funzioni riscritte: il resto dell'app non cambia di una riga.
+Per condividere davvero le recensioni su un dominio tuo usa **`index-supabase.html`**: è la stessa app con un database vero al posto dello storage locale. Devi solo incollare due chiavi. Istruzioni complete, file per file, in [`PUBBLICARE.md`](PUBBLICARE.md).
 
 ## Note
 
