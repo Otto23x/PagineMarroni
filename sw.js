@@ -1,9 +1,9 @@
-/* Merdiano — service worker.
+/* Pagine Marroni — service worker.
    Guscio in cache-first, mappe e API in network-first. */
-const CACHE = 'merdiano-v2';
+const CACHE = 'pagine-marroni-0.9-b2';  // alza il numero dopo la b a ogni pubblicazione
 const GUSCIO = [
   './', './index.html', './manifest.json',
-  './icon-192.png', './icon-512.png',
+  './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon.png',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'
 ];
@@ -14,6 +14,10 @@ self.addEventListener('install', e => {
       .then(c => Promise.allSettled(GUSCIO.map(u => c.add(u))))
       .then(() => self.skipWaiting())
   );
+});
+
+self.addEventListener('message', e => {
+  if (e.data && e.data.tipo === 'salta') self.skipWaiting();
 });
 
 self.addEventListener('activate', e => {
@@ -31,6 +35,19 @@ self.addEventListener('fetch', e => {
 
   // tessere della mappa: rete, con cache di riserva
   if (/tile|basemaps|nominatim/.test(url.hostname)) {
+    e.respondWith(
+      fetch(req).then(r => {
+        const copia = r.clone();
+        caches.open(CACHE).then(c => c.put(req, copia));
+        return r;
+      }).catch(() => caches.match(req))
+    );
+    return;
+  }
+
+  // manifest e icone: sempre dalla rete quando c'è, altrimenti il telefono
+  // continua a mostrare nome e logo di una versione precedente
+  if (/manifest\.json|icon-|favicon|apple-touch/.test(url.pathname)) {
     e.respondWith(
       fetch(req).then(r => {
         const copia = r.clone();

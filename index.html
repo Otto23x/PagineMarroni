@@ -8,9 +8,9 @@
 <meta name="theme-color" content="#0FA3A3">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pagine Marroni">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="favicon.png">
+<link rel="manifest" href="manifest.json?v=3">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=3">
+<link rel="icon" type="image/png" href="favicon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;800&display=swap" rel="stylesheet">
@@ -1380,7 +1380,7 @@ function annuncia(arrivate){
     : `${arrivate.length} nuove cagate nel gruppo`;
   toast(testo);
   if('Notification' in window && Notification.permission==='granted' && document.visibilityState!=='visible'){
-    try{ new Notification('Pagine Marroni', {body:testo, icon:'icon-192.png', tag:'pagine-marroni'}); }catch(e){}
+    try{ new Notification('Pagine Marroni', {body:testo, icon:'icon-192.png?v=3', tag:'pagine-marroni'}); }catch(e){}
   }
 }
 $('#btn-notifiche').addEventListener('click', async ()=>{

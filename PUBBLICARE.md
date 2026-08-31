@@ -1,27 +1,75 @@
-# Pubblicare Merdiano con il database condiviso
+# Pagine Marroni — guida completa alla pubblicazione
 
-Guida completa, file per file. Punto di partenza: hai già il repo su GitHub Pages e vedi l'app, ma le recensioni restano sul tuo telefono.
+**Versione 0.9**
 
-Alla fine avrai: recensioni, foto e pin visibili a tutti, aggiornati in tempo reale, con il nome di chi li ha lasciati.
+Questa guida ti porta da una cartella di file a un'app installata sul telefono tuo e dei tuoi amici, con le recensioni condivise. Non serve saper programmare. Serve copiare e incollare.
 
-Tempo: 20 minuti. Costo: zero.
+Tempo: circa 30 minuti la prima volta.
+Costo: zero.
 
 ---
 
-# PARTE 1 — Il database (Supabase)
+## Indice
 
-## Passo 1. Crea il progetto
+- [Parte 0 — Cosa ti serve](#parte-0--cosa-ti-serve)
+- [Parte 1 — Capire i due file `index`](#parte-1--capire-i-due-file-index)
+- [Parte 2 — Il database gratuito](#parte-2--il-database-gratuito-supabase)
+- [Parte 3 — Mettere le chiavi nell'app](#parte-3--mettere-le-chiavi-nellapp)
+- [Parte 4 — Pubblicare su GitHub Pages](#parte-4--pubblicare-su-github-pages)
+- [Parte 5 — Installare sul telefono](#parte-5--installare-sul-telefono)
+- [Parte 6 — La prova del nove](#parte-6--la-prova-del-nove)
+- [Parte 7 — Pubblicare gli aggiornamenti](#parte-7--pubblicare-gli-aggiornamenti)
+- [Parte 8 — Quando qualcosa non va](#parte-8--quando-qualcosa-non-va)
+- [Parte 9 — Sicurezza e backup](#parte-9--sicurezza-e-backup)
 
-1. Vai su [supabase.com](https://supabase.com) → **Start your project** → accedi con GitHub.
-2. **New project**:
-   - Name: `merdiano`
-   - Database Password: generala e salvala (non ti servirà per l'app, ma non perderla)
-   - Region: **Frankfurt** o **Milan**
-3. Premi **Create new project** e aspetta ~2 minuti.
+---
 
-## Passo 2. Crea la tabella
+# Parte 0 — Cosa ti serve
 
-Menu a sinistra → **SQL Editor** → **New query**. Incolla **tutto** questo blocco e premi **Run** (o Ctrl+Invio):
+1. Un account **GitHub** (gratis) — probabilmente ce l'hai già, visto che il repo esiste.
+2. Un account **Supabase** (gratis, si crea con GitHub in dieci secondi).
+3. Un computer. Dal telefono si può fare, ma incollare chiavi lunghissime in un file è un supplizio.
+4. Un editor di testo: va benissimo **Blocco note** su Windows o **TextEdit** su Mac. Se hai VS Code, meglio.
+
+⚠️ Se apri i file HTML con Word, li rovini. Servono editor di *testo semplice*.
+
+---
+
+# Parte 1 — Capire i due file `index`
+
+Nel pacchetto ci sono due file che sembrano uguali ma non lo sono.
+
+**`index.html`** è la versione base. Salva tutto nel telefono di chi scrive. Tu vedi le tue recensioni, il tuo amico le sue, e non vi incontrate mai. Va bene solo per provare l'app.
+
+**`index-supabase.html`** è la versione condivisa. Salva tutto in un database in rete, quindi tutti vedono tutto e le cose compaiono in tempo reale. **È quella che ti serve.**
+
+La differenza sta in una quarantina di righe: il resto dell'app è identico.
+
+## La regola che genera più confusione
+
+> Il file che pubblichi deve **sempre** chiamarsi `index.html`, perché è il nome che i siti web usano per la pagina principale.
+
+Quindi il lavoro è: prendi `index-supabase.html`, ci metti dentro le tue chiavi, e **lo rinomini in `index.html`** sovrascrivendo quello base. Nel repo resta un solo file HTML.
+
+---
+
+# Parte 2 — Il database gratuito (Supabase)
+
+**Supabase** regala un database PostgreSQL con 500 MB di spazio dati e 1 GB per le foto, senza carta di credito.
+
+## Passo 2.1 — Crea il progetto
+
+1. Vai su [supabase.com](https://supabase.com) e premi **Start your project**.
+2. Accedi con GitHub.
+3. Premi **New project** e compila:
+   - **Name**: `pagine-marroni`
+   - **Database Password**: premi *Generate a password* e **salvala da qualche parte**. Non ti servirà per l'app, ma perderla è una seccatura.
+   - **Region**: scegli **Frankfurt** o **Milan** (più vicino = più veloce).
+4. Premi **Create new project** e aspetta un paio di minuti che finisca di accendersi.
+
+## Passo 2.2 — Crea la tabella delle recensioni
+
+Nel menu a sinistra premi **SQL Editor**, poi **New query**. Incolla **tutto** questo blocco senza toccare niente e premi **Run** (o Ctrl+Invio).
 
 ```sql
 create table recensioni (
@@ -31,14 +79,15 @@ create table recensioni (
   faccia     text,
   ts         bigint not null,
   luogo      text,
+  luogo_id   text,
   titolo     text,
   testo      text,
   voti       jsonb not null default '{}'::jsonb,
-  tipo       text,
   tag        jsonb default '[]'::jsonb,
   durata     int,
   lat        double precision,
   lng        double precision,
+  citta      text,
   paese      text,
   foto_url   text,
   reaz       jsonb default '{}'::jsonb,
@@ -47,27 +96,28 @@ create table recensioni (
 
 create index recensioni_ts on recensioni (ts desc);
 
+-- senza queste regole nessuno può leggere né scrivere, nemmeno tu
 alter table recensioni enable row level security;
 
 create policy "tutti leggono"    on recensioni for select using (true);
 create policy "tutti scrivono"   on recensioni for insert with check (true);
-create policy "tutti reagiscono" on recensioni for update using (true) with check (true);
--- volutamente nessuna policy di delete: nessuno può cancellare lo storico del gruppo
+create policy "tutti modificano" on recensioni for update using (true) with check (true);
+create policy "tutti cancellano" on recensioni for delete using (true);
 
+-- fa comparire le cagate degli amici senza ricaricare la pagina
 alter publication supabase_realtime add table recensioni;
 ```
 
-Deve comparire *Success. No rows returned*. È giusto così.
+Deve rispondere **Success. No rows returned**. È il messaggio giusto: hai creato una tabella, non hai chiesto dei dati.
 
-## Passo 3. Crea lo spazio per le foto
+## Passo 2.3 — Crea lo spazio per le foto
 
-Menu a sinistra → **Storage** → **New bucket**:
+1. Menu a sinistra → **Storage** → **New bucket**.
+2. **Name**: `foto` (tutto minuscolo, esattamente così).
+3. Accendi l'interruttore **Public bucket**. È indispensabile: se resta privato, le foto non si vedranno.
+4. **Save**.
 
-- Name: `foto`
-- **Public bucket**: acceso ✅
-- **Save**
-
-Poi torna nel **SQL Editor**, nuova query, e lancia:
+Poi torna nel **SQL Editor**, **New query**, e lancia anche questo:
 
 ```sql
 create policy "chiunque carica foto" on storage.objects
@@ -75,141 +125,232 @@ create policy "chiunque carica foto" on storage.objects
 
 create policy "chiunque vede le foto" on storage.objects
   for select using (bucket_id = 'foto');
+
+create policy "chiunque cancella le proprie foto" on storage.objects
+  for delete using (bucket_id = 'foto');
 ```
 
-## Passo 4. Prendi le due chiavi
+## Passo 2.4 — Copia l'indirizzo e la chiave
 
-Menu a sinistra → in fondo **Project Settings** → **API**. Copiati:
+Ti servono due valori, e stanno in due pagine diverse.
 
-| Voce nella pagina | Che aspetto ha |
+### L'indirizzo del progetto
+
+Menu a sinistra, in fondo: **Project Settings** → **Data API**. In cima c'è **Project URL**, fatto così:
+
+```
+https://abcdefghijklm.supabase.co
+```
+
+Copialo senza la barra finale.
+
+*In alternativa*: dalla schermata principale del progetto, il pulsante **Connect** in alto mostra lo stesso indirizzo.
+
+### La chiave
+
+**Project Settings** → **API Keys**. Qui Supabase ha cambiato le carte in tavola nel 2025, quindi guarda bene: la pagina ha due schede e quattro chiavi diverse.
+
+| Cosa vedi | Cosa farne |
 |---|---|
-| **Project URL** | `https://abcdefghijkl.supabase.co` |
-| **anon** / **public** | `eyJhbGciOiJIUzI1NiIs...` lunghissima |
+| **Publishable key** — `sb_publishable_...` | ✅ **È questa.** Premi l'icona di copia accanto al valore. |
+| **Secret key** — `sb_secret_...` | ❌ Mai. Bypassa tutte le protezioni: in una pagina web è come lasciare le chiavi di casa sullo zerbino. |
+| Scheda *Legacy anon, service_role API keys* → **anon** | Funziona ancora, ma è in via di pensionamento. Usala solo se la publishable dà problemi. |
+| Scheda *Legacy...* → **service_role** | ❌ Mai, per lo stesso motivo della secret. |
 
-⚠️ Serve la chiave **anon public**, *non* la `service_role`. Quella non va mai messa in una pagina web.
+La chiave *publishable* ha sostituito quella che una volta si chiamava *anon*: fa esattamente lo stesso lavoro, e va bene per qualunque versione delle librerie Supabase. Il nome dice tutto — è pubblicabile, cioè pensata per stare dentro una pagina web. A proteggere i dati sono le policy che hai creato al Passo 2.2, non il segreto della chiave.
+
+> Regola pratica per non sbagliare mai: **quella che si copia da sola è quella giusta, quella nascosta dai pallini è quella da non toccare.** La chiave segreta è mascherata e ha l'icona dell'occhio per rivelarla. Se hai dovuto premere l'occhio, hai preso quella sbagliata.
 
 ---
 
-# PARTE 2 — I file del sito
+# Parte 3 — Mettere le chiavi nell'app
 
-## Passo 5. Prepara `index.html`
-
-Nel pacchetto hai due versioni:
-
-| File | Cosa fa |
-|---|---|
-| `index.html` | versione locale, ognuno vede solo le proprie cagate |
-| `index-supabase.html` | **questa ti serve**: database condiviso |
-
-Fai così:
-
-1. Apri `index-supabase.html` con un editor di testo (Blocco note, TextEdit, VS Code).
-2. Cerca `INCOLLA_QUI` (Ctrl+F). Trovi due righe verso l'inizio dello script:
+1. Apri **`index-supabase.html`** con Blocco note, TextEdit o VS Code.
+2. Cerca `INCOLLA_QUI` (Ctrl+F, o Cmd+F su Mac). Sono due righe, vicino all'inizio della parte di codice:
 
 ```js
-const SUPABASE_URL  = 'INCOLLA_QUI_IL_PROJECT_URL';
-const SUPABASE_ANON = 'INCOLLA_QUI_LA_CHIAVE_ANON';
+const SUPABASE_URL    = 'INCOLLA_QUI_IL_PROJECT_URL';
+const SUPABASE_CHIAVE = 'INCOLLA_QUI_LA_CHIAVE_PUBBLISHABLE';
 ```
 
-3. Sostituiscile con le tue, virgolette comprese:
+3. Sostituisci **solo la parte fra gli apici**, lasciando apici e punto e virgola dove sono:
 
 ```js
-const SUPABASE_URL  = 'https://abcdefghijkl.supabase.co';
-const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const SUPABASE_URL    = 'https://abcdefghijklm.supabase.co';
+const SUPABASE_CHIAVE = 'sb_publishable_ScRsxecp4dZPJVaJyZ7oIw_Fhxes...';
 ```
 
-4. Salva, poi **rinomina il file in `index.html`**, sovrascrivendo quello vecchio.
+Gli errori tipici sono tre: cancellare un apice, lasciare uno spazio dentro le virgolette, oppure incollare l'indirizzo con la barra finale (`.supabase.co/` va scritto senza `/`).
 
-## Passo 6. Carica i file nel repo
+4. **Salva.**
+5. **Rinomina il file in `index.html`**, sovrascrivendo quello base che c'era prima.
 
-Questi sono i file che devono stare nella **radice** del repository, nessuna sottocartella:
+Da adesso nella tua cartella c'è un solo `index.html`, ed è quello giusto.
 
-| File | Obbligatorio | A cosa serve |
-|---|---|---|
-| `index.html` | ✅ | l'app (quella con le tue chiavi dentro) |
-| `manifest.json` | ✅ | nome e icone per l'installazione sul telefono |
-| `sw.js` | ✅ | funzionamento offline |
-| `icon-192.png` | ✅ | icona |
-| `icon-512.png` | ✅ | icona |
-| `icon-maskable-512.png` | consigliato | icona Android ritagliata |
-| `README.md` | facoltativo | descrizione del repo |
+---
 
-**Dal browser** (il modo più semplice):
+# Parte 4 — Pubblicare su GitHub Pages
 
-1. Apri il tuo repo su github.com
-2. **Add file** → **Upload files**
-3. Trascina dentro tutti i file qui sopra
-4. In basso scrivi come messaggio `database condiviso` → **Commit changes**
+Questi sono i file che devono stare nella **cartella principale** del repository, senza sottocartelle:
 
-**Da terminale**, se preferisci:
+```
+index.html               ← quello con le tue chiavi dentro
+manifest.json
+sw.js
+icon-192.png
+icon-512.png
+icon-maskable-512.png
+apple-touch-icon.png
+favicon.png
+README.md                (facoltativo)
+PUBBLICARE.md            (facoltativo)
+```
+
+`index-supabase.html` **non va caricato**: ormai è diventato il tuo `index.html`.
+
+## Metodo A — dal browser, senza comandi
+
+1. Apri il tuo repo su github.com.
+2. Premi **Add file** → **Upload files**.
+3. Trascina dentro tutti i file dell'elenco.
+4. In basso scrivi un messaggio, per esempio `pubblicazione`, e premi **Commit changes**.
+
+## Metodo B — da terminale
 
 ```bash
 cd cartella-del-repo
-cp /percorso/merdiano/* .
+cp /percorso/della/cartella/pagine-marroni/* .
+rm -f index-supabase.html
 git add .
-git commit -m "database condiviso"
+git commit -m "pubblicazione"
 git push
 ```
 
-GitHub Pages ripubblica da solo in 30–60 secondi (lo vedi nella scheda **Actions**).
+## Accendere GitHub Pages
 
-## Passo 7. Svuota la vecchia versione dal telefono
+Se non l'hai già fatto: repo → **Settings** → **Pages** → in *Source* scegli **Deploy from a branch**, branch `main`, cartella `/ (root)` → **Save**.
 
-Il service worker della versione precedente potrebbe mostrarti ancora la vecchia pagina. Una volta sola:
+Dopo 30–60 secondi il sito è online. Nella scheda **Actions** vedi la spunta verde quando ha finito. L'indirizzo è:
 
-- **Computer**: Ctrl+Shift+R (Mac: Cmd+Shift+R)
-- **Android**: Chrome → ⋮ → Impostazioni → Privacy → Cancella dati navigazione → solo per questo sito
-- **iPhone**: chiudi la scheda, riaprila; se resta vecchia, Impostazioni → Safari → Cancella dati siti web
-
-Da questo aggiornamento in poi il problema non si ripresenta: la pagina viene sempre presa dalla rete quando c'è.
+```
+https://TUONOME.github.io/NOMEREPO/
+```
 
 ---
 
-# PARTE 3 — Verifica
+# Parte 5 — Installare sul telefono
 
-Apri il sito e controlla in ordine:
+Apri quell'indirizzo dal telefono. Dopo un secondo compare la fascia scura **Installa Pagine Marroni**.
 
-1. **Entra** con un soprannome. Se compare il messaggio *"Manca la configurazione Supabase"*, le chiavi del passo 5 non sono state incollate bene.
-2. **Registra una cagata** con foto e posizione (il browser chiede il permesso: accetta).
-3. Su Supabase → **Table Editor** → `recensioni`: deve esserci una riga. Se c'è, funziona tutto.
-4. Apri il sito **da un altro telefono con un altro nome**: devi vedere la cagata dell'altro senza ricaricare.
-5. **Clicca il pin** sulla mappa: si apre la scheda con foto, titolo, autore e voto.
+**Android (Chrome)**: premi Installa e conferma. Se la fascia non compare, menu ⋮ → *Installa app*.
 
-## Se qualcosa non va
+**iPhone (Safari, e deve essere Safari)**: premi il tasto Condividi in basso, scorri e scegli **Aggiungi a Home**. L'app compare fra le altre con l'icona della cacca.
 
-Apri la console del browser (F12 → **Console**, su telefono usa il computer): Supabase scrive lì il motivo esatto.
+Perché installarla e non usarla dal browser: parte a tutto schermo, senza barra degli indirizzi, resta fra le app recenti, e su iPhone le notifiche funzionano solo così.
 
-| Sintomo | Causa |
+---
+
+# Parte 6 — La prova del nove
+
+Fai questi cinque controlli in ordine. Se passano tutti, hai finito.
+
+1. **Apri il sito.** Ti chiede nome e faccia. Se invece compare il messaggio *"Manca la configurazione Supabase"*, le chiavi della Parte 3 non sono a posto: torna lì.
+2. **Registra una cagata** completa: nome del posto, due voti almeno, posizione (il browser chiede il permesso: accetta) e una foto.
+3. **Vai su Supabase** → **Table Editor** → `recensioni`. Deve esserci una riga con i tuoi dati. Se c'è, il grosso funziona.
+4. **Apri il sito da un altro telefono**, con un altro nome. Devi vedere la cagata del primo comparire **senza ricaricare la pagina**.
+5. **Tocca il pin sulla mappa**: si apre la scheda con foto, autore e voto. E tocca la miniatura in bacheca: la foto si apre in grande.
+
+---
+
+# Parte 7 — Pubblicare gli aggiornamenti
+
+Ogni volta che cambi qualcosa e ricarichi i file, devi dire ai telefoni di scaricare la versione nuova. Altrimenti restano con quella vecchia in memoria.
+
+Apri **`sw.js`**, terza riga:
+
+```js
+const CACHE = 'pagine-marroni-0.9-b1';
+```
+
+**Alza di uno il numero dopo la `b`**: `b6`, poi `b7`, e così via. Una volta per ogni pubblicazione.
+
+Quel numero non è la versione dell'app — quella è `0.9` e la vedi in fondo alla schermata Io. È solo il segnale di "c'è roba nuova". L'app controlla da sola a ogni apertura e ogni volta che torna in primo piano, e si aggiorna.
+
+**I dati non si perdono mai in un aggiornamento**: le recensioni stanno nel database, non nell'app. E se una versione nuova arriva mentre stai scrivendo, la pagina non si ricarica di colpo: aspetta che tu abbia salvato.
+
+---
+
+# Parte 8 — Quando qualcosa non va
+
+Prima cosa da fare sempre: apri la **console del browser** (F12 → scheda **Console**). Supabase ci scrive dentro il motivo esatto dell'errore, in inglese ma comprensibile.
+
+| Sintomo | Causa e rimedio |
 |---|---|
-| Feed vuoto, in console `permission denied for table recensioni` | manca la policy di `select` del passo 2 |
-| La recensione si salva ma la foto no | bucket non pubblico, o mancano le policy del passo 3 |
-| `column "autore_id" does not exist` | hai creato la tabella con una versione precedente dello script: lancia `alter table recensioni add column autore_id text;` |
-| Le cagate degli altri non compaiono da sole | manca `alter publication supabase_realtime add table recensioni;` |
-| `Failed to fetch` | Project URL sbagliato, oppure hai aperto il file con doppio clic invece che dal sito |
-| Il pulsante posizione non fa niente | la geolocalizzazione vuole HTTPS: usa l'indirizzo `https://tuonome.github.io/...`, non `http://` |
+| Compare *"Manca la configurazione Supabase"* | I due valori non sono stati incollati, o hai cancellato un apice. Parte 3. |
+| `Invalid API key` nella console | Hai copiato la chiave sbagliata. Serve la **Publishable key** (`sb_publishable_...`), non la secret. Passo 2.4. |
+| Bacheca vuota, console dice `permission denied for table recensioni` | Non hai lanciato le policy del Passo 2.2. Rilancia quel blocco. |
+| La recensione si salva ma la foto no | Il bucket `foto` non è pubblico, o mancano le policy del Passo 2.3. |
+| `column "luogo_id" does not exist` (o `citta`, o `autore_id`) | Hai creato la tabella con una versione vecchia dello script. Lancia: `alter table recensioni add column if not exists autore_id text, add column if not exists citta text, add column if not exists luogo_id text;` |
+| Le cagate degli amici non compaiono da sole | Manca l'ultima riga del Passo 2.2: `alter publication supabase_realtime add table recensioni;` |
+| Il pulsante Elimina non funziona | Manca la policy di delete: `create policy "tutti cancellano" on recensioni for delete using (true);` |
+| `Failed to fetch` nella console | Project URL sbagliato (occhio alla barra finale), oppure hai aperto il file col doppio clic invece che dal sito. |
+| Il tasto della posizione non fa niente | La geolocalizzazione richiede HTTPS. Usa l'indirizzo `https://...github.io/...`, non un file aperto localmente. |
+| Ho pubblicato ma vedo ancora la versione vecchia | Non hai alzato il numero `b` in `sw.js`. Parte 7. |
+| L'icona sul telefono è sbagliata | Le icone sono cinque file: controlla di averli caricati tutti. |
 
 ---
 
-# PARTE 4 — Quanto è sicuro
+# Parte 9 — Sicurezza e backup
 
-**Le SQL injection non sono possibili.** L'app non scrive mai SQL: parla con Supabase attraverso il suo client, che invia i dati come parametri separati dalla query. Anche se scrivi `'; drop table recensioni; --` nel nome del bagno, finisce nel database come testo, punto. In più non esiste una policy di `delete`: nessuno può cancellare righe, nemmeno per sbaglio.
+## Le SQL injection non sono possibili
 
-**Nemmeno gli script nelle recensioni.** Tutto il testo che gli utenti scrivono passa da una funzione di escape prima di finire nella pagina: un `<script>` scritto in una recensione si vede come testo, non viene eseguito.
+L'app non scrive mai comandi SQL. Passa i dati al client di Supabase, che li invia come parametri separati dalla richiesta. Se scrivi `'; drop table recensioni; --` come nome del bagno, finisce nel database come testo e basta. Le policy permettono soltanto di leggere e scrivere righe di quella tabella: nessuna richiesta può toccare la struttura del database.
 
-**La chiave `anon` nel codice non è una falla.** È pubblica per progetto, sta nel sorgente di qualunque app Supabase. A decidere chi fa cosa sono le policy del passo 2.
+Nemmeno gli script HTML funzionano: tutto il testo scritto dagli utenti viene neutralizzato prima di finire nella pagina.
 
-**Il vero limite è un altro, e devi saperlo**: con queste policy chiunque trovi l'indirizzo del sito può inserire recensioni. Per un gruppo di amici va benissimo. Se ti scoprissero e iniziassero a riempirtelo di spam, hai due rimedi rapidi:
+## La chiave `anon` nel codice non è una falla
 
-*Chiudere tutto in un secondo* (blocca le nuove scritture, la lettura resta):
+È pubblica per costruzione, sta nel sorgente di qualunque app Supabase. A decidere chi può fare cosa sono le policy, non il segreto della chiave.
+
+## Il limite vero, che devi conoscere
+
+Con le policy della Parte 2, **chiunque conosca l'indirizzo del tuo sito può inserire, modificare e cancellare recensioni**. Nell'app i pulsanti compaiono solo sulle tue, ma è una regola dell'interfaccia, non del database.
+
+Per un gruppo di amici è un rischio teorico: nessuno cerca a caso indirizzi di GitHub Pages. Ma se un giorno ti riempissero di spam:
+
+*Chiudere le scritture in un secondo* (la lettura resta):
 
 ```sql
 drop policy "tutti scrivono" on recensioni;
 ```
 
-*Pulire lo spam* (dal Table Editor di Supabase, selezioni le righe e le elimini: tu come proprietario del progetto puoi sempre).
+*Chiudere il club sul serio*: attiva **Authentication → Providers → Anonymous** su Supabase, poi:
 
-Se invece vuoi un club chiuso fin dall'inizio, attiva **Authentication → Providers → Anonymous** su Supabase e cambia le policy in `using (auth.uid() is not null)`: ogni dispositivo ottiene un'identità vera e solo chi è passato dall'app può scrivere.
+```sql
+alter table recensioni add column if not exists uid uuid default auth.uid();
 
-## Chi ha scritto cosa
+drop policy "tutti modificano" on recensioni;
+drop policy "tutti cancellano" on recensioni;
 
-Ogni recensione porta tre informazioni sull'autore: il **soprannome** scelto al primo accesso, la **faccia** e un **identificativo di dispositivo** generato una sola volta e salvato in locale. Il soprannome è quello che si vede in bacheca, nella classifica e sui pin; l'identificativo serve a distinguere due amici che scegliessero lo stesso nome. Se cambi soprannome dal profilo, l'identificativo resta lo stesso e lo storico continua a essere tuo.
+create policy "modifica solo le tue" on recensioni
+  for update using (uid = auth.uid()) with check (uid = auth.uid());
+create policy "cancella solo le tue" on recensioni
+  for delete using (uid = auth.uid());
+```
+
+Richiede anche una riga nell'app (`await cli.auth.signInAnonymously()` prima del primo caricamento dei dati).
+
+## Backup
+
+Il piano gratuito di Supabase non fa backup automatici seri. Due modi per dormire tranquillo:
+
+- **Dall'app**: Io → **Scarica backup CSV**. Esporta tutto il gruppo in un file che Excel e Fogli Google aprono già in colonne. Sul telefono finisce nei Download, da lì lo mandi su Drive.
+- **Da Supabase**: Table Editor → tre puntini → **Download as CSV**.
+
+Fallo ogni tanto. Costa dieci secondi e ti salva un anno di ricordi.
+
+---
+
+## Se metti mano al codice
+
+Le chiavi con cui l'app salva i dati sul telefono iniziano con **`pagine-marroni:`**. **Non rinominarle mai**: contengono la tua identità di autore, cioè ciò che ti rende proprietario del tuo storico. Se un domani serve cambiare il formato dei dati, si aggiunge una conversione nella funzione `migra()` dentro `index.html`, mai una chiave nuova.

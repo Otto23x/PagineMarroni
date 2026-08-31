@@ -31,7 +31,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 | `icon-maskable-512.png` | ✅ | Icona per Android, che la ritaglia a cerchio o a goccia. |
 | `apple-touch-icon.png` | ✅ | Icona per iPhone (iOS non gestisce la trasparenza). |
 | `favicon.png` | consigliato | Icona nella scheda del browser. |
-| `index-supabase.html` | — | La versione con database condiviso, **da rinominare in `index.html`** dopo averci messo le chiavi. Non va caricata così com'è. |
+| `index-supabase.html` | — | Il modello della versione condivisa, con le chiavi da compilare. **Non va caricato nel repo**: una volta compilato diventa `index.html`. |
 | `PUBBLICARE.md` | — | La guida completa passo passo. |
 | `README.md` | — | Questo file. |
 
@@ -39,7 +39,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 
 ## Le due versioni dell'app: quale scegliere
 
-Nel pacchetto ci sono due file HTML. **Nel repo ne va uno solo, e deve chiamarsi `index.html`.**
+Nel repo va **un solo file HTML, e deve chiamarsi `index.html`**. Quello di questo repo è già la versione condivisa, con le chiavi del database dentro.
 
 | | `index.html` (base) | `index-supabase.html` (condivisa) |
 |---|---|---|
