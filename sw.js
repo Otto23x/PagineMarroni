@@ -1,6 +1,6 @@
 /* Merdiano — service worker.
    Guscio in cache-first, mappe e API in network-first. */
-const CACHE = 'merdiano-v4';
+const CACHE = 'merdiano-v2';
 const GUSCIO = [
   './', './index.html', './manifest.json',
   './icon-192.png', './icon-512.png',

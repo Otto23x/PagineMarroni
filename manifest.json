@@ -1,5 +1,5 @@
 {
-  "name": "Merdiano",
+  "name": "Merdiano — la mappa mondiale delle cagate",
   "short_name": "Merdiano",
   "description": "Registra, recensisci e mappa ogni bagno del mondo insieme ai tuoi amici.",
   "start_url": "./index.html",
@@ -9,36 +9,13 @@
   "background_color": "#E9F0EC",
   "theme_color": "#0FA3A3",
   "lang": "it",
-  "categories": [
-    "social",
-    "travel",
-    "lifestyle"
-  ],
+  "categories": ["social", "travel", "lifestyle"],
   "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
-    }
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    {
-      "name": "Registra una cagata",
-      "short_name": "Registra",
-      "url": "./index.html#nuova"
-    }
+    { "name": "Registra una cagata", "short_name": "Registra", "url": "./index.html#nuova" }
   ]
 }
