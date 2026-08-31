@@ -39,6 +39,7 @@ create table recensioni (
   durata     int,
   lat        double precision,
   lng        double precision,
+  citta      text,
   paese      text,
   foto_url   text,
   reaz       jsonb default '{}'::jsonb,
@@ -52,7 +53,7 @@ alter table recensioni enable row level security;
 create policy "tutti leggono"    on recensioni for select using (true);
 create policy "tutti scrivono"   on recensioni for insert with check (true);
 create policy "tutti reagiscono" on recensioni for update using (true) with check (true);
--- volutamente nessuna policy di delete: nessuno può cancellare lo storico del gruppo
+create policy "tutti cancellano"  on recensioni for delete using (true);
 
 alter publication supabase_realtime add table recensioni;
 ```
@@ -183,7 +184,8 @@ Apri la console del browser (F12 → **Console**, su telefono usa il computer): 
 |---|---|
 | Feed vuoto, in console `permission denied for table recensioni` | manca la policy di `select` del passo 2 |
 | La recensione si salva ma la foto no | bucket non pubblico, o mancano le policy del passo 3 |
-| `column "autore_id" does not exist` | hai creato la tabella con una versione precedente dello script: lancia `alter table recensioni add column autore_id text;` |
+| `column "citta" does not exist` o `"autore_id" does not exist` | avevi creato la tabella con una versione precedente. Lancia: `alter table recensioni add column if not exists autore_id text, add column if not exists citta text;` |
+| Il pulsante Elimina non funziona | manca la policy di `delete`. Lancia: `create policy "tutti cancellano" on recensioni for delete using (true);` |
 | Le cagate degli altri non compaiono da sole | manca `alter publication supabase_realtime add table recensioni;` |
 | `Failed to fetch` | Project URL sbagliato, oppure hai aperto il file con doppio clic invece che dal sito |
 | Il pulsante posizione non fa niente | la geolocalizzazione vuole HTTPS: usa l'indirizzo `https://tuonome.github.io/...`, non `http://` |
@@ -192,7 +194,7 @@ Apri la console del browser (F12 → **Console**, su telefono usa il computer): 
 
 # PARTE 4 — Quanto è sicuro
 
-**Le SQL injection non sono possibili.** L'app non scrive mai SQL: parla con Supabase attraverso il suo client, che invia i dati come parametri separati dalla query. Anche se scrivi `'; drop table recensioni; --` nel nome del bagno, finisce nel database come testo, punto. In più non esiste una policy di `delete`: nessuno può cancellare righe, nemmeno per sbaglio.
+**Le SQL injection non sono possibili.** L'app non scrive mai SQL: parla con Supabase attraverso il suo client, che invia i dati come parametri separati dalla query. Anche se scrivi `'; drop table recensioni; --` nel nome del bagno, finisce nel database come testo, punto. Le policy permettono soltanto di leggere, inserire, aggiornare e cancellare righe di quella tabella: nessun comando può toccare la struttura del database.
 
 **Nemmeno gli script nelle recensioni.** Tutto il testo che gli utenti scrivono passa da una funzione di escape prima di finire nella pagina: un `<script>` scritto in una recensione si vede come testo, non viene eseguito.
 
@@ -205,6 +207,8 @@ Apri la console del browser (F12 → **Console**, su telefono usa il computer): 
 ```sql
 drop policy "tutti scrivono" on recensioni;
 ```
+
+*Fare un backup prima di sperimentare*: Table Editor → tre puntini → **Download as CSV**.
 
 *Pulire lo spam* (dal Table Editor di Supabase, selezioni le righe e le elimini: tu come proprietario del progetto puoi sempre).
 
