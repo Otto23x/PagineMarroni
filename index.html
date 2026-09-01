@@ -413,7 +413,8 @@ body.ingresso{overflow:hidden}
         </div>
         <button class="btn piccolo fantasma" id="btn-scegli" style="margin-top:12px;width:100%">🗺️ Cerca o scegli sulla mappa</button>
         <div class="vicini" id="vicini" hidden></div>
-        <h3 style="margin:18px 0 12px">Che tipo di posto è</h3>
+        <h3 style="margin:18px 0 4px">Che tipo di posto è</h3>
+        <p class="nota" style="margin-bottom:12px">Serve per le statistiche: scegline uno.</p>
         <div class="scelte" id="scelte-categoria" role="group" aria-label="Tipo di posto"></div>
       </div>
 
@@ -1405,11 +1406,27 @@ function comprimi(file){
 
 $('#salva').addEventListener('click', async ()=>{
   if(!S.io){ apriIngresso(); return; }
-  if(Object.values(S.bozza.voti).filter(v=>v>0).length<2){ toast('Dai almeno due voti, non essere timido'); return; }
+  const vaiA_blocco = (sel, messaggio) => {
+    toast(messaggio);
+    const el=$(sel); if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
+  };
+  if(Object.values(S.bozza.voti).filter(v=>v>0).length<2){
+    vaiA_blocco('#scale-voti', 'Dai almeno due voti, non essere timido'); return;
+  }
+  if(!S.bozza.categoria){
+    vaiA_blocco('#scelte-categoria', 'Scegli che tipo di posto è'); return;
+  }
+  if(!S.bozza.tag.length){
+    vaiA_blocco('#lista-tag', "Dimmi com'è andata: se è filato liscio, tocca Tutto ok"); return;
+  }
   const scelta = $('#quando').value ? new Date($('#quando').value).getTime() : Date.now();
   const quandoTs = (!scelta || isNaN(scelta)) ? Date.now() : Math.min(scelta, Date.now());
   let nomePosto = titoloMaiuscolo($('#luogo').value);
-  if(nomePosto.length<2){ toast('Dai un nome al posto: è il titolo della recensione'); $('#luogo').focus(); return; }
+  if(nomePosto.length<2){
+    vaiA_blocco('#luogo', 'Dai un nome al posto: è il titolo della recensione');
+    setTimeout(()=>$('#luogo').focus(), 350);
+    return;
+  }
   const idLuogo = risolviLuogo(nomePosto, S.bozza);
   const rinomina = S.modificaId && nomeCanonico(idLuogo)!=='Posto senza nome' && nomeCanonico(idLuogo)!==nomePosto;
   /* se il posto esiste già e non lo stai rinominando, vale il nome di chi è arrivato prima */

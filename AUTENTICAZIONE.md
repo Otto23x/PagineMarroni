@@ -118,6 +118,28 @@ Sui telefoni degli altri rimangono le bozze non ancora salvate e le eventuali re
 
 ---
 
+## Passo 4 bis (facoltativo) — L'email di recupero password
+
+Quella predefinita di Supabase è una riga di testo con un link nudo. Si può sostituire.
+
+**Authentication** → **Emails** → scheda **Templates** → **Reset Password**.
+
+Cambia l'oggetto in qualcosa di riconoscibile, per esempio:
+
+```
+Pagine Marroni — la tua nuova password
+```
+
+Poi, nel riquadro del messaggio, cancella tutto e incolla il contenuto del file **`email-recupero-password.html`** che trovi nel pacchetto: è nello stile dell'app, con la cacca in cima, il pulsante marrone e l'indirizzo di riserva in fondo per chi ha il client di posta che blocca i link. **Save**.
+
+Nota: `{{ .ConfirmationURL }}` è la variabile che Supabase sostituisce col link vero. Deve restare scritta esattamente così, comprese le graffe e lo spazio dopo la prima coppia.
+
+Stessa cosa si può fare con **Confirm signup** e **Magic Link**, se un giorno li userai.
+
+⚠️ Quello che **non** puoi cambiare senza il Passo 5 è il mittente: resterà un indirizzo di Supabase tipo `noreply@mail.app.supabase.io`. Per far arrivare le email da un tuo indirizzo serve l'SMTP personalizzato.
+
+---
+
 ## Passo 5 (facoltativo) — Email vere
 
 Se vuoi tenere accesa la conferma dell'email, o semplicemente vuoi che i messaggi di recupero password arrivino sempre, collega un servizio di posta al posto di quello integrato.

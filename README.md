@@ -34,6 +34,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 | `index-supabase.html` | — | Il modello della versione condivisa, con le chiavi da compilare. **Non va caricato nel repo**: una volta compilato diventa `index.html`. |
 | `PUBBLICARE.md` | — | La guida completa passo passo. |
 | `AUTENTICAZIONE.md` | — | Come configurare l'accesso con email e password. **Da leggere prima di pubblicare.** |
+| `email-recupero-password.html` | — | Modello grafico per l'email di recupero password, da incollare su Supabase. |
 | `README.md` | — | Questo file. |
 
 ---
