@@ -384,22 +384,22 @@ body.ingresso{overflow:hidden}
         <h3>Il racconto</h3>
         <div class="campo" style="margin-bottom:12px">
           <label for="luogo">Nome del posto</label>
-          <input type="text" id="luogo" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" list="posti-noti" autocomplete="off">
+          <input type="text" id="luogo" name="nome-posto" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" list="posti-noti" autocomplete="off" data-lpignore="true" data-form-type="other">
           <datalist id="posti-noti"></datalist>
           <div class="nota-luogo" id="nota-luogo" hidden></div>
         </div>
         <div class="campo" style="margin-bottom:12px">
           <label for="titolo-rec">Titolo del racconto <span style="font-weight:400;color:var(--tenue)">(facoltativo)</span></label>
-          <input type="text" id="titolo-rec" maxlength="50" placeholder="es. Ceramica fredda, cuore caldo">
+          <input type="text" id="titolo-rec" name="titolo-cagata" maxlength="50" placeholder="es. Ceramica fredda, cuore caldo" autocomplete="off" data-lpignore="true" data-form-type="other">
         </div>
         <div class="campo" style="margin-bottom:12px">
           <label for="testo-rec">Com'è andata</label>
-          <textarea id="testo-rec" maxlength="600" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
+          <textarea id="testo-rec" name="racconto-cagata" maxlength="600" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
           <div class="contatore" id="contatore">0 / 600</div>
         </div>
         <div class="campo" style="margin-bottom:0">
           <label for="quando">Quando è successo</label>
-          <input type="datetime-local" id="quando">
+          <input type="datetime-local" id="quando" name="quando-cagata" autocomplete="off" data-lpignore="true" data-form-type="other">
           <p class="nota" style="margin-top:6px">Lascia l'ora di adesso, oppure torna indietro per registrarne una vecchia: se sposti il giorno, l'ora va a mezzogiorno.</p>
         </div>
       </div>
@@ -599,7 +599,7 @@ body.ingresso{overflow:hidden}
   <div class="scheda riquadro" role="alertdialog" aria-modal="true" aria-labelledby="dlg-titolo" aria-describedby="dlg-testo">
     <h3 id="dlg-titolo"></h3>
     <p id="dlg-testo"></p>
-    <input type="text" id="dlg-campo" class="campo-dlg" hidden>
+    <input type="text" id="dlg-campo" class="campo-dlg" autocomplete="off" data-lpignore="true" data-form-type="other" hidden>
     <div class="dlg-azioni">
       <button class="btn fantasma" id="dlg-no">Annulla</button>
       <button class="btn scuro" id="dlg-si">Ok</button>
@@ -613,7 +613,7 @@ body.ingresso{overflow:hidden}
     <button id="chiudi-sel" aria-label="Chiudi">✕</button>
   </div>
   <div class="cerca-sel">
-    <input type="text" id="cerca-luogo" placeholder="Cerca un indirizzo o un posto" enterkeyhint="search">
+    <input type="text" id="cerca-luogo" name="ricerca-posto" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Cerca un indirizzo o un posto" enterkeyhint="search">
     <button class="btn piccolo" id="btn-cerca">Cerca</button>
   </div>
   <div class="esiti-sel" id="esiti-sel" hidden></div>
@@ -628,8 +628,8 @@ body.ingresso{overflow:hidden}
   <div class="scheda riquadro" role="dialog" aria-modal="true" aria-labelledby="prop-tit">
     <h3 id="prop-tit">Proponi un altro nome</h3>
     <p id="prop-attuale"></p>
-    <input type="text" id="prop-nome" class="campo-dlg" maxlength="60" placeholder="Come si dovrebbe chiamare">
-    <textarea id="prop-motivo" class="campo-dlg" maxlength="160" placeholder="Perché? (facoltativo)" style="min-height:76px;resize:vertical"></textarea>
+    <input type="text" id="prop-nome" name="nome-proposto" class="campo-dlg" maxlength="60" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Come si dovrebbe chiamare">
+    <textarea id="prop-motivo" name="motivo-proposta" class="campo-dlg" maxlength="160" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Perché? (facoltativo)" style="min-height:76px;resize:vertical"></textarea>
     <div class="dlg-azioni">
       <button class="btn fantasma" id="prop-no">Annulla</button>
       <button class="btn scuro" id="prop-si">Invia proposta</button>
@@ -849,7 +849,18 @@ const DB = {
 /* ============ FINE LIVELLO DATI ============ */
 
 const K_BOZZA='pagine-marroni:bozza:v1';
+/* Alcuni browser, dopo l'accesso, riempiono d'ufficio i campi di testo con
+   l'email appena usata. Qui la si toglie prima che finisca nella bozza salvata. */
+function ripuliscAutocompletamento(){
+  const email = S.io && S.io.email;
+  if(!email) return;
+  ['#titolo-rec','#luogo','#testo-rec'].forEach(sel=>{
+    const c=$(sel);
+    if(c && c.value.trim().toLowerCase()===email.toLowerCase()) c.value='';
+  });
+}
 function salvaBozza(){
+  ripuliscAutocompletamento();
   if(S.modificaId) return;
   try{ localStorage.setItem(K_BOZZA, JSON.stringify({
     b:S.bozza, luogo:$('#luogo').value, titolo:$('#titolo-rec').value,
@@ -1938,6 +1949,8 @@ function disegnaProfilo(){
   const faccia = suoi ? (uno?uno.faccia:'💩') : S.io.faccia;
 
   $('#zona-guida').hidden = !!suoi;
+  /* nel profilo di un altro non deve comparire niente che riguardi il tuo */
+  $('#btn-esci').hidden = !!suoi || !S.io;
   aggiornaBottoneNotifiche();
   const u=document.getElementById('mio-uid');
   if(u && S.io) u.innerHTML = `Profilo: ${esc(S.io.email||'')} · identificativo <code style="font-size:11px">${esc(S.io.id)}</code>`;
@@ -2007,9 +2020,24 @@ const K_LETTO='pagine-marroni:letto:v1';
 let ultimoLetto = Number(localStorage.getItem(K_LETTO)||0);
 let sincronizzando=false, bachecaVecchia=false;
 /* impronta dei dati: se non cambia, non si ridisegna niente e le foto stanno ferme */
+function firmaRec(r){
+  return r.id+'~'+r.ts+'~'+(r.luogo||'').length+'~'+(r.testo||'').length
+    +'~'+Object.values(r.voti||{}).join('')+'~'+((r.reaz&&r.reaz['💩'])||[]).length+'~'+(r.inCoda?1:0);
+}
 function impronta(){
-  return S.proposte.map(p=>p.id+p.stato).join(',')+'#'+S.recensioni.map(r=>r.id+'~'+r.ts+'~'+(r.luogo||'').length+'~'+(r.testo||'').length
-    +'~'+Object.values(r.voti||{}).join('')+'~'+((r.reaz&&r.reaz['💩'])||[]).length+'~'+(r.inCoda?1:0)).join('|');
+  return S.proposte.map(p=>p.id+p.stato).join(',')+'#'+S.recensioni.map(firmaRec).join('|');
+}
+/* Chi ha causato il cambiamento? Se sono solo cose mie, non ha senso avvisarmi. */
+function soloRobaMia(prima, dopo){
+  if(!S.io) return false;
+  const vecchie=new Map(prima.map(r=>[r.id, firmaRec(r)]));
+  const nuove=new Map(dopo.map(r=>[r.id, firmaRec(r)]));
+  const autori=new Map(prima.concat(dopo).map(r=>[r.id, r.autoreId]));
+  const cambiati=new Set();
+  nuove.forEach((f,id)=>{ if(vecchie.get(id)!==f) cambiati.add(id); });
+  vecchie.forEach((f,id)=>{ if(!nuove.has(id)) cambiati.add(id); });
+  if(!cambiati.size) return true;
+  return [...cambiati].every(id=>autori.get(id)===S.io.id);
 }
 
 async function sincronizza(avvisa, forza){
@@ -2017,6 +2045,7 @@ async function sincronizza(avvisa, forza){
   sincronizzando=true;
   try{
     const prima = impronta();
+    const recPrima = S.recensioni.slice();
     const nuove = await DB.carica();
     const propPrima = proposteInArrivo().length;
     try{ S.proposte = await DB.caricaProposte(); }catch(e){}
@@ -2037,6 +2066,10 @@ async function sincronizza(avvisa, forza){
     aggiornaPastiglia();
     if(impronta()===prima) return;            // niente di nuovo: non si tocca lo schermo
     aggiornaSuggerimenti();
+    if(soloRobaMia(recPrima, S.recensioni)){  // l'ho fatto io: aggiorno in silenzio
+      ridisegna();
+      return;
+    }
     if(S.vista==='bacheca' && !forza){
       /* la bacheca è sotto gli occhi: non gliela cambio da sotto i piedi */
       bachecaVecchia=true;
