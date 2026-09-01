@@ -1,6 +1,6 @@
 # Pagine Marroni 💩
 
-**Versione 0.9**
+**Versione 1.0**
 
 La mappa mondiale delle cagate. Tu e i tuoi amici registrate dove siete stati, con foto, voti in cacche e recensione: tutto finisce in bacheca e come pin su una mappa del mondo condivisa.
 
@@ -12,11 +12,11 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 
 | Sezione | Cosa fa |
 |---|---|
-| 💩 **Registra** | Nome del posto, racconto, posizione, foto, voti in cacche, etichette. **È sempre la schermata di apertura**, a ogni avvio. |
+| 💩 **Registra** | Nome del posto, racconto, data, posizione, foto, voti in cacche, etichette. **È sempre la schermata di apertura**, a ogni avvio. |
 | 📰 **Bacheca** | Tutte le recensioni del gruppo. Filtri per persona, città, paese e voto. Le tue le modifichi o le elimini. |
 | 🗺️ **Mappa** | I pin di tutti. Tocca un pin per leggere la recensione. |
 | 🏆 **Classifica** | Chi ha registrato di più e i bagni col voto più alto. Tocca un nome per le sue statistiche, tocca un bagno per le sue recensioni. |
-| 🚽 **Io** | Le tue statistiche, i distintivi, il backup CSV, le notifiche e il cambio nome. |
+| 🚽 **Io** | Le proposte di rinomina da approvare, le tue statistiche, i distintivi, il backup CSV, le notifiche, il codice profilo e il cambio nome. |
 
 ---
 
@@ -33,6 +33,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 | `favicon.png` | consigliato | Icona nella scheda del browser. |
 | `index-supabase.html` | — | Il modello della versione condivisa, con le chiavi da compilare. **Non va caricato nel repo**: una volta compilato diventa `index.html`. |
 | `PUBBLICARE.md` | — | La guida completa passo passo. |
+| `AUTENTICAZIONE.md` | — | Come configurare l'accesso con email e password. **Da leggere prima di pubblicare.** |
 | `README.md` | — | Questo file. |
 
 ---
@@ -79,12 +80,73 @@ Non serve saper programmare né scrivere SQL: si tratta di incollare uno script 
 
 ## Aggiornare l'app dopo la pubblicazione
 
-Quando ricarichi i file sul repo, i telefoni che hanno già l'app hanno in memoria la versione vecchia. Per farli aggiornare:
+I telefoni si aggiornano da soli: pagina, icone e manifest arrivano sempre dalla rete quando c'è connessione, e l'app controlla se c'è una versione nuova a ogni apertura e a ogni ritorno in primo piano.
 
-> Apri `sw.js`, prima riga utile: `const CACHE = 'pagine-marroni-0.9-b1';`
-> **Alza di uno il numero dopo la `b`** — `b6`, `b7`, e così via — a ogni pubblicazione.
+Quando pubblichi una versione nuova, allinea due numeri:
 
-Quel numero non è la versione dell'app, è il segnale che dice ai telefoni di scaricare i file nuovi. L'app controlla da sola a ogni apertura e a ogni ritorno in primo piano, quindi non dovrai più svuotare la cache a mano.
+- `const VERSIONE = '1.0';` in `index.html` — è quello che si legge in fondo alla schermata Io
+- `const CACHE = 'pagine-marroni-1.0';` in `sw.js` — rinnova la copia di riserva per l'uso offline
+
+---
+
+## Registrare una cagata passata
+
+Non serve essere sul posto. Nella schermata Registra:
+
+- **Quando è successo** è un campo data e ora, preimpostato su adesso. Torna indietro quanto vuoi (non si può andare nel futuro). Se sposti solo il giorno, l'ora si porta da sola a **mezzogiorno**, perché l'ora attuale su una data passata non vuol dire niente; se ricordi l'ora vera, la scrivi. La recensione si infila in bacheca al posto giusto in ordine di tempo.
+- **Cerca o scegli sulla mappa** apre una schermata con la ricerca per indirizzo o nome del posto e una mappa navigabile: tocchi il punto e lo confermi. Sulla mappa vedi anche i pin già registrati, così ritrovi al volo un bagno noto.
+
+Da lì in poi funziona tutto come al solito: il riconoscimento del posto entro 60 metri, il nome bloccato se qualcuno c'è già stato, città e paese dedotti dal punto scelto.
+
+Il posto lo **battezza chi lo registra per primo**, non chi ha la data più vecchia: se domani registri una cagata dell'anno scorso in un bagno già in elenco, il nome non cambia sotto il naso di nessuno.
+
+---
+
+## Il profilo
+
+Si entra con **email e password**. Il nome che vedono gli altri e la faccia si scelgono alla creazione e si cambiano quando si vuole da **Io → Cambia**: lo storico segue.
+
+- **Cambio telefono**: entri con le stesse credenziali e ritrovi tutto.
+- **Password dimenticata**: dalla schermata di ingresso, ti arriva un'email con il link per sceglierne una nuova.
+- **Uscire**: Io → Esci dal profilo.
+
+L'email serve solo per entrare: non compare da nessuna parte nell'app e gli altri non la vedono.
+
+La configurazione di tutto questo su Supabase è descritta in [`AUTENTICAZIONE.md`](AUTENTICAZIONE.md) — **va fatta prima di pubblicare questa versione**, altrimenti nessuno riesce a entrare.
+
+---
+
+## Etichette: due dimensioni, non una lista infinita
+
+I posti del mondo sono infiniti, quindi elencarli come etichette non funziona: dopo "autogrill" servono bar, banca, palazzetto, traghetto, e non finisce più. Per questo ci sono **due domande separate**.
+
+**Che tipo di posto è** — una sola scelta, nove categorie larghe: Casa, Lavoro, Bar e ristoranti, Negozi, Locali pubblici, Trasporti, Alberghi e simili, All'aperto, Altro. Servono per le statistiche e per il filtro. Il nome preciso — "Autogrill Somaglia Ovest" — sta già nel titolo della recensione, quindi non serve ripeterlo in un'etichetta.
+
+**Cos'è successo** — quante ne vuoi, dodici circostanze: Coda, Spettatori, Bussata, Carta finita, Serratura rotta, Fuori servizio, Senza luce, Alla turca, Bagno chimico, A pagamento, Chiave al bancone, Altro. Queste sì che sono un insieme chiuso: descrivono l'esperienza, non il luogo.
+
+---
+
+## Come funzionano i nomi dei posti
+
+Il nome appartiene al **posto**, non alla singola recensione. Chi registra per primo in un punto lo battezza; chi ci va dopo lo trova già scritto e bloccato, e scrive solo il proprio titolo e la propria recensione.
+
+Due recensioni sono nello stesso posto se le coordinate distano meno di **60 metri**. Se il GPS sbaglia o è un bagno diverso nello stesso edificio, c'è il pulsante **Non è questo posto** che sblocca il campo e crea un posto nuovo.
+
+Per cambiare il nome di un posto serve esserne il battezzatore (o essere in modalità gestore): si modifica la propria recensione, si cambia il nome e **cambia per tutte le recensioni fatte lì**.
+
+**Se il nome non ti convince e non l'hai scelto tu**, tocca **Proponi un altro nome** mentre registri: scrivi il nome che suggerisci e, se vuoi, il motivo. La proposta arriva a chi ha battezzato il posto, che la trova nella schermata **Io** con il pallino rosso sulla scheda e può approvarla o lasciare tutto com'è. Se approva, il nome cambia per tutte le recensioni fatte lì. Chi ha proposto vede l'esito nella stessa schermata.
+
+Così le statistiche di un posto restano una cosa sola, invece di sparpagliarsi fra "Bar Roma", "bar roma" e "Il Bar Di Roma".
+
+---
+
+## Modalità gestore
+
+Il gestore vede **Modifica** ed **Elimina** su tutte le recensioni e può rinominare qualsiasi posto. Non è un codice nel sorgente: è una riga nella tabella `gestori` del database, con il tuo identificativo. Chi non è in quell'elenco non può diventarlo, nemmeno leggendo il codice della pagina.
+
+Il gestore ha anche il pulsante **🧨 Svuota tutto e riparti da zero**, che cancella recensioni, foto e proposte con doppia conferma — utile dopo le prove, prima del lancio vero.
+
+Come nominarti gestore: Passo 4 di [`AUTENTICAZIONE.md`](AUTENTICAZIONE.md).
 
 ---
 

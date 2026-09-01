@@ -1,6 +1,6 @@
 # Pagine Marroni — guida completa alla pubblicazione
 
-**Versione 0.9**
+**Versione 1.0**
 
 Questa guida ti porta da una cartella di file a un'app installata sul telefono tuo e dei tuoi amici, con le recensioni condivise. Non serve saper programmare. Serve copiare e incollare.
 
@@ -80,6 +80,7 @@ create table recensioni (
   ts         bigint not null,
   luogo      text,
   luogo_id   text,
+  categoria  text,
   titolo     text,
   testo      text,
   voti       jsonb not null default '{}'::jsonb,
@@ -104,8 +105,29 @@ create policy "tutti scrivono"   on recensioni for insert with check (true);
 create policy "tutti modificano" on recensioni for update using (true) with check (true);
 create policy "tutti cancellano" on recensioni for delete using (true);
 
--- fa comparire le cagate degli amici senza ricaricare la pagina
+-- proposte di rinomina dei posti
+create table proposte (
+  id            text primary key,
+  luogo_id      text not null,
+  nome_attuale  text,
+  nome_proposto text not null,
+  motivo        text,
+  da_id         text,
+  da_nome       text,
+  a_id          text,
+  ts            bigint not null,
+  stato         text default 'attesa'
+);
+
+alter table proposte enable row level security;
+
+create policy "tutti leggono proposte" on proposte for select using (true);
+create policy "tutti propongono"       on proposte for insert with check (true);
+create policy "tutti rispondono"       on proposte for update using (true) with check (true);
+
+-- fa comparire cagate e proposte senza ricaricare la pagina
 alter publication supabase_realtime add table recensioni;
+alter publication supabase_realtime add table proposte;
 ```
 
 Deve rispondere **Success. No rows returned**. È il messaggio giusto: hai creato una tabella, non hai chiesto dei dati.
@@ -264,17 +286,15 @@ Fai questi cinque controlli in ordine. Se passano tutti, hai finito.
 
 # Parte 7 — Pubblicare gli aggiornamenti
 
-Ogni volta che cambi qualcosa e ricarichi i file, devi dire ai telefoni di scaricare la versione nuova. Altrimenti restano con quella vecchia in memoria.
+Quando cambi qualcosa e ricarichi i file, i telefoni si aggiornano da soli: pagina, icone e manifest vengono sempre presi dalla rete quando c'è connessione, e l'app controlla se c'è una versione nuova a ogni apertura e a ogni ritorno in primo piano.
 
-Apri **`sw.js`**, terza riga:
+L'unica cosa che resta in memoria è la copia di riserva per l'uso offline. Per rinnovare anche quella, quando pubblichi una versione nuova apri **`sw.js`** e cambia il numero nella terza riga:
 
 ```js
-const CACHE = 'pagine-marroni-0.9-b1';
+const CACHE = 'pagine-marroni-1.0';
 ```
 
-**Alza di uno il numero dopo la `b`**: `b6`, poi `b7`, e così via. Una volta per ogni pubblicazione.
-
-Quel numero non è la versione dell'app — quella è `0.9` e la vedi in fondo alla schermata Io. È solo il segnale di "c'è roba nuova". L'app controlla da sola a ogni apertura e ogni volta che torna in primo piano, e si aggiorna.
+Da `1.0` a `1.1`, e così via — lo stesso numero che scrivi in `const VERSIONE` dentro `index.html`, così i due restano allineati e sai sempre cosa c'è online.
 
 **I dati non si perdono mai in un aggiornamento**: le recensioni stanno nel database, non nell'app. E se una versione nuova arriva mentre stai scrivendo, la pagina non si ricarica di colpo: aspetta che tu abbia salvato.
 
@@ -290,12 +310,13 @@ Prima cosa da fare sempre: apri la **console del browser** (F12 → scheda **Con
 | `Invalid API key` nella console | Hai copiato la chiave sbagliata. Serve la **Publishable key** (`sb_publishable_...`), non la secret. Passo 2.4. |
 | Bacheca vuota, console dice `permission denied for table recensioni` | Non hai lanciato le policy del Passo 2.2. Rilancia quel blocco. |
 | La recensione si salva ma la foto no | Il bucket `foto` non è pubblico, o mancano le policy del Passo 2.3. |
-| `column "luogo_id" does not exist` (o `citta`, o `autore_id`) | Hai creato la tabella con una versione vecchia dello script. Lancia: `alter table recensioni add column if not exists autore_id text, add column if not exists citta text, add column if not exists luogo_id text;` |
-| Le cagate degli amici non compaiono da sole | Manca l'ultima riga del Passo 2.2: `alter publication supabase_realtime add table recensioni;` |
+| `column "luogo_id" does not exist` (o `citta`, o `autore_id`) | Hai creato la tabella con una versione vecchia dello script. Lancia: `alter table recensioni add column if not exists autore_id text, add column if not exists citta text, add column if not exists luogo_id text, add column if not exists categoria text;` |
+| Le cagate degli amici non compaiono da sole | Mancano le righe finali del Passo 2.2: `alter publication supabase_realtime add table recensioni;` e la stessa per `proposte` |
+| Le proposte di rinomina non arrivano, in console `relation "proposte" does not exist` | Manca la tabella delle proposte: lancia il blocco della sezione "Aggiornare un progetto già creato" |
 | Il pulsante Elimina non funziona | Manca la policy di delete: `create policy "tutti cancellano" on recensioni for delete using (true);` |
 | `Failed to fetch` nella console | Project URL sbagliato (occhio alla barra finale), oppure hai aperto il file col doppio clic invece che dal sito. |
 | Il tasto della posizione non fa niente | La geolocalizzazione richiede HTTPS. Usa l'indirizzo `https://...github.io/...`, non un file aperto localmente. |
-| Ho pubblicato ma vedo ancora la versione vecchia | Non hai alzato il numero `b` in `sw.js`. Parte 7. |
+| Ho pubblicato ma vedo ancora la versione vecchia | Chiudi e riapri l'app: il controllo parte all'avvio. Se persiste, cambia il numero in `sw.js`. Parte 7. |
 | L'icona sul telefono è sbagliata | Le icone sono cinque file: controlla di averli caricati tutti. |
 
 ---

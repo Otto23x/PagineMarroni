@@ -28,7 +28,9 @@
   --font-display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
   --font-ui:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
-*,*::before,*::after{box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+/* [hidden] deve battere qualunque display dichiarato dalle classi */
+[hidden]{display:none !important}
 html,body{height:100%}
 body{
   margin:0;font-family:var(--font-ui);color:var(--inchiostro);background-color:var(--ceramica);
@@ -43,7 +45,8 @@ body{
 button,input,select,textarea{font:inherit;color:inherit}
 input[type=range]{accent-color:var(--cioccolato);height:34px;width:100%}
 button{cursor:pointer;border:none;background:none}
-:focus-visible{outline:3px solid var(--acqua);outline-offset:2px;border-radius:6px}
+:focus{outline:none}
+:focus-visible{outline:2.5px solid var(--acqua);outline-offset:3px}   /* solo navigazione da tastiera */
 h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;margin:0;line-height:1.05}
 p{margin:0}
 img,canvas,svg{max-width:100%}
@@ -107,9 +110,19 @@ body.ingresso{overflow:hidden}
 .benvenuto .paylo{font-size:15px;color:var(--tenue);margin-bottom:20px;line-height:1.45}
 .campo{text-align:left;margin-bottom:14px}
 .campo label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--cioccolato-2)}
-.campo input[type=text],.campo textarea,.campo select{width:100%;min-height:var(--tap);padding:12px 14px;border-radius:var(--r-m);border:1.5px solid var(--fuga);background:#FBFDFC;transition:border-color .15s,box-shadow .15s}
+.campo input:not([type=range]),.campo textarea,.campo select{
+  width:100%;min-height:52px;padding:14px 16px;border-radius:var(--r-l);
+  border:1.5px solid var(--fuga);background:#FBFDFC;
+  transition:border-color .15s,box-shadow .15s,background .15s;-webkit-appearance:none;appearance:none}
+.campo input::placeholder,.campo textarea::placeholder{color:#B0A79F}
+.campo input:not([type=range]):focus,.campo textarea:focus,.campo select:focus{background:var(--porcellana)}
 .campo textarea{min-height:96px;resize:vertical;line-height:1.5}
 .campo input:focus,.campo textarea:focus,.campo select:focus{outline:none;border-color:var(--acqua);box-shadow:0 0 0 4px rgba(15,163,163,.15)}
+.linguette{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#F1F5F3;border-radius:999px;margin-bottom:18px}
+.ling{min-height:40px;border-radius:999px;font-size:14px;font-weight:700;color:var(--tenue)}
+.ling.attiva{background:var(--porcellana);color:var(--cioccolato);box-shadow:0 4px 10px -6px rgba(42,28,18,.5)}
+.errore{background:rgba(217,80,63,.12);color:#9c3123;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.4;margin-bottom:12px;text-align:left}
+.errore[hidden]{display:none}
 .griglia-emoji{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
 .griglia-emoji button{aspect-ratio:1;border-radius:14px;font-size:22px;background:#FBFDFC;border:1.5px solid var(--fuga);display:grid;place-items:center;transition:transform .15s,border-color .15s,background .15s}
 .griglia-emoji button[aria-pressed="true"]{border-color:var(--acqua);background:rgba(15,163,163,.12);transform:scale(1.06)}
@@ -133,11 +146,17 @@ body.ingresso{overflow:hidden}
 .pop img{width:100%;border-radius:10px;margin-bottom:8px;display:block}
 
 /* ---------- filtri ---------- */
-.barra-filtri{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
-@media (min-width:620px){.barra-filtri{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.barra-filtri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+@media (min-width:760px){.barra-filtri{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.pulisci{width:100%;margin-bottom:12px;min-height:42px;border-radius:999px;background:var(--cioccolato);color:#fff;font-size:13px;font-weight:700;box-shadow:0 6px 14px -8px rgba(78,50,32,.9);padding:0 8px}
+.pulisci:disabled{display:none}
+.riassunto{display:flex;flex-wrap:wrap;gap:6px 14px;padding:12px 16px;margin-bottom:14px;background:var(--porcellana);border:var(--bordo);border-radius:var(--r-m);box-shadow:var(--ombra);font-size:13px}
+.riassunto[hidden]{display:none}
+.riassunto b{font-family:var(--font-display);color:var(--cioccolato);font-size:15px}
+.riassunto span{color:var(--tenue)}
+.nuove{display:block;width:100%;margin-bottom:14px;min-height:44px;border-radius:999px;background:var(--acqua);color:#fff;font-size:13.5px;font-weight:700;box-shadow:0 8px 18px -10px var(--acqua-scuro)}
+.nuove[hidden]{display:none}
 .barra-filtri select{min-height:44px;padding:0 12px;border-radius:999px;border:var(--bordo);background:var(--porcellana);box-shadow:var(--ombra);font-size:13px;font-weight:600;-webkit-appearance:none;appearance:none;text-overflow:ellipsis}
-.filtro-attivo{display:flex;align-items:center;gap:8px;background:rgba(78,50,32,.08);border-radius:999px;padding:8px 8px 8px 14px;font-size:13px;font-weight:600;margin-bottom:12px}
-.filtro-attivo button{margin-left:auto;background:var(--cioccolato);color:#fff;border-radius:999px;height:30px;padding:0 12px;font-size:12px;font-weight:700}
 
 /* ---------- bacheca ---------- */
 .bacheca{display:grid;gap:16px}
@@ -185,6 +204,14 @@ body.ingresso{overflow:hidden}
 .scala{display:flex;gap:2px;flex:none}
 .scala button{width:34px;height:38px;font-size:21px;line-height:1;display:grid;place-items:center;filter:grayscale(1) opacity(.3);transition:filter .16s,transform .16s}
 .scala button.acceso{filter:none;transform:scale(1.12)}
+.scelte{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.scelta{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  min-height:74px;padding:10px 6px;border-radius:var(--r-m);background:#FBFDFC;border:1.5px solid var(--fuga);
+  text-align:center;font-size:12.5px;font-weight:600;line-height:1.25;
+  transition:border-color .15s,background .15s,transform .15s;overflow:hidden}
+.scelta{font-size:12px;hyphens:auto}
+.scelta .em{font-size:21px;line-height:1}
+.scelta[aria-pressed="true"]{border-color:var(--cioccolato);background:rgba(78,50,32,.07);transform:translateY(-2px)}
 .tag-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
 .tag-lista button{height:42px;padding:0 8px;border-radius:var(--r-m);border:1.5px solid var(--fuga);background:#FBFDFC;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tag-lista button[aria-pressed="true"]{background:var(--acqua);border-color:var(--acqua);color:#fff}
@@ -233,6 +260,16 @@ body.ingresso{overflow:hidden}
 .distintivo .txt{min-width:0}
 .distintivo b{font-size:12.5px;display:block;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .distintivo span{font-size:11px;color:var(--tenue);line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:2px}
+.proposta{background:var(--porcellana);border:1.5px solid rgba(242,194,48,.55);border-radius:var(--r-l);padding:14px 16px;margin-bottom:12px;box-shadow:var(--ombra)}
+.proposta h4{font-size:15px;font-family:var(--font-display);color:var(--cioccolato);margin:0 0 6px}
+.proposta .cambio{font-size:14px;line-height:1.5;margin-bottom:6px}
+.proposta .cambio b{color:var(--cioccolato)}
+.proposta .perche{font-size:13px;color:var(--tenue);line-height:1.45;font-style:italic;margin-bottom:10px}
+.proposta .azioni-p{display:flex;gap:8px}
+.proposta .azioni-p .btn{flex:1;min-height:40px;font-size:13.5px}
+.proposta.esito{border-color:var(--fuga)}
+.proposta .stato{font-size:12.5px;font-weight:700}
+.stato.ok{color:var(--acqua-scuro)} .stato.no{color:var(--allarme)} .stato.attesa{color:var(--tenue)}
 .testata-profilo{display:flex;align-items:center;gap:14px;padding:18px;margin-bottom:16px}
 .testata-profilo .avatar{width:58px;height:58px;font-size:32px}
 .testata-profilo h2{font-size:26px;color:var(--cioccolato)}
@@ -263,11 +300,49 @@ body.ingresso{overflow:hidden}
 .pastiglia{position:absolute;top:2px;right:calc(50% - 22px);min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:var(--allarme);color:#fff;font-size:10.5px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px rgba(255,255,255,.9)}
 .pastiglia[hidden]{display:none}
 .tab{position:relative}
+.campo input[readonly]{background:#F1F5F3;color:var(--cioccolato);border-style:dashed;cursor:default}
+.nota-luogo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:9px 12px;border-radius:14px;background:rgba(15,163,163,.10);font-size:12.5px;line-height:1.4;color:var(--acqua-scuro)}
+.nota-luogo[hidden]{display:none}
+.nota-luogo button{margin-left:auto;height:32px;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:12px;font-weight:700;color:var(--cioccolato);white-space:nowrap}
 .vicini{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .vicini .cip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border-radius:999px;background:rgba(15,163,163,.12);color:var(--acqua-scuro);font-size:13px;font-weight:600;border:1px solid rgba(15,163,163,.3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vicini .et-vicini{font-size:12px;color:var(--tenue);width:100%;margin-bottom:-2px}
 .azioni-io{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:22px}
 .azioni-io .btn{width:100%}
+.pannello-pieno{position:fixed;inset:0;z-index:9992;background:var(--ceramica);display:flex;flex-direction:column}
+.pannello-pieno[hidden]{display:none}
+.testa-sel{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;background:var(--porcellana);border-bottom:1px solid var(--fuga)}
+.testa-sel b{font-family:var(--font-display);font-size:19px;color:var(--cioccolato)}
+.testa-sel button{margin-left:auto;width:40px;height:40px;border-radius:50%;background:var(--ceramica);font-size:17px}
+.cerca-sel{display:flex;gap:8px;padding:12px 16px}
+.cerca-sel input{flex:1;min-width:0;min-height:48px;padding:0 16px;border-radius:999px;border:1.5px solid var(--fuga);background:var(--porcellana);-webkit-appearance:none;appearance:none}
+.cerca-sel input:focus{outline:none;border-color:var(--acqua)}
+.esiti-sel{max-height:34dvh;overflow-y:auto;margin:0 16px 8px;background:var(--porcellana);border:var(--bordo);border-radius:var(--r-m);box-shadow:var(--ombra)}
+.esiti-sel[hidden]{display:none}
+.esiti-sel button{display:block;width:100%;text-align:left;padding:12px 14px;border-bottom:1px solid var(--fuga);font-size:13.5px;line-height:1.4}
+.esiti-sel button:last-child{border-bottom:none}
+.mappa-sel{flex:1;position:relative;isolation:isolate;z-index:0;margin:0 16px;border-radius:var(--r-l);overflow:hidden;border:var(--bordo);min-height:200px}
+#mappa-scelta{position:absolute;inset:0;background:#DCE7E2}
+.mappa-sel .leaflet-pane,.mappa-sel .leaflet-top,.mappa-sel .leaflet-bottom{z-index:auto}
+.piede-sel{display:flex;align-items:center;gap:12px;padding:12px 16px calc(14px + var(--safe-b))}
+.piede-sel span{flex:1;min-width:0;font-size:12.5px;color:var(--tenue);line-height:1.35}
+.finestra{position:fixed;inset:0;z-index:9990;display:grid;place-items:center;padding:22px;background:rgba(42,28,18,.55);backdrop-filter:blur(5px);animation:sfuma .18s ease-out}
+.finestra[hidden]{display:none}
+@keyframes sfuma{from{opacity:0}to{opacity:1}}
+.riquadro{max-width:380px;width:100%;padding:24px 22px;animation:spunta .24s cubic-bezier(.22,1,.36,1)}
+@keyframes spunta{from{transform:scale(.94);opacity:0}to{transform:none;opacity:1}}
+.riquadro h3{font-size:21px;color:var(--cioccolato);margin-bottom:8px}
+.riquadro p{font-size:14.5px;line-height:1.5;color:#3D2C1F;white-space:pre-wrap;word-break:break-word}
+.campo-dlg{width:100%;min-height:52px;margin-top:14px;padding:14px 16px;border-radius:var(--r-l);border:1.5px solid var(--fuga);background:#FBFDFC;-webkit-appearance:none;appearance:none}
+.campo-dlg:focus{outline:none;border-color:var(--acqua);box-shadow:0 0 0 4px rgba(15,163,163,.15)}
+.lista-profili{max-height:44dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
+.lista-profili button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-bottom:1px solid var(--fuga)}
+.lista-profili button:last-child{border-bottom:none}
+.lista-profili .info{min-width:0}
+.lista-profili .info b{display:block;font-size:14.5px}
+.lista-profili .info span{display:block;font-size:12px;color:var(--tenue)}
+.dlg-azioni{display:flex;gap:10px;margin-top:22px}
+.dlg-azioni .btn{flex:1;padding:0 12px}
 .toast{position:fixed;left:50%;bottom:calc(104px + var(--safe-b));transform:translateX(-50%) translateY(14px);z-index:120;background:var(--cioccolato);color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 14px 30px -12px rgba(42,28,18,.8);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;max-width:88vw;text-align:center}
 .toast.visibile{opacity:1;transform:translateX(-50%)}
 .sciacquone{position:fixed;inset:0;z-index:200;pointer-events:none;overflow:hidden}
@@ -305,6 +380,7 @@ body.ingresso{overflow:hidden}
           <label for="luogo">Nome del posto o del negozio</label>
           <input type="text" id="luogo" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" list="posti-noti" autocomplete="off">
           <datalist id="posti-noti"></datalist>
+          <div class="nota-luogo" id="nota-luogo" hidden></div>
         </div>
         <div class="campo" style="margin-bottom:12px">
           <label for="titolo-rec">Titolo del racconto <span style="font-weight:400;color:var(--tenue)">(facoltativo)</span></label>
@@ -315,9 +391,14 @@ body.ingresso{overflow:hidden}
           <textarea id="testo-rec" maxlength="600" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
           <div class="contatore" id="contatore">0 / 600</div>
         </div>
-        <div class="campo" style="margin-bottom:0">
+        <div class="campo" style="margin-bottom:12px">
           <label for="durata">Durata della seduta: <b id="et-durata">5 minuti</b></label>
           <input type="range" id="durata" min="1" max="45" value="5">
+        </div>
+        <div class="campo" style="margin-bottom:0">
+          <label for="quando">Quando è successo</label>
+          <input type="datetime-local" id="quando">
+          <p class="nota" style="margin-top:6px">Lascia l'ora di adesso, oppure torna indietro per registrarne una vecchia: se sposti il giorno, l'ora va a mezzogiorno.</p>
         </div>
       </div>
 
@@ -325,10 +406,13 @@ body.ingresso{overflow:hidden}
         <h3>Dove</h3>
         <div class="posizione">
           <span class="punto" id="punto-gps"></span>
-          <span class="stato" id="stato-gps"><b>Posizione non richiesta</b>Serve il permesso per mettere il pin sulla mappa.</span>
+          <span class="stato" id="stato-gps"><b>Posizione non richiesta</b>Rileva dove sei, oppure scegli il punto qui sotto.</span>
           <button class="btn piccolo" id="btn-gps">Rileva</button>
         </div>
+        <button class="btn piccolo fantasma" id="btn-scegli" style="margin-top:12px;width:100%">🗺️ Cerca o scegli sulla mappa</button>
         <div class="vicini" id="vicini" hidden></div>
+        <h3 style="margin:18px 0 12px">Che tipo di posto è</h3>
+        <div class="scelte" id="scelte-categoria" role="group" aria-label="Tipo di posto"></div>
       </div>
 
       <div class="blocco">
@@ -350,7 +434,7 @@ body.ingresso{overflow:hidden}
       </div>
 
       <div class="blocco">
-        <h3>Etichette</h3>
+        <h3>Cos'è successo</h3>
         <div class="tag-lista" id="lista-tag" role="group" aria-label="Etichette"></div>
       </div>
 
@@ -367,6 +451,8 @@ body.ingresso{overflow:hidden}
       </div>
       <div class="barra-filtri">
         <select id="f-utente" aria-label="Filtra per persona"><option value="">Tutti</option></select>
+        <select id="f-luogo" aria-label="Filtra per posto"><option value="">Ogni posto</option></select>
+        <select id="f-categoria" aria-label="Filtra per tipo di posto"><option value="">Ogni tipo</option></select>
         <select id="f-citta" aria-label="Filtra per città"><option value="">Ogni città</option></select>
         <select id="f-paese" aria-label="Filtra per paese"><option value="">Ogni paese</option></select>
         <select id="f-voto" aria-label="Filtra per voto">
@@ -377,10 +463,9 @@ body.ingresso{overflow:hidden}
           <option value="basso">💩 Sotto il 3</option>
         </select>
       </div>
-      <div class="filtro-attivo" id="filtro-luogo" hidden>
-        <span class="tronca" id="testo-filtro-luogo"></span>
-        <button id="pulisci-luogo">Togli filtro</button>
-      </div>
+      <button class="pulisci" id="pulisci-filtri">Pulisci filtri</button>
+      <div class="riassunto" id="riassunto" hidden></div>
+      <button class="nuove" id="nuove" hidden>↑ Ci sono novità, tocca per vedere</button>
       <div class="bacheca" id="lista-bacheca"></div>
     </section>
 
@@ -412,24 +497,36 @@ body.ingresso{overflow:hidden}
     <!-- ========== IO ========== -->
     <section class="vista stretta" id="vista-profilo" role="tabpanel" aria-label="Profilo" hidden>
       <div class="scheda testata-profilo" id="testata-profilo"></div>
+      <div id="zona-proposte"></div>
       <div class="statistiche" id="statistiche"></div>
       <h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Distintivi</h3>
       <div class="distintivi" id="distintivi"></div>
       <div class="azioni-io" id="azioni-io">
         <button class="btn fantasma piccolo" id="btn-notifiche">🔔 Avvisami se pubblicano</button>
         <button class="btn fantasma piccolo" id="btn-backup">💾 Scarica backup CSV</button>
+        <button class="btn fantasma piccolo" id="btn-esci">🚪 Esci dal profilo</button>
       </div>
       <div id="zona-guida">
+        <p class="nota" id="mio-uid" style="margin-top:10px"></p>
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
         <div class="scheda guida">
           <ol>
             <li>Dal tasto centrale scrivi il racconto, fai rilevare la posizione, aggiungi una foto e dai i voti in cacche.</li>
+            <li>Per una cagata di ieri o di un posto dove non sei adesso: cambia la data in "Quando è successo" e usa <b>Cerca o scegli sulla mappa</b>.</li>
             <li>Appena salvi, la recensione compare a tutti: in bacheca e come pin sulla mappa.</li>
-            <li>In bacheca filtri per persona, città o paese; le tue recensioni le puoi modificare o eliminare.</li>
+            <li>In bacheca filtri per persona, posto, tipo di posto, città, paese o voto: in cima compaiono le statistiche di quel taglio.</li>
             <li>Tocca la miniatura per vedere la foto in grande, tocca un pin per leggere la recensione.</li>
-            <li>Cambi nome o faccia dal tuo nome in alto a destra: lo storico ti segue, perché sei riconosciuto da un identificativo tuo.</li>
+            <li>Il nome di un posto lo dà chi ci arriva per primo: se registri dove è già stato qualcuno, lo trovi già scritto e uguale per tutti. Tu scrivi il titolo.</li>
+            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla.</li>
+            <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
+            <li>Nome e faccia si cambiano da "Io" → Cambia: lo storico ti segue.</li>
           </ol>
-          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">0.9</b> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
+          <div id="riga-gestore" hidden style="margin-top:14px;padding:10px 12px;border-radius:14px;background:rgba(242,194,48,.18);display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600">
+            <span>🔑 Modalità gestore attiva</span>
+            <button class="btn piccolo fantasma" id="esci-gestore" style="margin-left:auto">Esci</button>
+          </div>
+          <button class="btn piccolo rossa" id="azzera-db" hidden style="width:100%;margin-top:8px">🧨 Svuota tutto e riparti da zero</button>
+          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.0</b> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
         </div>
       </div>
     </section>
@@ -440,7 +537,7 @@ body.ingresso{overflow:hidden}
     <button class="tab" role="tab" data-vista="bacheca" aria-selected="false"><span class="ico" aria-hidden="true">📰</span>Bacheca<span class="pastiglia" id="pastiglia" hidden>0</span></button>
     <button class="tab tab-centrale" role="tab" data-vista="registra" aria-selected="true"><span class="ico" aria-hidden="true">💩</span>Registra</button>
     <button class="tab" role="tab" data-vista="classifica" aria-selected="false"><span class="ico" aria-hidden="true">🏆</span>Classifica</button>
-    <button class="tab" role="tab" data-vista="profilo" aria-selected="false"><span class="ico" aria-hidden="true">🚽</span>Io</button>
+    <button class="tab" role="tab" data-vista="profilo" aria-selected="false"><span class="ico" aria-hidden="true">🚽</span>Io<span class="pastiglia" id="pastiglia-io" hidden>0</span></button>
   </nav>
 </div>
 
@@ -455,17 +552,37 @@ body.ingresso{overflow:hidden}
     <span class="logo-grande" aria-hidden="true">💩</span>
     <h1>Pagine Marroni</h1>
     <p class="paylo">Le Pagine Gialle elencavano i negozi.<br>Queste elencano i bagni, e li recensite voi.</p>
+
+    <div class="linguette" role="tablist">
+      <button class="ling attiva" id="ling-accedi" role="tab" aria-selected="true">Accedi</button>
+      <button class="ling" id="ling-registra" role="tab" aria-selected="false">Crea profilo</button>
+    </div>
+
     <div class="campo">
-      <label for="nome-utente">Come ti chiamano gli amici</label>
-      <input type="text" id="nome-utente" maxlength="18" placeholder="es. Bibi" autocomplete="nickname" enterkeyhint="done">
+      <label for="email">Email</label>
+      <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="tu@esempio.it">
     </div>
     <div class="campo">
-      <label id="et-avatar">Scegli la tua faccia</label>
-      <div class="griglia-emoji" id="griglia-avatar" role="group" aria-labelledby="et-avatar"></div>
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password" placeholder="almeno 8 caratteri">
     </div>
-    <button class="btn largo scuro" id="entra">Entra nel bagno</button>
+
+    <div id="solo-registrazione" hidden>
+      <div class="campo">
+        <label for="nome-utente">Come ti chiamano gli amici</label>
+        <input type="text" id="nome-utente" maxlength="18" placeholder="es. Bibi" autocomplete="nickname">
+      </div>
+      <div class="campo">
+        <label id="et-avatar">Scegli la tua faccia</label>
+        <div class="griglia-emoji" id="griglia-avatar" role="group" aria-labelledby="et-avatar"></div>
+      </div>
+    </div>
+
+    <p class="errore" id="errore-auth" hidden></p>
+    <button class="btn largo scuro" id="entra">Accedi</button>
     <button class="btn largo fantasma" id="chiudi-ingresso" style="margin-top:8px" hidden>Annulla</button>
-    <p class="nota" style="margin-top:14px">Nome, recensioni, foto e posizioni sono visibili a chiunque apra l'app. Se cambi nome, cambia anche in tutto il tuo storico.</p>
+    <button id="scordata" style="margin-top:14px;font-size:13px;font-weight:700;color:var(--acqua-scuro);text-decoration:underline">Password dimenticata</button>
+    <p class="nota" style="margin-top:14px">Nome, recensioni, foto e posizioni sono visibili a chiunque usi l'app. L'email serve solo per entrare e non si vede da nessuna parte.</p>
   </div>
 </div>
 
@@ -475,6 +592,48 @@ body.ingresso{overflow:hidden}
   <span class="did" id="did-foto"></span>
 </div>
 
+<div class="finestra" id="dialogo" hidden>
+  <div class="scheda riquadro" role="alertdialog" aria-modal="true" aria-labelledby="dlg-titolo" aria-describedby="dlg-testo">
+    <h3 id="dlg-titolo"></h3>
+    <p id="dlg-testo"></p>
+    <input type="text" id="dlg-campo" class="campo-dlg" hidden>
+    <div class="dlg-azioni">
+      <button class="btn fantasma" id="dlg-no">Annulla</button>
+      <button class="btn scuro" id="dlg-si">Ok</button>
+    </div>
+  </div>
+</div>
+
+<div class="pannello-pieno" id="selettore" hidden>
+  <div class="testa-sel">
+    <b>Dove è successo</b>
+    <button id="chiudi-sel" aria-label="Chiudi">✕</button>
+  </div>
+  <div class="cerca-sel">
+    <input type="text" id="cerca-luogo" placeholder="Cerca un indirizzo o un posto" enterkeyhint="search">
+    <button class="btn piccolo" id="btn-cerca">Cerca</button>
+  </div>
+  <div class="esiti-sel" id="esiti-sel" hidden></div>
+  <div class="mappa-sel"><div id="mappa-scelta"></div></div>
+  <div class="piede-sel">
+    <span id="coord-sel">Tocca la mappa nel punto giusto</span>
+    <button class="btn scuro" id="usa-punto" disabled>Usa questo punto</button>
+  </div>
+</div>
+
+<div class="finestra" id="proposta" hidden>
+  <div class="scheda riquadro" role="dialog" aria-modal="true" aria-labelledby="prop-tit">
+    <h3 id="prop-tit">Proponi un altro nome</h3>
+    <p id="prop-attuale"></p>
+    <input type="text" id="prop-nome" class="campo-dlg" maxlength="60" placeholder="Come si dovrebbe chiamare">
+    <textarea id="prop-motivo" class="campo-dlg" maxlength="160" placeholder="Perché? (facoltativo)" style="min-height:76px;resize:vertical"></textarea>
+    <div class="dlg-azioni">
+      <button class="btn fantasma" id="prop-no">Annulla</button>
+      <button class="btn scuro" id="prop-si">Invia proposta</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <div class="sciacquone" id="sciacquone" hidden aria-hidden="true"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
@@ -482,7 +641,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '0.9';
+const VERSIONE = '1.0';
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -495,8 +654,27 @@ const PARAMETRI = [
   {id:'dotazione', nome:'Dotazione', sub:'Carta, sapone, specchio'}
 ];
 
-const TAG = ['Casa','Casa di altri','Negozio','Ufficio','Autogrill','Nel bosco',
-             'Bagno chimico','Treno o aereo','Attesa','Carta finita','Serratura rotta','Emergenza'];
+/* Che posto è: categorie larghe, una sola per recensione.
+   Il nome preciso del bagno sta già nel titolo, qui serve solo per le statistiche. */
+const CATEGORIE = [
+  {id:'casa',      em:'🏠', nome:'Casa'},
+  {id:'lavoro',    em:'💼', nome:'Lavoro'},
+  {id:'ristoro',   em:'🍝', nome:'Bar e ristoranti'},
+  {id:'negozi',    em:'🛒', nome:'Negozi'},
+  {id:'pubblico',  em:'🏛️', nome:'Locali pubblici'},
+  {id:'trasporti', em:'🚆', nome:'Trasporti'},
+  {id:'vacanza',   em:'🏨', nome:'Alberghi e simili'},
+  {id:'aperto',    em:'🌳', nome:"All'aperto"},
+  {id:'altro',     em:'❓', nome:'Altro'}
+];
+const nomeCategoria = id => (CATEGORIE.find(c=>c.id===id)||{}).nome || '';
+const emCategoria   = id => (CATEGORIE.find(c=>c.id===id)||{}).em || '';
+
+/* Cosa è successo: le circostanze, quante ne vuoi. */
+const TAG = ['Coda','Spettatori','Bussata',
+             'Carta finita','Serratura rotta','Fuori servizio',
+             'Senza luce','Alla turca','Bagno chimico',
+             'A pagamento','Chiave al bancone','Altro'];
 
 const DISTINTIVI = [
   {id:'battesimo', em:'🎉', nome:'Battesimo',    desc:'La prima resta impressa',      test:s=>s.totale>=1},
@@ -513,12 +691,23 @@ const DISTINTIVI = [
   {id:'penna',     em:'🖋️', nome:'Penna d\'oro', desc:'Un racconto da 300 caratteri', test:s=>s.maxTesto>=300},
   {id:'critico',   em:'🤢', nome:'Critico severo',desc:'Un bagno da 1,5 o meno',      test:s=>s.peggiore!==null&&s.peggiore<=1.5},
   {id:'gourmet',   em:'✨', nome:'Palato fine',  desc:'Un bagno da cinque pieno',     test:s=>s.migliore>=4.9},
-  {id:'pendolare', em:'🚆', nome:'Pendolare',    desc:'Una in treno o aereo',         test:s=>s.tag['Treno o aereo']>0},
-  {id:'scout',     em:'🌲', nome:'Boy scout',    desc:'Una nel bosco',                test:s=>s.tag['Nel bosco']>0},
-  {id:'autostrada',em:'⛽', nome:'Autostradale', desc:'Tre in autogrill',             test:s=>s.tag['Autogrill']>=3},
-  {id:'paziente',  em:'🧘', nome:'Paziente',     desc:'Hai fatto la fila e resistito',test:s=>s.tag['Attesa']>0},
+  {id:'giroposti', em:'🗺️', nome:'Cartografo',   desc:'Otto tipi di posto diversi',   test:s=>s.categorie>=8},
+  {id:'vacanza',   em:'🏨', nome:'Villeggiante',  desc:'Tre in albergo o simili',      test:s=>s.cat['vacanza']>=3},
+  {id:'pendolare', em:'🚆', nome:'Pendolare',    desc:'Tre nei trasporti',            test:s=>s.cat['trasporti']>=3},
+  {id:'buongusto', em:'🍝', nome:'Buona forchetta',desc:'Cinque fra bar e ristoranti',test:s=>s.cat['ristoro']>=5},
+  {id:'scout',     em:'🌳', nome:'Boy scout',    desc:'Tre all\'aria aperta',         test:s=>s.cat['aperto']>=3},
+  {id:'padrone',   em:'🏠', nome:'Padrone di casa',desc:'Dieci nel tuo bagno',        test:s=>s.cat['casa']>=10},
+  {id:'burocrate', em:'🏛️', nome:'Burocrate',    desc:'Una nei locali pubblici',      test:s=>s.cat['pubblico']>0},
+  {id:'paziente',  em:'🧘', nome:'Paziente',     desc:'Hai fatto la coda e resistito',test:s=>s.tag['Coda']>0},
   {id:'sfortuna',  em:'🧻', nome:'Sfortunato',   desc:'Carta finita: tre volte',      test:s=>s.tag['Carta finita']>=3},
-  {id:'ospite',    em:'🏡', nome:'Ospite fisso', desc:'Tre in casa di altri',         test:s=>s.tag['Casa di altri']>=3}
+  {id:'turca',     em:'🦶', nome:'Equilibrista', desc:'Una alla turca',               test:s=>s.tag['Alla turca']>0},
+  {id:'buio',      em:'🔦', nome:'Al buio',      desc:'Senza luce, e ce l\'hai fatta',test:s=>s.tag['Senza luce']>0},
+  {id:'folla',     em:'👀', nome:'Senza pudore',  desc:'Tre volte con gli spettatori', test:s=>s.tag['Spettatori']>=3},
+  {id:'toctoc',    em:'✊', nome:'Toc toc',        desc:'Tre volte a farsi bussare',    test:s=>s.tag['Bussata']>=3},
+  {id:'pedaggio',  em:'🪙', nome:'Pedaggio',      desc:'Hai pagato per farla',         test:s=>s.tag['A pagamento']>=1},
+  {id:'cantiere',  em:'🚧', nome:'Cantiere',      desc:'Un bagno fuori servizio',      test:s=>s.tag['Fuori servizio']>=1},
+  {id:'applausi',  em:'👏', nome:'Applausi',      desc:'La prima cacca ricevuta dagli amici', test:s=>s.reazioni>=1},
+  {id:'mestolo',   em:'🥄', nome:'Chiave al bancone',desc:'Tre volte a chiedere la chiave', test:s=>s.tag['Chiave al bancone']>=3}
 ];
 
 /* ============ INIZIO LIVELLO DATI (Supabase) ============ */
@@ -540,26 +729,29 @@ const cli = configurato ? window.supabase.createClient(SUPABASE_URL, SUPABASE_CH
 
 async function leggiIo(){ try{ return localStorage.getItem(K_IO); }catch(e){ return null; } }
 async function scriviIo(v){ try{ localStorage.setItem(K_IO, v); }catch(e){} }
-async function migra(){
-  try{
-    if(localStorage.getItem(K_IO)) return;
-    for(const k of VECCHIE_IO){
-      const v = localStorage.getItem(k);
-      if(v){ localStorage.setItem(K_IO, v); break; }
-    }
-  }catch(e){}
+/* Recupera l'eventuale identità locale delle versioni precedenti: serve solo
+   per proporre il collegamento delle vecchie recensioni al profilo con email. */
+function ripulisciIdentita(){
+  for(const k of [K_IO].concat(VECCHIE_IO)){ try{ localStorage.removeItem(k); }catch(e){} }
+}
+function identitaPrecedente(){
+  for(const k of [K_IO].concat(VECCHIE_IO)){
+    try{ const v=localStorage.getItem(k); if(v) return JSON.parse(v); }catch(e){}
+  }
+  return null;
 }
 
 function daRiga(x){
   return {id:x.id, nome:x.nome, faccia:x.faccia, autoreId:x.autore_id, ts:Number(x.ts),
+    creatoTs: x.creato ? Date.parse(x.creato) : Number(x.ts),
     luogo:x.luogo, luogoId:x.luogo_id, titolo:x.titolo, testo:x.testo, voti:x.voti||{},
-    tag:x.tag||[], durata:x.durata, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
+    tag:x.tag||[], categoria:x.categoria||null, durata:x.durata, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
     haFoto:!!x.foto_url, fotoUrl:x.foto_url, reaz:x.reaz||{}};
 }
 function aRiga(r){
   return {id:r.id, nome:r.nome, faccia:r.faccia, autore_id:r.autoreId||null, ts:r.ts,
     luogo:r.luogo, luogo_id:r.luogoId||null, titolo:r.titolo, testo:r.testo, voti:r.voti,
-    tag:r.tag, durata:r.durata, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
+    tag:r.tag, categoria:r.categoria||null, durata:r.durata, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
     foto_url:r.fotoUrl||null, reaz:r.reaz||{}};
 }
 
@@ -578,6 +770,49 @@ const DB = {
     try{ await cli.storage.from('foto').remove([id+'.jpg']); }catch(e){}
   },
   async rinomina(autoreId,nome,faccia){ await cli.from('recensioni').update({nome,faccia}).eq('autore_id',autoreId); },
+  async cambiaAutore(vecchio,nuovo,nome,faccia){
+    const {error} = await cli.from('recensioni').update({autore_id:nuovo, nome, faccia}).eq('autore_id',vecchio);
+    if(error) throw error;
+    try{
+      await cli.from('proposte').update({da_id:nuovo, da_nome:nome}).eq('da_id',vecchio);
+      await cli.from('proposte').update({a_id:nuovo}).eq('a_id',vecchio);
+    }catch(e){}
+  },
+  async rinominaLuogo(luogoId,nome){ await cli.from('recensioni').update({luogo:nome}).eq('luogo_id',luogoId); },
+
+  /* Azzeramento totale: solo per chi è nella tabella "gestori". */
+  async azzeraTutto(){
+    let foto=0;
+    try{
+      const {data} = await cli.storage.from('foto').list('', {limit:1000});
+      const nomi = (data||[]).map(f=>f.name);
+      for(let i=0;i<nomi.length;i+=100){
+        await cli.storage.from('foto').remove(nomi.slice(i,i+100));
+      }
+      foto = nomi.length;
+    }catch(e){ console.warn('foto:', e); }
+    const p = await cli.from('proposte').delete().gte('ts', 0);
+    if(p.error) throw p.error;
+    const r = await cli.from('recensioni').delete().gte('ts', 0);
+    if(r.error) throw r.error;
+    return foto;
+  },
+  async caricaProposte(){
+    if(!cli) return [];
+    const {data,error} = await cli.from('proposte').select('*').order('ts',{ascending:false}).limit(200);
+    if(error){ console.warn('proposte:', error.message); return []; }
+    return (data||[]).map(x=>({id:x.id, luogoId:x.luogo_id, nomeAttuale:x.nome_attuale, nomeProposto:x.nome_proposto,
+      motivo:x.motivo, daId:x.da_id, daNome:x.da_nome, aId:x.a_id, ts:Number(x.ts), stato:x.stato||'attesa'}));
+  },
+  async proponi(p){
+    const {error} = await cli.from('proposte').insert({id:p.id, luogo_id:p.luogoId, nome_attuale:p.nomeAttuale,
+      nome_proposto:p.nomeProposto, motivo:p.motivo, da_id:p.daId, da_nome:p.daNome, a_id:p.aId, ts:p.ts, stato:p.stato});
+    if(error) throw error;
+  },
+  async rispondi(id, stato){
+    const {error} = await cli.from('proposte').update({stato}).eq('id',id);
+    if(error) throw error;
+  },
   async salvaFoto(id,dataURL){
     const blob = await (await fetch(dataURL)).blob();
     const nome = id + '.jpg';
@@ -591,6 +826,7 @@ const DB = {
     try{
       cli.channel('pagine-marroni')
         .on('postgres_changes',{event:'*',schema:'public',table:'recensioni'},()=>cb())
+        .on('postgres_changes',{event:'*',schema:'public',table:'proposte'},()=>cb())
         .subscribe();
     }catch(e){ console.warn('tempo reale non disponibile',e); }
   }
@@ -602,15 +838,20 @@ function salvaBozza(){
   if(S.modificaId) return;
   try{ localStorage.setItem(K_BOZZA, JSON.stringify({
     b:S.bozza, luogo:$('#luogo').value, titolo:$('#titolo-rec').value,
-    testo:$('#testo-rec').value, durata:$('#durata').value
+    testo:$('#testo-rec').value, durata:$('#durata').value, quando:$('#quando').value
   })); }catch(e){}
 }
 function scartaBozza(){ try{ localStorage.removeItem(K_BOZZA); }catch(e){} }
 
+/* Modalità gestore: non un codice nel sorgente, ma un elenco nel database.
+   Aggiungi il tuo identificativo alla tabella "gestori" da Supabase. */
+let gestore = false;
+
+
 /* ============ STATO ============ */
-const S = {io:null, recensioni:[], vista:'registra', foto:new Map(), modificaId:null,
+const S = {io:null, recensioni:[], proposte:[], vista:'registra', foto:new Map(), modificaId:null,
            bozza:null, profilo:null, mappa:null, strato:null, perni:new Map(),
-           filtri:{utente:'',citta:'',paese:'',voto:'',luogo:''}};
+           filtri:{utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''}};
 
 const $  = s => document.querySelector(s);
 const $$ = s => Array.from(document.querySelectorAll(s));
@@ -648,12 +889,20 @@ function chiaveLuogo(t){
 /* due recensioni appartengono allo stesso bagno se condividono l'identificativo
    di luogo (assegnato per vicinanza) o, in mancanza, il nome normalizzato */
 function gruppoLuogo(r){ return r.luogoId || ('n:'+chiaveLuogo(r.luogo)); }
+/* Il nome appartiene al posto, non alla recensione: lo dà chi ci arriva per primo. */
+function primaDelPosto(gruppo){
+  return S.recensioni.filter(r=>gruppoLuogo(r)===gruppo && r.luogo)
+    .sort((a,b)=>(a.creatoTs||a.ts)-(b.creatoTs||b.ts))[0] || null;
+}
 function nomeCanonico(gruppo){
-  const conteggi=new Map();
-  S.recensioni.filter(r=>gruppoLuogo(r)===gruppo && r.luogo).forEach(r=>conteggi.set(r.luogo,(conteggi.get(r.luogo)||0)+1));
-  let top='', n=-1;
-  conteggi.forEach((c,nome)=>{ if(c>n){ n=c; top=nome; } });
-  return top || 'Posto senza nome';
+  const p = primaDelPosto(gruppo);
+  return p ? p.luogo : 'Posto senza nome';
+}
+function possoRinominare(r){
+  if(gestore) return true;
+  if(!S.io || r.autoreId!==S.io.id) return false;
+  const p = primaDelPosto(gruppoLuogo(r));
+  return !p || p.id===r.id;          // solo chi l'ha battezzato
 }
 const RAGGIO_STESSO_BAGNO = 0.06;   // 60 metri
 function luoghiVicini(pos){
@@ -685,11 +934,40 @@ function distanza(a,b){
   const x=Math.sin(dl/2)**2+Math.cos(r(a.lat))*Math.cos(r(b.lat))*Math.sin(dg/2)**2;
   return 2*R*Math.asin(Math.sqrt(x));
 }
+/* finestra di conferma dell'app: niente riquadri grigi del browser */
+let risolviDialogo=null;
+function chiedi(titolo, testo, opz){
+  opz = opz || {};
+  $('#dlg-titolo').textContent = titolo;
+  $('#dlg-testo').textContent  = testo;
+  const si=$('#dlg-si');
+  si.textContent = opz.ok || 'Ok';
+  si.className = 'btn ' + (opz.pericolo ? 'rossa' : 'scuro');
+  $('#dlg-no').textContent = opz.no || 'Annulla';
+  const campo=$('#dlg-campo');
+  campo.hidden = !opz.campo;
+  campo.value='';
+  if(opz.campo){ campo.type = opz.campo==='segreto' ? 'password' : 'text'; campo.placeholder = opz.segnaposto||''; }
+  $('#dialogo').hidden=false;
+  setTimeout(()=>(opz.campo?campo:si).focus(), 80);
+  return new Promise(res=>{ risolviDialogo=res; });
+}
+function chiudiDialogo(v){
+  $('#dialogo').hidden=true;
+  if(risolviDialogo){ risolviDialogo(v); risolviDialogo=null; }
+}
+$('#dlg-si').addEventListener('click',()=>chiudiDialogo($('#dlg-campo').hidden ? true : $('#dlg-campo').value.trim()));
+$('#dlg-campo').addEventListener('keydown',e=>{ if(e.key==='Enter') chiudiDialogo($('#dlg-campo').value.trim()); });
+$('#dlg-no').addEventListener('click',()=>chiudiDialogo($('#dlg-campo').hidden ? false : null));
+$('#dialogo').addEventListener('click',e=>{ if(e.target.id==='dialogo') chiudiDialogo(false); });
+
 let tToast;
 function toast(m){ const t=$('#toast'); t.textContent=m; t.classList.add('visibile'); clearTimeout(tToast); tToast=setTimeout(()=>t.classList.remove('visibile'),2800); }
 
-/* ============ LOGIN ============ */
+/* ============ ACCESSO CON EMAIL E PASSWORD ============ */
 let faccia = FACCE[0];
+let modoRegistrazione = false;
+
 function costruisciFacce(){
   $('#griglia-avatar').innerHTML = FACCE.map(f=>`<button type="button" data-f="${f}" aria-pressed="${f===faccia}" aria-label="Faccia ${f}">${f}</button>`).join('');
 }
@@ -698,29 +976,180 @@ $('#griglia-avatar').addEventListener('click', e=>{
   faccia=b.dataset.f;
   $$('#griglia-avatar button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.f===faccia));
 });
-$('#entra').addEventListener('click', async ()=>{
-  const nome = $('#nome-utente').value.trim();
-  if(nome.length<2){ toast('Serve un nome di almeno 2 lettere'); $('#nome-utente').focus(); return; }
-  const prima = S.io;
-  S.io = {nome, faccia, id:(prima&&prima.id) || nuovoId('u')};
-  await scriviIo(JSON.stringify(S.io));
-  if(prima && (prima.nome!==nome || prima.faccia!==faccia)){
-    S.recensioni.forEach(r=>{ if(r.autoreId===S.io.id){ r.nome=nome; r.faccia=faccia; } });
-    try{ await DB.rinomina(S.io.id, nome, faccia); }catch(e){}
-    toast('Nome aggiornato in tutto il tuo storico');
-  }
-  const primoAccesso = !prima;
-  chiudiIngresso(); mostraIo(); avviaMappaSeServe(); ridisegna();
-  if(primoAccesso){ vaiA('registra'); chiediPosizione(); }
-});
 function nuovoId(p){ return p + (crypto.randomUUID ? crypto.randomUUID().slice(0,12) : Date.now().toString(36)+Math.random().toString(36).slice(2,7)); }
-function mostraIo(){ $('#nome-mio').textContent=S.io.nome; $('#avatar-mio').textContent=S.io.faccia; }
+function mostraIo(){ if(!S.io) return; $('#nome-mio').textContent=S.io.nome; $('#avatar-mio').textContent=S.io.faccia; }
+
+function modo(registrazione){
+  modoRegistrazione = registrazione;
+  $('#ling-accedi').classList.toggle('attiva', !registrazione);
+  $('#ling-registra').classList.toggle('attiva', registrazione);
+  $('#ling-accedi').setAttribute('aria-selected', !registrazione);
+  $('#ling-registra').setAttribute('aria-selected', registrazione);
+  $('#solo-registrazione').hidden = !registrazione;
+  $('#entra').textContent = registrazione ? 'Crea il profilo' : 'Accedi';
+  $('#scordata').hidden = registrazione;
+  $('#password').autocomplete = registrazione ? 'new-password' : 'current-password';
+  erroreAuth('');
+}
+$('#ling-accedi').addEventListener('click', ()=>modo(false));
+$('#ling-registra').addEventListener('click', ()=>modo(true));
+
+function erroreAuth(t){
+  const e=$('#errore-auth');
+  e.hidden = !t; e.textContent = t||'';
+}
+/* i messaggi di Supabase sono in inglese: li traduco in qualcosa di utile */
+function traduciErrore(m){
+  m = String(m||'').toLowerCase();
+  if(m.includes('invalid login')) return 'Email o password sbagliate.';
+  if(m.includes('already registered') || m.includes('already exists')) return 'Questa email ha già un profilo: usa Accedi, o Password dimenticata.';
+  if(m.includes('password should be') || m.includes('at least')) return 'La password deve avere almeno 8 caratteri.';
+  if(m.includes('invalid email') || m.includes('valid email')) return "L'email non sembra scritta bene.";
+  if(m.includes('email not confirmed')) return 'Devi prima confermare l\'email: controlla la posta.';
+  if(m.includes('rate limit') || m.includes('too many')) return 'Troppi tentativi ravvicinati, riprova fra qualche minuto.';
+  if(m.includes('failed to fetch')) return 'Nessuna connessione al server.';
+  return m ? m.charAt(0).toUpperCase()+m.slice(1) : 'Qualcosa non ha funzionato.';
+}
+
+$('#entra').addEventListener('click', async ()=>{
+  const email = $('#email').value.trim();
+  const pw = $('#password').value;
+  if(!email.includes('@')){ erroreAuth("Scrivi la tua email."); $('#email').focus(); return; }
+  if(pw.length<8){ erroreAuth('La password deve avere almeno 8 caratteri.'); $('#password').focus(); return; }
+  const btn=$('#entra'); const et=btn.textContent;
+  btn.disabled=true; btn.textContent='Un attimo…'; erroreAuth('');
+  try{
+    if(modoRegistrazione){
+      const nome = $('#nome-utente').value.trim();
+      if(nome.length<2){ erroreAuth('Serve un nome di almeno 2 lettere.'); return; }
+      const {data,error} = await cli.auth.signUp({email, password:pw, options:{data:{nome, faccia}}});
+      if(error) throw error;
+      if(!data.session){
+        erroreAuth("Profilo creato. Ti ho mandato un'email di conferma: aprila, poi torna qui e premi Accedi.");
+        modo(false);
+        return;
+      }
+      await dopoAccesso(true);
+    } else {
+      const {error} = await cli.auth.signInWithPassword({email, password:pw});
+      if(error) throw error;
+      await dopoAccesso(false);
+    }
+  }catch(err){ erroreAuth(traduciErrore(err && err.message)); }
+  finally{ btn.disabled=false; btn.textContent=et; }
+});
+
+$('#scordata').addEventListener('click', async ()=>{
+  const email = $('#email').value.trim() || (await chiedi('Password dimenticata',
+    "Scrivi l'email del tuo profilo: ti mando il link per sceglierne una nuova.",
+    {campo:'testo', segnaposto:'tu@esempio.it', ok:'Mandami il link'}));
+  if(!email || email===true || !String(email).includes('@')){ erroreAuth("Serve l'email per mandarti il link."); return; }
+  try{
+    const {error} = await cli.auth.resetPasswordForEmail(String(email).trim(), {redirectTo: location.href.split('#')[0]});
+    if(error) throw error;
+    erroreAuth("Fatto: apri l'email e segui il link. Se non arriva, controlla lo spam.");
+  }catch(err){ erroreAuth(traduciErrore(err && err.message)); }
+});
+
+async function nuovaPassword(){
+  const pw = await chiedi('Scegli la nuova password',
+    'Il link ha funzionato. Scrivi la password nuova: almeno 8 caratteri.',
+    {campo:'segreto', segnaposto:'nuova password', ok:'Salva'});
+  if(!pw || pw===true) return;
+  if(String(pw).length<8){ toast('Almeno 8 caratteri'); return nuovaPassword(); }
+  try{
+    const {error} = await cli.auth.updateUser({password:String(pw)});
+    if(error) throw error;
+    toast('Password aggiornata');
+    await dopoAccesso(false);
+  }catch(err){ toast(traduciErrore(err && err.message)); }
+}
+
+/* dalla sessione di Supabase all'identità dell'app */
+function daSessione(sess){
+  if(!sess || !sess.user) return null;
+  const m = sess.user.user_metadata || {};
+  return {id: sess.user.id, email: sess.user.email,
+          nome: m.nome || (sess.user.email||'utente').split('@')[0],
+          faccia: m.faccia || '💩'};
+}
+async function dopoAccesso(appenaCreato){
+  const {data:{session}} = await cli.auth.getSession();
+  S.io = daSessione(session);
+  if(!S.io) return;
+  await collegaVecchioProfilo();
+  await controllaGestore();
+  chiudiIngresso(); mostraIo(); avviaMappaSeServe();
+  await sincronizza(false, true);
+  ridisegna(); vaiA('registra');
+  toast(appenaCreato ? `Benvenuto ${S.io.nome}` : `Bentornato ${S.io.nome}`);
+  if(appenaCreato) chiediPosizione();
+}
+
+/* chi usava l'app prima dell'accesso con email: le sue recensioni passano al nuovo profilo */
+async function collegaVecchioProfilo(){
+  const vecchio = identitaPrecedente();
+  if(!vecchio || !vecchio.id || vecchio.id===S.io.id) return;
+  const sue = S.recensioni.filter(r=>r.autoreId===vecchio.id);
+  if(!sue.length){ ripulisciIdentita(); return; }
+  const ok = await chiedi('Sono tue queste recensioni?',
+    `Su questo telefono risultano ${sue.length} ${sue.length===1?'cagata':'cagate'} registrate come ${vecchio.nome}. Le collego a questo profilo, così restano tue per sempre.`,
+    {ok:'Sì, collegale', no:'No, lasciale'});
+  if(ok!==true) return;
+  try{
+    await DB.cambiaAutore(vecchio.id, S.io.id, S.io.nome, S.io.faccia);
+    S.recensioni.forEach(r=>{ if(r.autoreId===vecchio.id){ r.autoreId=S.io.id; r.nome=S.io.nome; r.faccia=S.io.faccia; } });
+    ripulisciIdentita();
+    toast(`${sue.length} ${sue.length===1?'recensione collegata':'recensioni collegate'}`);
+  }catch(e){ console.warn(e); toast('Non sono riuscito a collegarle'); }
+}
+
+async function controllaGestore(){
+  gestore=false;
+  if(!S.io) return;
+  try{
+    const {data} = await cli.from('gestori').select('uid').eq('uid', S.io.id).maybeSingle();
+    gestore = !!data;
+  }catch(e){}
+  aggiornaGestore();
+}
+
+/* cambio nome e faccia dal profilo */
+async function salvaProfilo(nome, nuovaFaccia){
+  S.io.nome=nome; S.io.faccia=nuovaFaccia;
+  try{ await cli.auth.updateUser({data:{nome, faccia:nuovaFaccia}}); }catch(e){ console.warn(e); }
+  S.recensioni.forEach(r=>{ if(r.autoreId===S.io.id){ r.nome=nome; r.faccia=nuovaFaccia; } });
+  try{ await DB.rinomina(S.io.id, nome, nuovaFaccia); }catch(e){}
+  mostraIo(); ridisegna();
+  toast('Aggiornato in tutto il tuo storico');
+}
+async function apriModificaProfilo(){
+  const nome = await chiedi('Come ti chiami', 'Il nome che vedono gli altri. Cambiarlo aggiorna tutte le tue recensioni.',
+    {campo:'testo', segnaposto:S.io.nome, ok:'Avanti'});
+  if(!nome || nome===true) return;
+  if(String(nome).trim().length<2){ toast('Serve un nome di almeno 2 lettere'); return; }
+  const scelte = FACCE.map((f,i)=>`${i+1}. ${f}`).join('   ');
+  const n = await chiedi('E la faccia?', `Scrivi il numero della faccia che vuoi:\n\n${scelte}`,
+    {campo:'testo', segnaposto:'numero', ok:'Salva'});
+  const idx = parseInt(n,10);
+  await salvaProfilo(String(nome).trim(), (idx>=1 && idx<=FACCE.length) ? FACCE[idx-1] : S.io.faccia);
+}
+
+$('#btn-esci').addEventListener('click', async ()=>{
+  const ok = await chiedi('Esci dal profilo?', 'Le tue recensioni restano dove sono. Rientri con email e password.', {ok:'Esci', no:'Resta'});
+  if(ok!==true) return;
+  await cli.auth.signOut();
+  S.io=null; gestore=false;
+  apriIngresso();
+  toast('Uscito');
+});
+
 function apriIngresso(){
   costruisciFacce();
-  if(S.io){ $('#nome-utente').value=S.io.nome; faccia=S.io.faccia; costruisciFacce(); }
+  modo(false);
   $('#chiudi-ingresso').hidden = !S.io;
   $('#velo').hidden=false; document.body.classList.add('ingresso');
-  setTimeout(()=>$('#nome-utente').focus(),120);
+  setTimeout(()=>$('#email').focus(),120);
 }
 function chiudiIngresso(){
   $('#velo').hidden=true; document.body.classList.remove('ingresso');
@@ -736,7 +1165,7 @@ function vaiA(nome){
   if(nome==='mappa'){ avviaMappaSeServe(); if(S.mappa) setTimeout(()=>S.mappa.invalidateSize(),60); }
   if(nome==='bacheca'){ disegnaBacheca(); segnaLette(); }
   if(nome==='classifica') disegnaClassifica();
-  if(nome==='profilo') disegnaProfilo();
+  if(nome==='profilo'){ disegnaProfilo(); disegnaProposte(); }
   window.scrollTo(0,0);
   if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
 }
@@ -746,17 +1175,17 @@ $$('.tab[data-vista]').forEach(t=>t.addEventListener('click',()=>{
   vaiA(t.dataset.vista);
 }));
 function ridisegna(){
-  disegnaFiltriBacheca();
+  if(document.getElementById('f-utente')) disegnaFiltriBacheca();
   if(S.vista==='bacheca') disegnaBacheca();
   if(S.vista==='classifica') disegnaClassifica();
-  if(S.vista==='profilo') disegnaProfilo();
+  if(S.vista==='profilo'){ disegnaProfilo(); disegnaProposte(); }
   disegnaMappa();
 }
 
 /* ============ REGISTRA ============ */
 function nuovaBozza(){
   S.modificaId = null;
-  S.bozza = {voti:{}, tag:[], foto:null, fotoUrl:null, pos:null, citta:null, paese:null};
+  S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null};
   $('#titolo-registra').textContent='Registra la cagata';
   $('#sotto-registra').textContent='Ci metti meno di quanto ci hai messo dentro';
   $('#salva').textContent='Tira lo sciacquone 🚽';
@@ -764,28 +1193,62 @@ function nuovaBozza(){
   $('#titolo-rec').value=''; $('#testo-rec').value=''; $('#luogo').value='';
   $('#contatore').textContent='0 / 600'; $('#durata').value=5; $('#et-durata').textContent='5 minuti';
   $('#anteprima').hidden=true; $('#zona-foto').hidden=false;
+  $('#luogo').readOnly=false; $('#nota-luogo').hidden=true;
+  impostaQuando(Date.now());
   $('#punto-gps').className='punto';
-  $('#stato-gps').innerHTML='<b>Posizione non richiesta</b>Serve il permesso per mettere il pin sulla mappa.';
+  $('#stato-gps').innerHTML='<b>Posizione non richiesta</b>Rileva dove sei, oppure scegli il punto qui sotto.';
   costruisciModulo();
 }
+function bloccaLuogo(nome, luogoId, spiegazione, etichettaSblocco, etichettaProposta){
+  const i=$('#luogo'), n=$('#nota-luogo');
+  i.value=nome; i.readOnly=true;
+  S.bozza.luogoId=luogoId; S.bozza.bloccato=true;
+  n.hidden=false;
+  n.innerHTML = `<span>${spiegazione}</span>` +
+    (etichettaProposta ? `<button type="button" id="proponi-nome">${etichettaProposta}</button>` : '') +
+    (etichettaSblocco ? `<button type="button" id="sblocca-luogo">${etichettaSblocco}</button>` : '');
+}
+function sbloccaLuogo(vuota){
+  const i=$('#luogo');
+  i.readOnly=false;
+  if(vuota){ i.value=''; S.bozza.luogoId=null; }
+  S.bozza.bloccato=false;
+  $('#nota-luogo').hidden=true;
+  i.focus();
+  salvaBozza();
+}
+document.addEventListener('click', e=>{ if(e.target.closest('#sblocca-luogo')) sbloccaLuogo(!S.modificaId); });
+
 function aggiornaSuggerimenti(){
   const nomi=Array.from(new Set(S.recensioni.map(r=>r.luogo).filter(Boolean))).sort();
   document.getElementById('posti-noti').innerHTML = nomi.map(n=>`<option value="${esc(n)}">`).join('');
 }
 function mostraVicini(pos){
+  if(S.modificaId) return;
   const c=$('#vicini'), v=luoghiVicini(pos);
-  if(!v.length){ c.hidden=true; c.innerHTML=''; return; }
-  c.hidden=false;
-  c.innerHTML='<span class="et-vicini">Qui hanno già registrato:</span>'+
-    v.map(x=>`<button type="button" class="cip" data-gruppo="${esc(x.gruppo)}" data-nome="${esc(x.nome)}" data-lid="${esc(x.luogoId||'')}">📍 ${esc(x.nome)}</button>`).join('');
+  if(!v.length){
+    c.hidden=true; c.innerHTML='';
+    if(S.bozza.bloccato) sbloccaLuogo(true);
+    return;
+  }
+  /* il posto più vicino vince: nome già assegnato, campo bloccato */
+  const x=v[0], p=primaDelPosto(x.gruppo);
+  const mioPosto = S.io && p && p.autoreId===S.io.id;
+  bloccaLuogo(x.nome, x.luogoId,
+    `📍 Posto già in elenco, battezzato da <b>${esc(p?p.nome:'qualcuno')}</b>. Il titolo qui sotto è tuo.`,
+    'Non è questo posto',
+    mioPosto ? '' : 'Proponi un altro nome');
+  /* se ce n'è più d'uno nel raggio, si può scegliere */
+  if(v.length>1){
+    c.hidden=false;
+    c.innerHTML='<span class="et-vicini">Oppure era uno di questi:</span>'+
+      v.slice(1).map(y=>`<button type="button" class="cip" data-gruppo="${esc(y.gruppo)}" data-nome="${esc(y.nome)}" data-lid="${esc(y.luogoId||'')}">📍 ${esc(y.nome)}</button>`).join('');
+  } else { c.hidden=true; c.innerHTML=''; }
 }
 $('#vicini').addEventListener('click', e=>{
   const b=e.target.closest('.cip'); if(!b) return;
-  $('#luogo').value = b.dataset.nome;
-  S.bozza.luogoId = b.dataset.lid || null;
-  S.bozza.gruppoScelto = b.dataset.gruppo;
+  bloccaLuogo(b.dataset.nome, b.dataset.lid||null, `📍 Hai scelto <b>${esc(b.dataset.nome)}</b>.`, 'Non è questo posto');
   salvaBozza();
-  toast('Stesso bagno di prima');
 });
 function costruisciModulo(){
   $('#scale-voti').innerHTML = PARAMETRI.map(p=>`<div class="riga-voto">
@@ -794,19 +1257,32 @@ function costruisciModulo(){
       ${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" class="${(S.bozza.voti[p.id]||0)>=n?'acceso':''}" aria-label="${n} su 5">💩</button>`).join('')}
     </div></div>`).join('');
   $('#lista-tag').innerHTML = TAG.map(t=>`<button type="button" data-tag="${t}" aria-pressed="${S.bozza.tag.includes(t)}">${t}</button>`).join('');
+  $('#scelte-categoria').innerHTML = CATEGORIE.map(c=>
+    `<button type="button" class="scelta" data-cat="${c.id}" aria-pressed="${S.bozza.categoria===c.id}"><span class="em">${c.em}</span>${c.nome}</button>`).join('');
 }
 async function modifica(id){
   const r = S.recensioni.find(x=>x.id===id); if(!r) return;
   S.modificaId = id;
-  S.bozza = {voti:{...r.voti}, tag:(r.tag||[]).slice(), foto:null, fotoUrl:r.fotoUrl||null, luogoId:r.luogoId||null,
+  S.bozza = {voti:{...r.voti}, tag:(r.tag||[]).slice(), categoria:r.categoria||null, foto:null, fotoUrl:r.fotoUrl||null, luogoId:r.luogoId||null,
              pos: r.lat!=null?{lat:r.lat,lng:r.lng,acc:null}:null, citta:r.citta||null, paese:r.paese||null};
   $('#titolo-registra').textContent='Modifica la recensione';
   $('#sotto-registra').textContent='Cambia quello che vuoi, poi salva';
   $('#salva').textContent='Salva le modifiche';
   $('#elimina-rec').hidden=false; $('#annulla-modifica').hidden=false;
-  $('#titolo-rec').value=r.titolo||''; $('#testo-rec').value=r.testo||''; $('#luogo').value=r.luogo||'';
+  $('#titolo-rec').value=r.titolo||''; $('#testo-rec').value=r.testo||'';
+  $('#luogo').value=r.luogo||''; $('#luogo').readOnly=false; $('#nota-luogo').hidden=true;
+  if(!possoRinominare(r)){
+    const p=primaDelPosto(gruppoLuogo(r));
+    bloccaLuogo(r.luogo||'', r.luogoId||null,
+      `📍 Il nome del posto l'ha scelto <b>${esc(p?p.nome:'chi è arrivato prima')}</b>. Tu cambi il titolo e il resto.`,
+      '', 'Proponi un altro nome');
+  } else if(r.luogo){
+    $('#nota-luogo').hidden=false;
+    $('#nota-luogo').innerHTML = '<span>✏️ Sei tu ad aver battezzato questo posto: se cambi il nome, cambia per tutte le recensioni fatte qui.</span>';
+  }
   $('#contatore').textContent=(r.testo||'').length+' / 600';
   $('#durata').value=r.durata||5; $('#et-durata').textContent=(r.durata||5)+((r.durata||5)===1?' minuto':' minuti');
+  impostaQuando(r.ts);
   $('#punto-gps').className = r.lat!=null?'punto ok':'punto';
   $('#stato-gps').innerHTML = r.lat!=null
     ? `<b>Posizione salvata</b>${r.lat.toFixed(4)}, ${r.lng.toFixed(4)}`
@@ -824,6 +1300,12 @@ $('#scale-voti').addEventListener('click', e=>{
   const g=b.parentElement, n=+b.dataset.n;
   S.bozza.voti[g.dataset.p]=n;
   Array.from(g.children).forEach(x=>x.classList.toggle('acceso', +x.dataset.n<=n));
+  salvaBozza();
+});
+$('#scelte-categoria').addEventListener('click', e=>{
+  const b=e.target.closest('.scelta'); if(!b) return;
+  S.bozza.categoria = S.bozza.categoria===b.dataset.cat ? null : b.dataset.cat;
+  $$('#scelte-categoria .scelta').forEach(x=>x.setAttribute('aria-pressed', x.dataset.cat===S.bozza.categoria));
   salvaBozza();
 });
 $('#lista-tag').addEventListener('click', e=>{
@@ -898,10 +1380,18 @@ function comprimi(file){
 $('#salva').addEventListener('click', async ()=>{
   if(!S.io){ apriIngresso(); return; }
   if(Object.values(S.bozza.voti).filter(v=>v>0).length<2){ toast('Dai almeno due voti, non essere timido'); return; }
-  const nomePosto = titoloMaiuscolo($('#luogo').value);
+  const scelta = $('#quando').value ? new Date($('#quando').value).getTime() : Date.now();
+  const quandoTs = (!scelta || isNaN(scelta)) ? Date.now() : Math.min(scelta, Date.now());
+  let nomePosto = titoloMaiuscolo($('#luogo').value);
   if(nomePosto.length<2){ toast('Dai un nome al posto: è il titolo della recensione'); $('#luogo').focus(); return; }
-  $('#luogo').value = nomePosto;
   const idLuogo = risolviLuogo(nomePosto, S.bozza);
+  const rinomina = S.modificaId && nomeCanonico(idLuogo)!=='Posto senza nome' && nomeCanonico(idLuogo)!==nomePosto;
+  /* se il posto esiste già e non lo stai rinominando, vale il nome di chi è arrivato prima */
+  if(!rinomina){
+    const canonico = nomeCanonico(idLuogo);
+    if(canonico!=='Posto senza nome') nomePosto = canonico;
+  }
+  $('#luogo').value = nomePosto;
   const btn=$('#salva'), etichetta=btn.textContent;
   btn.disabled=true; btn.textContent='Un attimo…'; salvataggioInCorso=true;
   try{
@@ -909,21 +1399,25 @@ $('#salva').addEventListener('click', async ()=>{
       const r = S.recensioni.find(x=>x.id===S.modificaId);
       Object.assign(r, {
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
-        voti:S.bozza.voti, tag:S.bozza.tag, durata:+$('#durata').value,
+        ts:quandoTs, voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, durata:+$('#durata').value,
         lat:S.bozza.pos?S.bozza.pos.lat:r.lat, lng:S.bozza.pos?S.bozza.pos.lng:r.lng,
         citta:S.bozza.citta||r.citta, paese:S.bozza.paese||r.paese
       });
       if(S.bozza.foto){ r.fotoUrl = await DB.salvaFoto(r.id, S.bozza.foto); r.haFoto=true; S.foto.set(r.id,S.bozza.foto); }
       else if(S.bozza.tolta){ r.haFoto=false; r.fotoUrl=null; S.foto.delete(r.id); }
       await DB.aggiorna(r);
+      if(rinomina && idLuogo){
+        S.recensioni.forEach(x=>{ if(x.luogoId===idLuogo) x.luogo=nomePosto; });
+        try{ await DB.rinominaLuogo(idLuogo, nomePosto); }catch(e){ console.warn(e); }
+      }
       scartaBozza();
-      toast('Recensione aggiornata');
+      toast(rinomina ? 'Posto rinominato per tutti' : 'Recensione aggiornata');
       nuovaBozza(); vaiA('bacheca');
     } else {
       const id = nuovoId('c');
-      const r = {id, nome:S.io.nome, faccia:S.io.faccia, autoreId:S.io.id, ts:Date.now(),
+      const r = {id, nome:S.io.nome, faccia:S.io.faccia, autoreId:S.io.id, ts:quandoTs, creatoTs:Date.now(),
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
-        voti:S.bozza.voti, tag:S.bozza.tag, durata:+$('#durata').value,
+        voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, durata:+$('#durata').value,
         lat:S.bozza.pos?S.bozza.pos.lat:null, lng:S.bozza.pos?S.bozza.pos.lng:null,
         citta:S.bozza.citta, paese:S.bozza.paese, haFoto:!!S.bozza.foto, fotoUrl:null, reaz:{}};
       if(S.bozza.foto) S.foto.set(id, S.bozza.foto);
@@ -969,7 +1463,10 @@ function risolviLuogo(nome, bozza){
 }
 $('#elimina-rec').addEventListener('click', async ()=>{
   if(!S.modificaId) return;
-  if(!confirm('Elimini questa recensione? Non si può recuperare.')) return;
+  const conferma = await chiedi('Eliminare la recensione?',
+    'Sparisce per tutti, foto compresa. Non si può recuperare.',
+    {ok:'Elimina', no:'Tienila', pericolo:true});
+  if(!conferma) return;
   const id=S.modificaId;
   S.recensioni = S.recensioni.filter(x=>x.id!==id);
   try{ await DB.elimina(id); }catch(e){ toast('Eliminazione non riuscita'); return; }
@@ -1016,42 +1513,81 @@ async function apriFoto(id){
 function chiudiFoto(){ $('#lightbox').hidden=true; $('#foto-grande').removeAttribute('src'); document.body.style.overflow=''; }
 $('#chiudi-foto').addEventListener('click', chiudiFoto);
 $('#lightbox').addEventListener('click', e=>{ if(e.target.id==='lightbox') chiudiFoto(); });
-document.addEventListener('keydown', e=>{ if(e.key==='Escape' && !$('#lightbox').hidden) chiudiFoto(); });
+document.addEventListener('keydown', e=>{
+  if(e.key!=='Escape') return;
+  if(!$('#dialogo').hidden){ chiudiDialogo(false); return; }
+  if(!$('#lightbox').hidden) chiudiFoto();
+});
 
 /* ============ BACHECA ============ */
 function filtrate(){
   const f=S.filtri;
   return S.recensioni.filter(r=>
     (!f.utente || chiaveDi(r)===f.utente) &&
+    (!f.categoria || r.categoria===f.categoria) &&
     (!f.citta  || r.citta===f.citta) &&
     (!f.paese  || r.paese===f.paese) &&
     (!f.luogo  || gruppoLuogo(r)===f.luogo) &&
     (!f.voto   || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto))));
 }
+function filtriAttivi(){ return Object.values(S.filtri).some(v=>v); }
 function disegnaFiltriBacheca(){
-  const persone=new Map(), citta=new Set(), paesi=new Set();
-  S.recensioni.forEach(r=>{ persone.set(chiaveDi(r), (r.faccia||'💩')+' '+r.nome); if(r.citta) citta.add(r.citta); if(r.paese) paesi.add(r.paese); });
+  const persone=new Map(), posti=new Map(), citta=new Set(), paesi=new Set();
+  S.recensioni.forEach(r=>{
+    persone.set(chiaveDi(r), (r.faccia||'💩')+' '+r.nome);
+    if(r.luogo) posti.set(gruppoLuogo(r), nomeCanonico(gruppoLuogo(r)));
+    if(r.citta) citta.add(r.citta);
+    if(r.paese) paesi.add(r.paese);
+  });
   const opz=(sel, vuoto, voci, val)=>{
-    sel.innerHTML = `<option value="">${vuoto}</option>` + voci.map(([v,e])=>`<option value="${esc(v)}" ${v===val?'selected':''}>${esc(e)}</option>`).join('');
+    sel.innerHTML = `<option value="">${vuoto}</option>` +
+      voci.map(([v,e])=>`<option value="${esc(v)}" ${v===val?'selected':''}>${esc(e)}</option>`).join('');
   };
   opz($('#f-utente'),'Tutti',Array.from(persone.entries()),S.filtri.utente);
+  opz($('#f-luogo'),'Ogni posto',Array.from(posti.entries()).sort((a,b)=>a[1].localeCompare(b[1])),S.filtri.luogo);
+  opz($('#f-categoria'),'Ogni tipo',CATEGORIE.filter(c=>S.recensioni.some(r=>r.categoria===c.id)).map(c=>[c.id,c.em+' '+c.nome]),S.filtri.categoria);
   opz($('#f-citta'),'Ogni città',Array.from(citta).sort().map(c=>[c,c]),S.filtri.citta);
   opz($('#f-paese'),'Ogni paese',Array.from(paesi).sort().map(c=>[c,c]),S.filtri.paese);
   $('#f-voto').value = S.filtri.voto;
-  $('#filtro-luogo').hidden = !S.filtri.luogo;
-  if(S.filtri.luogo) $('#testo-filtro-luogo').textContent = 'Solo: '+nomeCanonico(S.filtri.luogo);
+  $('#pulisci-filtri').disabled = !filtriAttivi();
 }
-['f-utente','f-citta','f-paese','f-voto'].forEach(id=>{
+/* quando filtri, le statistiche di quel taglio: quanto si è cagato lì, con che voto */
+function disegnaRiassunto(elenco){
+  const box=$('#riassunto');
+  if(!filtriAttivi() || !elenco.length){ box.hidden=true; return; }
+  const voto = elenco.reduce((a,r)=>a+media(r.voti),0)/elenco.length;
+  const persone = new Set(elenco.map(chiaveDi)).size;
+  const minuti = elenco.reduce((a,r)=>a+(r.durata||0),0);
+  const posti = new Set(elenco.map(gruppoLuogo)).size;
+  const ultima = Math.max(...elenco.map(r=>r.ts));
+  box.hidden=false;
+  box.innerHTML =
+    `<span><b>${elenco.length}</b> ${elenco.length===1?'cagata':'cagate'}</span>`+
+    `<span>voto medio <b>${voto.toFixed(1)}</b></span>`+
+    `<span><b>${persone}</b> ${persone===1?'persona':'persone'}</span>`+
+    (S.filtri.luogo?'':`<span><b>${posti}</b> ${posti===1?'posto':'posti'}</span>`)+
+    (()=>{ const c={}; elenco.forEach(r=>{ if(r.categoria) c[r.categoria]=(c[r.categoria]||0)+1; });
+           const top=Object.keys(c).sort((a,b)=>c[b]-c[a])[0];
+           return top ? `<span>più spesso <b>${emCategoria(top)} ${esc(nomeCategoria(top))}</b></span>` : ''; })()+
+    `<span><b>${minuti}</b> minuti in totale</span>`+
+    `<span>ultima ${quando(ultima)}</span>`;
+}
+['f-utente','f-luogo','f-categoria','f-citta','f-paese','f-voto'].forEach(id=>{
   document.getElementById(id).addEventListener('change', e=>{
     S.filtri[id.slice(2)] = e.target.value;
     disegnaBacheca();
   });
 });
-$('#pulisci-luogo').addEventListener('click', ()=>{ S.filtri.luogo=''; disegnaFiltriBacheca(); disegnaBacheca(); });
+$('#pulisci-filtri').addEventListener('click', ()=>{
+  S.filtri={utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''};
+  disegnaBacheca();
+});
 
 function disegnaBacheca(){
   disegnaFiltriBacheca();
   const el=filtrate(), c=$('#lista-bacheca');
+  disegnaRiassunto(el);
+  $('#nuove').hidden=true; bachecaVecchia=false;
   $('#conta-bacheca').textContent = el.length ? `${el.length} ${el.length===1?'recensione':'recensioni'}` : 'Le ultime del gruppo';
   if(!el.length){
     c.innerHTML=`<div class="scheda vuoto" style="grid-column:1/-1"><span class="faccia">🧻</span>
@@ -1063,7 +1599,9 @@ function disegnaBacheca(){
   c.querySelectorAll('img[data-rid]').forEach(i=>osservatore.observe(i));
 }
 function scheda(r){
-  const v=media(r.voti), mia = S.io && r.autoreId===S.io.id;
+  const v=media(r.voti);
+  const propria = S.io && r.autoreId===S.io.id;
+  const mia = propria || gestore;
   const cacca=(r.reaz&&r.reaz['💩'])||[];
   const miaR = S.io && cacca.includes(S.io.id);
   return `<article class="scheda">
@@ -1087,6 +1625,7 @@ function scheda(r){
       </div>
       <div class="etichette">
         ${r.inCoda?`<span class="etichetta neutra">⏳ In attesa di rete</span>`:''}
+        ${r.categoria?`<span class="etichetta neutra">${emCategoria(r.categoria)} ${esc(nomeCategoria(r.categoria))}</span>`:''}
         ${r.durata?`<span class="etichetta neutra">⏱️ ${r.durata} min</span>`:''}
         ${(r.tag||[]).map(t=>`<span class="etichetta">${esc(t)}</span>`).join('')}
       </div>
@@ -1094,7 +1633,7 @@ function scheda(r){
     <footer class="piede">
       <button class="azione" aria-pressed="${!!miaR}" onclick="reagisci('${r.id}')">💩${cacca.length?` <small>${cacca.length}</small>`:''}</button>
       ${r.lat!=null?`<button class="azione" onclick="volaA('${r.id}')">🗺️ <small>Mappa</small></button>`:''}
-      ${mia?`<button class="azione fine" onclick="modifica('${r.id}')">✏️ <small>Modifica</small></button>`:''}
+      ${mia?`<button class="azione fine" onclick="modifica('${r.id}')">✏️ <small>${propria?'Modifica':'Gestisci'}</small></button>`:''}
     </footer>
   </article>`;
 }
@@ -1245,7 +1784,7 @@ $('#migliori-bagni').addEventListener('click', e=>{
   const b=e.target.closest('[data-luogo]'); if(b) apriBagno(b.dataset.luogo);
 });
 function apriBagno(luogo){
-  S.filtri={utente:'',citta:'',paese:'',voto:'',luogo};
+  S.filtri={utente:'',luogo,categoria:'',citta:'',paese:'',voto:''};
   vaiA('bacheca');
 }
 
@@ -1267,9 +1806,14 @@ function statistiche(chiave){
     mattiniera:mie.some(r=>new Date(r.ts).getHours()<7),
     peggiore:mie.length?Math.min(...mie.map(r=>media(r.voti))):null,
     migliore:mie.length?Math.max(...mie.map(r=>media(r.voti))):0,
-    km:0, tag:{}};
+    km:0, tag:{}, cat:{}, categorie:0,
+    reazioni: mie.reduce((a,r)=>a+(((r.reaz&&r.reaz['💩'])||[]).length),0)};
   s.media = mie.length ? mie.reduce((a,r)=>a+media(r.voti),0)/mie.length : 0;
-  mie.forEach(r=>(r.tag||[]).forEach(t=>s.tag[t]=(s.tag[t]||0)+1));
+  mie.forEach(r=>{
+    (r.tag||[]).forEach(t=>s.tag[t]=(s.tag[t]||0)+1);
+    if(r.categoria) s.cat[r.categoria]=(s.cat[r.categoria]||0)+1;
+  });
+  s.categorie = Object.keys(s.cat).length;
   for(let i=1;i<mie.length;i++) if(mie[i].lat!=null&&mie[i-1].lat!=null) s.km+=distanza(mie[i-1],mie[i]);
   s.km=Math.round(s.km);
   return {s, mie};
@@ -1284,12 +1828,15 @@ function disegnaProfilo(){
   const faccia = suoi ? (uno?uno.faccia:'💩') : S.io.faccia;
 
   $('#zona-guida').hidden = !!suoi;
+  const u=document.getElementById('mio-uid');
+  if(u && S.io) u.innerHTML = `Profilo: ${esc(S.io.email||'')} · identificativo <code style="font-size:11px">${esc(S.io.id)}</code>`;
+  aggiornaGestore();
   $('#testata-profilo').innerHTML = `<span class="avatar" aria-hidden="true">${faccia||'💩'}</span>
     <div style="min-width:0">
       <h2 class="tronca">${esc(nome)}</h2>
       <p>${s.totale? s.totale+' deposizioni certificate' : 'Ancora niente da dichiarare'}</p>
     </div>
-    ${suoi?'':'<button class="btn piccolo fantasma" style="margin-left:auto;flex:none" onclick="apriIngresso()">Cambia</button>'}`;
+    ${suoi?'':'<button class="btn piccolo fantasma" style="margin-left:auto;flex:none" onclick="apriModificaProfilo()">Cambia</button>'}`;
 
   $('#statistiche').innerHTML = [
     ['Cagate', s.totale],
@@ -1347,26 +1894,63 @@ window.addEventListener('online', svuotaCoda);
 /* ============ AGGIORNAMENTO E SINCRONIZZAZIONE ============ */
 const K_LETTO='pagine-marroni:letto:v1';
 let ultimoLetto = Number(localStorage.getItem(K_LETTO)||0);
-let sincronizzando=false;
+let sincronizzando=false, bachecaVecchia=false;
+/* impronta dei dati: se non cambia, non si ridisegna niente e le foto stanno ferme */
+function impronta(){
+  return S.proposte.map(p=>p.id+p.stato).join(',')+'#'+S.recensioni.map(r=>r.id+'~'+r.ts+'~'+(r.luogo||'').length+'~'+(r.testo||'').length
+    +'~'+Object.values(r.voti||{}).join('')+'~'+((r.reaz&&r.reaz['💩'])||[]).length+'~'+(r.inCoda?1:0)).join('|');
+}
 
-async function sincronizza(avvisa){
+async function sincronizza(avvisa, forza){
   if(sincronizzando) return;
   sincronizzando=true;
   try{
+    const prima = impronta();
     const nuove = await DB.carica();
+    const propPrima = proposteInArrivo().length;
+    try{ S.proposte = await DB.caricaProposte(); }catch(e){}
+    const propDopo = proposteInArrivo().length;
+    if(propDopo>propPrima){
+      const p = proposteInArrivo()[0];
+      const testo = `${p.daNome} propone di chiamarlo "${p.nomeProposto}"`;
+      toast(testo);
+      if('Notification' in window && Notification.permission==='granted' && document.visibilityState!=='visible'){
+        try{ new Notification('Pagine Marroni', {body:testo, icon:'icon-192.png?v=3', tag:'pagine-marroni-proposta'}); }catch(e){}
+      }
+      disegnaProposte();
+    }
     const idPrima = new Set(S.recensioni.map(r=>r.id));
     const arrivate = nuove.filter(r=>!idPrima.has(r.id) && (!S.io || r.autoreId!==S.io.id));
     S.recensioni = nuove;
     innestaCoda();
-    aggiornaSuggerimenti(); ridisegna(); aggiornaPastiglia();
+    aggiornaPastiglia();
+    if(impronta()===prima) return;            // niente di nuovo: non si tocca lo schermo
+    aggiornaSuggerimenti();
+    if(S.vista==='bacheca' && !forza){
+      /* la bacheca è sotto gli occhi: non gliela cambio da sotto i piedi */
+      bachecaVecchia=true;
+      $('#nuove').hidden=false;
+      $('#nuove').textContent = arrivate.length
+        ? `↑ ${arrivate.length===1?'Una nuova cagata':arrivate.length+' nuove cagate'}, tocca per vedere`
+        : '↑ Ci sono novità, tocca per vedere';
+    } else {
+      ridisegna();
+    }
     if(avvisa && arrivate.length) annuncia(arrivate);
   }catch(e){ console.warn(e); }
   finally{ sincronizzando=false; }
 }
+$('#nuove').addEventListener('click', ()=>{
+  disegnaBacheca();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
 function aggiornaPastiglia(){
   const n = S.recensioni.filter(r=>r.ts>ultimoLetto && (!S.io||r.autoreId!==S.io.id)).length;
   const p=$('#pastiglia');
   p.hidden = n===0; p.textContent = n>9?'9+':n;
+  const q = proposteInArrivo().length;
+  const pi=$('#pastiglia-io');
+  pi.hidden = q===0; pi.textContent = q>9?'9+':q;
 }
 function segnaLette(){
   ultimoLetto = Date.now();
@@ -1429,7 +2013,7 @@ $('#btn-backup').addEventListener('click', ()=>{
     const era=tirato; y0=null; tirato=0;
     if(era>soglia){
       barra.classList.add('gira'); testo.textContent='Aggiorno…'; barra.style.height='54px';
-      await sincronizza(false);
+      await sincronizza(false, true);
       await controllaVersione();
       testo.textContent='Aggiornato';
       setTimeout(()=>{ barra.style.height='0px'; barra.classList.remove('gira'); }, 500);
@@ -1480,16 +2064,269 @@ if('serviceWorker' in navigator && location.protocol.startsWith('http')){
     seDelCaso();
   });
 }
+/* al rientro nell'app si aggiorna tutto: è il momento in cui non dà fastidio */
 document.addEventListener('visibilitychange', ()=>{
   if(document.visibilityState!=='visible') return;
   controllaVersione();
-  sincronizza(true);
+  sincronizza(true, true);
   svuotaCoda();
 });
 /* se stai salvando, il browser chiede conferma prima di chiudere */
 window.addEventListener('beforeunload', e=>{
   if(!salvataggioInCorso) return;
   e.preventDefault(); e.returnValue='';
+});
+
+function aggiornaGestore(){
+  const r=document.getElementById('riga-gestore');
+  if(r) r.hidden = !gestore;
+  const a=document.getElementById('azzera-db');
+  if(a) a.hidden = !gestore;
+}
+
+/* Azzeramento: doppia conferma, con parola da scrivere. Non si torna indietro. */
+document.addEventListener('click', async e=>{
+  if(!e.target.closest('#azzera-db')) return;
+  if(!gestore) return;
+  const quante = S.recensioni.length;
+  const primo = await chiedi('Svuotare tutto?',
+    `Stai per cancellare ${quante} ${quante===1?'recensione':'recensioni'}, tutte le foto e tutte le proposte di rinomina. Per tutti, per sempre. I profili con email restano.`,
+    {ok:'Ho capito, vai avanti', no:'Annulla', pericolo:true});
+  if(primo!==true) return;
+  const parola = await chiedi('Ultima conferma',
+    'Scrivi AZZERA in maiuscolo per confermare. Non esiste un annulla, e non esiste un recupero.',
+    {campo:'testo', segnaposto:'AZZERA', ok:'Cancella tutto'});
+  if(String(parola).trim()!=='AZZERA'){ toast('Annullato: niente è stato cancellato'); return; }
+  toast('Sto cancellando…');
+  try{
+    const foto = await DB.azzeraTutto();
+    S.recensioni=[]; S.proposte=[]; S.foto.clear();
+    coda=[]; salvaCoda(); scartaBozza();
+    try{ localStorage.removeItem(K_LETTO); }catch(err){}
+    ultimoLetto=0;
+    giaInquadrato=false;
+    aggiornaSuggerimenti(); ridisegna(); aggiornaPastiglia(); disegnaProposte();
+    await chiedi('Fatto', `Cancellate ${quante} ${quante===1?'recensione':'recensioni'} e ${foto} ${foto===1?'foto':'foto'}. Il database è vuoto: la prima cagata di questa nuova era è tutta tua.`, {ok:'Bene', no:'Chiudi'});
+  }catch(err){
+    console.warn(err);
+    toast('Non è riuscito: controlla di essere fra i gestori');
+  }
+});
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#esci-gestore')) return;
+  gestore=false;
+  try{ localStorage.removeItem(K_GESTORE); }catch(err){}
+  aggiornaGestore(); ridisegna();
+  toast('Modalità gestore disattivata');
+});
+
+
+/* ============ SCEGLIERE IL LUOGO A MANO ============ */
+/* Per registrare una cagata di ieri, o di un posto dove non sei adesso:
+   si cerca per nome o indirizzo, oppure si tocca il punto sulla mappa. */
+let mappaScelta=null, pernoScelto=null, puntoScelto=null;
+
+function apriSelettore(){
+  $('#selettore').hidden=false;
+  document.body.style.overflow='hidden';
+  puntoScelto = S.bozza && S.bozza.pos ? {lat:S.bozza.pos.lat, lng:S.bozza.pos.lng} : null;
+  $('#usa-punto').disabled = !puntoScelto;
+  $('#coord-sel').textContent = puntoScelto
+    ? `${puntoScelto.lat.toFixed(4)}, ${puntoScelto.lng.toFixed(4)}`
+    : 'Tocca la mappa nel punto giusto';
+  setTimeout(()=>{
+    if(typeof L==='undefined'){ toast('La mappa non si è caricata'); return; }
+    if(!mappaScelta){
+      mappaScelta = L.map('mappa-scelta',{zoomControl:true, minZoom:2, maxZoom:19})
+        .setView(puntoScelto ? [puntoScelto.lat,puntoScelto.lng] : [45.46,9.19], puntoScelto?16:11);
+      L.tileLayer(FONTI[fonte].url,{maxZoom:19, attribution:FONTI[fonte].attr}).addTo(mappaScelta);
+      mappaScelta.on('click', e=>segnaPunto(e.latlng.lat, e.latlng.lng, false));
+      /* i posti già registrati, per ritrovarli al volo */
+      S.recensioni.filter(r=>r.lat!=null).forEach(r=>{
+        L.marker([r.lat,r.lng],{icon:L.divIcon({className:'perno',html:`<div class="bolla"><span>${r.faccia||'💩'}</span></div>`,iconSize:[38,38],iconAnchor:[19,36]}),title:r.luogo||''})
+          .addTo(mappaScelta).on('click', ()=>segnaPunto(r.lat,r.lng,false));
+      });
+    }
+    mappaScelta.invalidateSize();
+    if(puntoScelto){ segnaPunto(puntoScelto.lat, puntoScelto.lng, true); mappaScelta.setView([puntoScelto.lat,puntoScelto.lng],16); }
+  }, 120);
+}
+function chiudiSelettore(){ $('#selettore').hidden=true; document.body.style.overflow=''; }
+$('#btn-scegli').addEventListener('click', apriSelettore);
+$('#chiudi-sel').addEventListener('click', chiudiSelettore);
+
+function segnaPunto(lat,lng,zitto){
+  puntoScelto={lat,lng};
+  if(pernoScelto) mappaScelta.removeLayer(pernoScelto);
+  pernoScelto = L.marker([lat,lng],{icon:L.divIcon({className:'perno',html:'<div class="bolla"><span>📍</span></div>',iconSize:[38,38],iconAnchor:[19,36]})}).addTo(mappaScelta);
+  $('#usa-punto').disabled=false;
+  $('#coord-sel').textContent = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  if(!zitto) $('#esiti-sel').hidden=true;
+}
+
+async function cercaLuogo(){
+  const q=$('#cerca-luogo').value.trim();
+  if(q.length<3){ toast('Scrivi almeno tre lettere'); return; }
+  const box=$('#esiti-sel');
+  box.hidden=false; box.innerHTML='<button disabled>Sto cercando…</button>';
+  try{
+    const c=new AbortController(); setTimeout(()=>c.abort(),8000);
+    const r=await fetch(`https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(q)}&limit=6&accept-language=it`,{signal:c.signal});
+    const j=await r.json();
+    if(!j.length){ box.innerHTML='<button disabled>Nessun risultato. Prova con l\'indirizzo, o tocca la mappa.</button>'; return; }
+    box.innerHTML = j.map((x,i)=>`<button data-i="${i}" data-lat="${x.lat}" data-lon="${x.lon}"><b>${esc((x.name||x.display_name.split(',')[0]))}</b><br><span style="color:var(--tenue);font-size:12px">${esc(x.display_name)}</span></button>`).join('');
+  }catch(e){
+    box.innerHTML='<button disabled>Ricerca non disponibile adesso. Tocca la mappa nel punto giusto.</button>';
+  }
+}
+$('#btn-cerca').addEventListener('click', cercaLuogo);
+$('#cerca-luogo').addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); cercaLuogo(); } });
+$('#esiti-sel').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-lat]'); if(!b) return;
+  const lat=parseFloat(b.dataset.lat), lng=parseFloat(b.dataset.lon);
+  mappaScelta.setView([lat,lng],17);
+  segnaPunto(lat,lng,false);
+});
+
+$('#usa-punto').addEventListener('click', async ()=>{
+  if(!puntoScelto) return;
+  S.bozza.pos={lat:puntoScelto.lat, lng:puntoScelto.lng, acc:null, manuale:true};
+  $('#punto-gps').className='punto ok';
+  $('#stato-gps').innerHTML=`<b>Punto scelto a mano</b>${puntoScelto.lat.toFixed(4)}, ${puntoScelto.lng.toFixed(4)}`;
+  chiudiSelettore();
+  mostraVicini(S.bozza.pos);
+  salvaBozza();
+  const n = await nomeDelPosto(S.bozza.pos);
+  if(n){
+    S.bozza.citta=n.citta; S.bozza.paese=n.paese;
+    if(!$('#luogo').value && n.etichetta && !S.bozza.bloccato) $('#luogo').value=titoloMaiuscolo(n.etichetta);
+    salvaBozza();
+  }
+});
+
+/* ---- data e ora dell'evento ---- */
+function perCampoData(ts){
+  const d=new Date(ts - new Date().getTimezoneOffset()*60000);
+  return d.toISOString().slice(0,16);
+}
+function impostaQuando(ts){
+  const c=$('#quando');
+  c.max = perCampoData(Date.now());
+  c.value = perCampoData(ts);
+  quandoPrima = c.value;
+}
+/* Se sposti solo il giorno, l'ora di adesso non significa niente su una data
+   passata: la porto a mezzogiorno. Se poi la cambi a mano, resta come vuoi tu. */
+let quandoPrima = '';
+$('#quando').addEventListener('change', e=>{
+  const v = e.target.value;
+  if(v && quandoPrima){
+    const [gNuovo, oNuovo] = v.split('T');
+    const [gVecchio, oVecchio] = quandoPrima.split('T');
+    const oggi = perCampoData(Date.now()).split('T')[0];
+    if(gNuovo !== gVecchio && oNuovo === oVecchio && gNuovo !== oggi){
+      e.target.value = gNuovo + 'T12:00';
+      toast('Ora impostata a mezzogiorno, cambiala se la ricordi');
+    }
+  }
+  quandoPrima = e.target.value;
+  salvaBozza();
+});
+
+/* ============ PROPOSTE DI RINOMINA ============ */
+/* Chiunque può proporre un nome diverso per un posto: la proposta arriva a chi
+   l'ha battezzato, che approva o rifiuta. Se approva, il nome cambia per tutti. */
+let luogoDaProporre=null;
+
+function apriProposta(luogoId){
+  if(!S.io){ apriIngresso(); return; }
+  const p=primaDelPosto(luogoId);
+  if(!p){ toast('Questo posto non ha ancora un nome ufficiale'); return; }
+  luogoDaProporre = {luogoId, nomeAttuale:p.luogo, aId:p.autoreId||null, battezzatore:p.nome};
+  $('#prop-attuale').innerHTML = `Adesso si chiama <b>${esc(p.luogo)}</b>, nome scelto da <b>${esc(p.nome)}</b>. Se accetta, cambia per tutte le recensioni fatte qui.`;
+  $('#prop-nome').value = p.luogo;
+  $('#prop-motivo').value = '';
+  $('#proposta').hidden=false;
+  setTimeout(()=>$('#prop-nome').focus(), 80);
+}
+function chiudiProposta(){ $('#proposta').hidden=true; luogoDaProporre=null; }
+$('#prop-no').addEventListener('click', chiudiProposta);
+$('#proposta').addEventListener('click', e=>{ if(e.target.id==='proposta') chiudiProposta(); });
+document.addEventListener('click', e=>{ if(e.target.closest('#proponi-nome')) apriProposta(S.bozza && S.bozza.luogoId); });
+
+$('#prop-si').addEventListener('click', async ()=>{
+  if(!luogoDaProporre) return;
+  const nome = titoloMaiuscolo($('#prop-nome').value);
+  if(nome.length<2){ toast('Scrivi il nome che proponi'); return; }
+  if(chiaveLuogo(nome)===chiaveLuogo(luogoDaProporre.nomeAttuale)){ toast('È lo stesso nome di adesso'); return; }
+  const p = {id:nuovoId('p'), luogoId:luogoDaProporre.luogoId, nomeAttuale:luogoDaProporre.nomeAttuale,
+    nomeProposto:nome, motivo:$('#prop-motivo').value.trim(), daId:S.io.id, daNome:S.io.nome,
+    aId:luogoDaProporre.aId, ts:Date.now(), stato:'attesa'};
+  const btn=$('#prop-si'); btn.disabled=true;
+  try{
+    await DB.proponi(p);
+    S.proposte.unshift(p);
+    chiudiProposta();
+    toast('Proposta inviata a '+luogoDaProporre.battezzatore);
+    disegnaProposte();
+  }catch(e){ console.warn(e); toast('Non sono riuscito a inviarla, riprova'); }
+  finally{ btn.disabled=false; }
+});
+
+function proposteInArrivo(){
+  if(!S.io) return [];
+  return S.proposte.filter(p=>p.stato==='attesa' && p.aId===S.io.id && p.daId!==S.io.id);
+}
+function proposteMie(){
+  if(!S.io) return [];
+  return S.proposte.filter(p=>p.daId===S.io.id).slice(0,5);
+}
+function disegnaProposte(){
+  const box=document.getElementById('zona-proposte');
+  if(!box) return;
+  if(S.profilo && S.io && S.profilo!==S.io.id){ box.innerHTML=''; return; }
+  const arrivo=proposteInArrivo(), mie=proposteMie();
+  let h='';
+  if(arrivo.length){
+    h += `<h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Ti hanno proposto un nome</h3>`;
+    h += arrivo.map(p=>`<div class="proposta">
+      <h4>${esc(p.daNome)} propone una rinomina</h4>
+      <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
+      ${p.motivo?`<p class="perche">"${esc(p.motivo)}"</p>`:''}
+      <div class="azioni-p">
+        <button class="btn fantasma" data-rifiuta="${p.id}">Lascia com'è</button>
+        <button class="btn scuro" data-approva="${p.id}">Approva</button>
+      </div></div>`).join('');
+  }
+  const inCorso = mie.filter(p=>p.stato==='attesa' || Date.now()-p.ts < 604800000);
+  if(inCorso.length){
+    h += `<h3 style="font-size:16px;margin:${arrivo.length?'18px':'6px'} 2px 10px;color:var(--cioccolato)">Le tue proposte</h3>`;
+    h += inCorso.map(p=>`<div class="proposta esito">
+      <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
+      <span class="stato ${p.stato}">${p.stato==='attesa'?'In attesa di risposta':p.stato==='ok'?'✅ Approvata':'✖️ Non accettata'}</span>
+      </div>`).join('');
+  }
+  box.innerHTML = h;
+}
+document.addEventListener('click', async e=>{
+  const ok=e.target.closest('[data-approva]'), no=e.target.closest('[data-rifiuta]');
+  if(!ok && !no) return;
+  const id = (ok||no).dataset.approva || (ok||no).dataset.rifiuta;
+  const p = S.proposte.find(x=>x.id===id); if(!p) return;
+  const bottoni = (ok||no).parentElement.querySelectorAll('button');
+  bottoni.forEach(b=>b.disabled=true);
+  try{
+    if(ok){
+      S.recensioni.forEach(r=>{ if(r.luogoId===p.luogoId) r.luogo=p.nomeProposto; });
+      await DB.rinominaLuogo(p.luogoId, p.nomeProposto);
+      p.stato='ok'; await DB.rispondi(p.id,'ok');
+      toast('Rinominato: adesso è '+p.nomeProposto);
+    } else {
+      p.stato='no'; await DB.rispondi(p.id,'no');
+      toast('Proposta rifiutata, il nome resta');
+    }
+    disegnaProposte(); ridisegna(); aggiornaPastiglia();
+  }catch(err){ console.warn(err); toast('Non ha funzionato, riprova'); bottoni.forEach(b=>b.disabled=false); }
 });
 
 /* ============ BANNER INSTALLAZIONE ============ */
@@ -1511,23 +2348,34 @@ $('#installa-no').addEventListener('click',()=>{ bannerChiuso=true; $('#banner-i
 (async function avvio(){
   const et=document.getElementById('versione'); if(et) et.textContent=VERSIONE;
   costruisciFacce();
-  if(typeof migra === 'function') await migra();
   caricaCoda();
-  const io=await leggiIo();
-  if(io){ try{ S.io=JSON.parse(io); }catch(e){} }
+  /* Supabase tiene la sessione: se sei già entrato, non rivedi il login */
+  let sessione=null;
+  try{ const r = await cli.auth.getSession(); sessione = r.data.session; }catch(e){}
+  S.io = daSessione(sessione);
+  cli.auth.onAuthStateChange((evento, sess)=>{
+    if(evento==='PASSWORD_RECOVERY'){ chiudiIngresso(); nuovaPassword(); return; }
+    if(evento==='SIGNED_OUT'){ S.io=null; gestore=false; apriIngresso(); }
+  });
+  try{ S.proposte = await DB.caricaProposte(); }catch(e){ S.proposte=[]; }
   try{ S.recensioni = await DB.carica(); }
   catch(e){ S.recensioni = []; toast('Database non raggiungibile: vedrai solo quello che hai in coda.'); }
   innestaCoda();
   nuovaBozza();
   disegnaFiltriBacheca();
-  if(S.io){ mostraIo(); avviaMappaSeServe(); } else { apriIngresso(); }
+  if(S.io){ mostraIo(); avviaMappaSeServe(); await collegaVecchioProfilo(); await controllaGestore(); }
+  else { apriIngresso(); }
   vaiA('registra');
   setTimeout(mostraBanner, 1600);
   if(!configurato) setTimeout(()=>toast('Manca la configurazione Supabase in index.html'), 1200);
   aggiornaSuggerimenti(); aggiornaPastiglia();
   svuotaCoda();
   DB.ascolta(()=>sincronizza(true));
-  setInterval(()=>{ if($('#velo').hidden){ sincronizza(true); svuotaCoda(); } }, 20000);
+  setInterval(()=>{
+    if(document.hidden || !$('#velo').hidden) return;   // fuori dall'app o al login: fermo
+    if(S.vista==='bacheca') return;                     // in bacheca aggiorna solo su richiesta
+    sincronizza(true); svuotaCoda();
+  }, 30000);
 })();
 
 </script>
