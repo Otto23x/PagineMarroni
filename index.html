@@ -525,8 +525,7 @@ body.ingresso{overflow:hidden}
             <li>Nome e faccia si cambiano da "Io" → Cambia: lo storico ti segue.</li>
           </ol>
           <div id="riga-gestore" hidden style="margin-top:14px;padding:10px 12px;border-radius:14px;background:rgba(242,194,48,.18);display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600">
-            <span>🔑 Modalità gestore attiva</span>
-            <button class="btn piccolo fantasma" id="esci-gestore" style="margin-left:auto">Esci</button>
+            <span>🔑 Modalità gestore attiva: vedi Gestisci ed Elimina su tutte le recensioni</span>
           </div>
           <button class="btn piccolo rossa" id="azzera-db" hidden style="width:100%;margin-top:8px">🧨 Svuota tutto e riparti da zero</button>
           <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.0</b> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
@@ -764,7 +763,13 @@ function aRiga(r){
 const DB = {
   async carica(){
     if(!cli) return [];
-    const {data,error} = await cli.from('recensioni').select('*').order('ts',{ascending:false}).limit(500);
+    let {data,error} = await cli.from('recensioni').select('*').order('ts',{ascending:false}).limit(500);
+    if(error && /jwt|token|expired|401/i.test(error.message||'')){
+      /* sessione scaduta: la lettura è pubblica, quindi si riprova da anonimi */
+      console.warn('sessione scaduta, rileggo senza:', error.message);
+      try{ await cli.auth.signOut({scope:'local'}); }catch(e){}
+      ({data,error} = await cli.from('recensioni').select('*').order('ts',{ascending:false}).limit(500));
+    }
     if(error){ console.warn('Supabase:', error.message); throw error; }
     return (data||[]).map(daRiga);
   },
@@ -805,7 +810,11 @@ const DB = {
   },
   async caricaProposte(){
     if(!cli) return [];
-    const {data,error} = await cli.from('proposte').select('*').order('ts',{ascending:false}).limit(200);
+    let {data,error} = await cli.from('proposte').select('*').order('ts',{ascending:false}).limit(200);
+    if(error && /jwt|token|expired|401/i.test(error.message||'')){
+      try{ await cli.auth.signOut({scope:'local'}); }catch(e){}
+      ({data,error} = await cli.from('proposte').select('*').order('ts',{ascending:false}).limit(200));
+    }
     if(error){ console.warn('proposte:', error.message); return []; }
     return (data||[]).map(x=>({id:x.id, luogoId:x.luogo_id, nomeAttuale:x.nome_attuale, nomeProposto:x.nome_proposto,
       motivo:x.motivo, daId:x.da_id, daNome:x.da_nome, aId:x.a_id, ts:Number(x.ts), stato:x.stato||'attesa'}));
@@ -983,7 +992,10 @@ $('#griglia-avatar').addEventListener('click', e=>{
   $$('#griglia-avatar button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.f===faccia));
 });
 function nuovoId(p){ return p + (crypto.randomUUID ? crypto.randomUUID().slice(0,12) : Date.now().toString(36)+Math.random().toString(36).slice(2,7)); }
-function mostraIo(){ if(!S.io) return; $('#nome-mio').textContent=S.io.nome; $('#avatar-mio').textContent=S.io.faccia; }
+function mostraIo(){
+  $('#nome-mio').textContent = S.io ? S.io.nome : 'ospite';
+  $('#avatar-mio').textContent = S.io ? S.io.faccia : '💩';
+}
 
 function modo(registrazione){
   modoRegistrazione = registrazione;
@@ -1081,6 +1093,35 @@ async function nuovaPassword(){
   }catch(err){ toast(traduciErrore(err && err.message)); }
 }
 
+/* Il ripristino della sessione salvata non è istantaneo: se leggessimo subito
+   rischieremmo di prenderti per ospite pur essendo entrato. Qui si aspetta che
+   il client abbia finito, con una rete di sicurezza a 5 secondi. */
+function inizializzaSessione(){
+  return new Promise(risolvi=>{
+    let deciso=false;
+    const decidi = sess => { if(deciso) return; deciso=true; S.io = daSessione(sess); risolvi(); };
+
+    cli.auth.onAuthStateChange((evento, sess)=>{
+      if(evento==='PASSWORD_RECOVERY'){ chiudiIngresso(); nuovaPassword(); return; }
+      if(evento==='SIGNED_OUT'){
+        S.io=null; gestore=false; mostraIo(); aggiornaGestore();
+        if(deciso) apriIngresso();
+        decidi(null);
+        return;
+      }
+      if(sess){                      /* SIGNED_IN, TOKEN_REFRESHED, INITIAL_SESSION */
+        S.io = daSessione(sess);
+        mostraIo();
+        if(deciso && !$('#velo').hidden) chiudiIngresso();
+      }
+      if(evento==='INITIAL_SESSION' || evento==='SIGNED_IN' || evento==='TOKEN_REFRESHED') decidi(sess);
+    });
+
+    cli.auth.getSession().then(r=>decidi(r.data.session)).catch(()=>decidi(null));
+    setTimeout(()=>decidi(null), 5000);
+  });
+}
+
 /* dalla sessione di Supabase all'identità dell'app */
 function daSessione(sess){
   if(!sess || !sess.user) return null;
@@ -1124,9 +1165,10 @@ async function controllaGestore(){
   gestore=false;
   if(!S.io) return;
   try{
-    const {data} = await cli.from('gestori').select('uid').eq('uid', S.io.id).maybeSingle();
+    const {data, error} = await cli.from('gestori').select('uid').eq('uid', S.io.id).maybeSingle();
+    if(error) console.warn('gestori:', error.message);
     gestore = !!data;
-  }catch(e){}
+  }catch(e){ console.warn('gestori:', e); }
   aggiornaGestore();
 }
 
@@ -1483,7 +1525,14 @@ $('#salva').addEventListener('click', async ()=>{
       nuovaBozza(); vaiA('bacheca');
     }
     ridisegna();
-  }catch(err){ console.warn(err); toast('Non sono riuscito a salvare. Il testo resta qui: riprova fra un attimo.'); }
+  }catch(err){
+    console.warn(err);
+    const m = String(err && err.message || '');
+    if(/jwt|token|expired|401|row-level/i.test(m)){
+      toast('La sessione è scaduta: rientra con email e password, il testo resta qui.');
+      apriIngresso();
+    } else toast('Non sono riuscito a salvare. Il testo resta qui: riprova fra un attimo.');
+  }
   finally{ btn.disabled=false; btn.textContent=etichetta; salvataggioInCorso=false; seDelCaso(); }
 });
 /* Stesso bagno = stesse coordinate a meno di 60 m, oppure stesso nome normalizzato.
@@ -1575,6 +1624,7 @@ function passaFiltri(r, salta){
       && (salta==='voto'      || !f.voto      || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto)));
 }
 function filtrate(){ return S.recensioni.filter(r=>passaFiltri(r, null)); }
+function filtriAttivi(){ return Object.values(S.filtri).some(x=>x); }
 function candidati(salta){ return S.recensioni.filter(r=>passaFiltri(r, salta)); }
 
 function disegnaFiltriBacheca(){
@@ -2118,6 +2168,7 @@ document.addEventListener('visibilitychange', ()=>{
   controllaVersione();
   sincronizza(true, true);
   svuotaCoda();
+  controllaGestore();
 });
 /* se stai salvando, il browser chiede conferma prima di chiudere */
 window.addEventListener('beforeunload', e=>{
@@ -2159,15 +2210,6 @@ document.addEventListener('click', async e=>{
     toast('Non è riuscito: controlla di essere fra i gestori');
   }
 });
-document.addEventListener('click', e=>{
-  if(!e.target.closest('#esci-gestore')) return;
-  gestore=false;
-  try{ localStorage.removeItem(K_GESTORE); }catch(err){}
-  aggiornaGestore(); ridisegna();
-  toast('Modalità gestore disattivata');
-});
-
-
 /* ============ SCEGLIERE IL LUOGO A MANO ============ */
 /* Per registrare una cagata di ieri, o di un posto dove non sei adesso:
    si cerca per nome o indirizzo, oppure si tocca il punto sulla mappa. */
@@ -2396,22 +2438,18 @@ $('#installa-no').addEventListener('click',()=>{ bannerChiuso=true; $('#banner-i
   const et=document.getElementById('versione'); if(et) et.textContent=VERSIONE;
   costruisciFacce();
   caricaCoda();
-  /* Supabase tiene la sessione: se sei già entrato, non rivedi il login */
-  let sessione=null;
-  try{ const r = await cli.auth.getSession(); sessione = r.data.session; }catch(e){}
-  S.io = daSessione(sessione);
-  cli.auth.onAuthStateChange((evento, sess)=>{
-    if(evento==='PASSWORD_RECOVERY'){ chiudiIngresso(); nuovaPassword(); return; }
-    if(evento==='SIGNED_OUT'){ S.io=null; gestore=false; apriIngresso(); }
-  });
+  await inizializzaSessione();
   try{ S.proposte = await DB.caricaProposte(); }catch(e){ S.proposte=[]; }
   try{ S.recensioni = await DB.carica(); }
   catch(e){ S.recensioni = []; toast('Database non raggiungibile: vedrai solo quello che hai in coda.'); }
   innestaCoda();
   nuovaBozza();
   disegnaFiltriBacheca();
-  if(S.io){ mostraIo(); avviaMappaSeServe(); await collegaVecchioProfilo(); await controllaGestore(); }
-  else { apriIngresso(); }
+  if(S.io){
+    mostraIo(); avviaMappaSeServe();
+    try{ await collegaVecchioProfilo(); }catch(e){ console.warn(e); }
+    try{ await controllaGestore(); }catch(e){ console.warn(e); }
+  } else { mostraIo(); apriIngresso(); }
   vaiA('registra');
   setTimeout(mostraBanner, 1600);
   if(!configurato) setTimeout(()=>toast('Manca la configurazione Supabase in index.html'), 1200);
