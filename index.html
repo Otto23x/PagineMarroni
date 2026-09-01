@@ -2175,14 +2175,36 @@ $('#btn-notifiche').addEventListener('click', async ()=>{
 /* aggiornamento forzato dell'app: a ogni apertura e a ogni ritorno in primo piano */
 let registrazioneSW=null, ricaricando=false, aggiornamentoPronto=false;
 
+/* Quando una versione nuova ricarica la pagina, l'app deve riaprirsi dov'eri,
+   non sbatterti su Registra. La vista si ricorda per un minuto: oltre, è
+   un'apertura normale e si riparte da Registra come sempre. */
+const K_RIPRESA='pagine-marroni:ripresa:v1';
+function ricaricaTenendoIlSegno(){
+  try{ sessionStorage.setItem(K_RIPRESA, JSON.stringify({vista:S.vista, ts:Date.now()})); }catch(e){}
+  location.reload();
+}
+function vistaDaRiprendere(){
+  try{
+    const g=JSON.parse(sessionStorage.getItem(K_RIPRESA)||'null');
+    sessionStorage.removeItem(K_RIPRESA);
+    if(g && g.vista && Date.now()-g.ts < 60000) return g.vista;
+  }catch(e){}
+  return null;
+}
+
 /* Una versione nuova non ricarica la pagina se stai scrivendo o se un salvataggio
    è in volo: aspetta, e nel frattempo te lo dice. Nessun dato viene perso. */
 function bozzaAperta(){
   return !!($('#luogo').value.trim() || $('#testo-rec').value.trim() || $('#titolo-rec').value.trim()
             || (S.bozza && (S.bozza.foto || Object.keys(S.bozza.voti||{}).length)));
 }
+const avvioTs = Date.now();
 function seDelCaso(){
   if(!aggiornamentoPronto) return;
+  /* Appena aperta, la pagina che stai già guardando è arrivata dalla rete:
+     è quindi la versione nuova. Ricaricarla non aggiunge niente e ti sbatte
+     fuori da dove sei. Il service worker aggiornato serve da qui in avanti. */
+  if(Date.now() - avvioTs < 20000){ aggiornamentoPronto=false; return; }
   if(salvataggioInCorso || coda.length){ return; }
   if(bozzaAperta()){
     const b=$('#banner-installa');
@@ -2190,11 +2212,11 @@ function seDelCaso(){
       b.hidden=false;
       b.querySelector('.txt').innerHTML='<b>Nuova versione pronta</b><span>Finisci pure: si installa quando salvi.</span>';
       b.querySelector('.si').textContent='Aggiorna ora';
-      b.querySelector('.si').onclick=()=>location.reload();
+      b.querySelector('.si').onclick=ricaricaTenendoIlSegno;
     }
     return;
   }
-  location.reload();
+  ricaricaTenendoIlSegno();
 }
 async function controllaVersione(){ try{ if(registrazioneSW) await registrazioneSW.update(); }catch(e){} }
 if('serviceWorker' in navigator && location.protocol.startsWith('http')){
@@ -2503,7 +2525,7 @@ $('#installa-no').addEventListener('click',()=>{ bannerChiuso=true; $('#banner-i
     try{ await collegaVecchioProfilo(); }catch(e){ console.warn(e); }
     try{ await controllaGestore(); }catch(e){ console.warn(e); }
   } else { mostraIo(); apriIngresso(); }
-  vaiA('registra');
+  vaiA(vistaDaRiprendere() || 'registra');
   setTimeout(mostraBanner, 1600);
   if(!configurato) setTimeout(()=>toast('Manca la configurazione Supabase in index.html'), 1200);
   aggiornaSuggerimenti(); aggiornaPastiglia();
