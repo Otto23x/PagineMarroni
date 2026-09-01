@@ -1231,17 +1231,7 @@ function vaiA(nome){
   S.vista = nome;
   $$('.vista').forEach(v=>{ const on = v.id==='vista-'+nome; v.classList.toggle('attiva',on); v.hidden=!on; });
   $$('.tab[data-vista]').forEach(t=>t.setAttribute('aria-selected', t.dataset.vista===nome));
-  if(nome==='mappa'){
-    avviaMappaSeServe();
-    disegnaMappa();
-    /* la mappa nasce dentro una sezione nascosta: senza questi ricalcoli
-       resta con dimensione zero e i pin non si vedono */
-    if(S.mappa){
-      setTimeout(()=>{ S.mappa.invalidateSize(); if(!saltaInquadratura) inquadraTutti(); },60);
-      setTimeout(()=>S.mappa.invalidateSize(),400);
-    }
-    saltaInquadratura=false;
-  }
+  if(nome==='mappa') apriMappa();
   if(nome==='bacheca'){ disegnaBacheca(); segnaLette(); }
   if(nome==='classifica') disegnaClassifica();
   if(nome==='profilo'){ disegnaProfilo(); disegnaProposte(); }
@@ -1771,7 +1761,6 @@ function avviaMappaSeServe(){
   if(S.mappa) return;
   try{ creaMappa(); }catch(e){ console.warn('mappa non disponibile',e); }
   disegnaMappa();
-  if(S.mappa) setTimeout(()=>{ S.mappa.invalidateSize(); inquadraTutti(); }, 250);
 }
 function creaMappa(){
   if(typeof L==='undefined'){
@@ -1783,6 +1772,7 @@ function creaMappa(){
   L.control.zoom({position:'bottomright'}).addTo(S.mappa);
   window.addEventListener('resize',()=>S.mappa&&S.mappa.invalidateSize());
   S.strato=L.layerGroup().addTo(S.mappa);
+  S.mappa.on('dragstart', ()=>{ utenteHaMosso=true; });
   montaTessere();
 }
 function montaTessere(){
@@ -1816,14 +1806,38 @@ function disegnaMappa(){
   const paesi=new Set(el.map(r=>r.paese).filter(Boolean)).size;
   $('#conta-perni').textContent = el.length ? `${el.length} pin${paesi?` · ${paesi} ${paesi===1?'paese':'paesi'}`:''}` : 'Nessun pin, per ora';
 }
-/* Inquadra tutti i pin esistenti: si chiama ogni volta che si apre la mappa,
-   così all'ingresso si vede sempre tutto quello che c'è. */
+/* Inquadra tutti i pin esistenti. Senza animazione: all'apertura deve essere
+   già giusta, non arrivarci con uno zoom avanti e indietro. */
 function inquadraTutti(){
   if(!S.mappa) return;
   const punti=S.recensioni.filter(r=>r.lat!=null).map(r=>[r.lat,r.lng]);
   if(!punti.length) return;
-  if(punti.length===1) S.mappa.setView(punti[0],15);
-  else S.mappa.fitBounds(L.latLngBounds(punti),{padding:[45,45],maxZoom:14});
+  if(punti.length===1) S.mappa.setView(punti[0], 15, {animate:false});
+  else S.mappa.fitBounds(L.latLngBounds(punti), {padding:[45,45], maxZoom:14, animate:false});
+}
+
+/* Apertura della mappa in tre tempi.
+   La sezione è appena diventata visibile: finché il browser non ha finito di
+   disporla, Leaflet crede di essere alto zero pixel e qualunque inquadratura
+   esce sbagliata. Quindi PRIMA si ricalcolano le dimensioni, POI si inquadra,
+   e si ripete quando il disegno è certamente concluso. Se nel frattempo la
+   mappa l'hai spostata tu, le correzioni si fermano e comanda il tuo dito. */
+let utenteHaMosso=false;
+function sistemaMappa(salta){
+  if(!S.mappa) return;
+  S.mappa.invalidateSize({animate:false});
+  if(!salta && !utenteHaMosso) inquadraTutti();
+}
+function apriMappa(){
+  avviaMappaSeServe();
+  if(!S.mappa) return;
+  disegnaMappa();
+  const salta = saltaInquadratura;
+  saltaInquadratura = false;
+  utenteHaMosso = false;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>sistemaMappa(salta)));
+  setTimeout(()=>sistemaMappa(salta), 300);
+  setTimeout(()=>sistemaMappa(salta), 700);
 }
 function contenutoPopup(r){
   const v=media(r.voti);
@@ -1847,8 +1861,14 @@ function volaA(id){
   const r=S.recensioni.find(x=>x.id===id); if(!r||r.lat==null){ toast('Questa cagata non ha una posizione'); return; }
   saltaInquadratura=true;
   vaiA('mappa');
-  setTimeout(()=>{ if(!S.mappa) return; S.mappa.flyTo([r.lat,r.lng],15,{duration:1.1});
-    const m=S.perni.get(id); if(m) setTimeout(()=>m.openPopup(),1000); },180);
+  /* si aspetta che la mappa abbia le sue dimensioni vere, poi si vola */
+  setTimeout(()=>{
+    if(!S.mappa) return;
+    S.mappa.invalidateSize({animate:false});
+    S.mappa.flyTo([r.lat,r.lng], 16, {duration:.9});
+    const m=S.perni.get(id);
+    if(m) setTimeout(()=>m.openPopup(), 950);
+  }, 260);
 }
 
 /* ============ CLASSIFICA ============ */
