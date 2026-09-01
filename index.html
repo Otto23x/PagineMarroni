@@ -309,7 +309,7 @@ body.ingresso{overflow:hidden}
 .vicini .et-vicini{font-size:12px;color:var(--tenue);width:100%;margin-bottom:-2px}
 .azioni-io{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-top:22px}
 .azioni-io .btn{width:100%}
-.pannello-pieno{position:fixed;inset:0;z-index:9992;background:var(--ceramica);display:flex;flex-direction:column}
+.pannello-pieno{position:fixed;inset:0;z-index:10020;background:var(--ceramica);display:flex;flex-direction:column}
 .pannello-pieno[hidden]{display:none}
 .testa-sel{display:flex;align-items:center;gap:12px;padding:calc(12px + env(safe-area-inset-top,0px)) 16px 12px;background:var(--porcellana);border-bottom:1px solid var(--fuga)}
 .testa-sel b{font-family:var(--font-display);font-size:19px;color:var(--cioccolato)}
@@ -326,7 +326,7 @@ body.ingresso{overflow:hidden}
 .mappa-sel .leaflet-pane,.mappa-sel .leaflet-top,.mappa-sel .leaflet-bottom{z-index:auto}
 .piede-sel{display:flex;align-items:center;gap:12px;padding:12px 16px calc(14px + var(--safe-b))}
 .piede-sel span{flex:1;min-width:0;font-size:12.5px;color:var(--tenue);line-height:1.35}
-.finestra{position:fixed;inset:0;z-index:9990;display:grid;place-items:center;padding:22px;background:rgba(42,28,18,.55);backdrop-filter:blur(5px);animation:sfuma .18s ease-out}
+.finestra{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:22px;background:rgba(42,28,18,.55);backdrop-filter:blur(5px);animation:sfuma .18s ease-out}
 .finestra[hidden]{display:none}
 @keyframes sfuma{from{opacity:0}to{opacity:1}}
 .riquadro{max-width:380px;width:100%;padding:24px 22px;animation:spunta .24s cubic-bezier(.22,1,.36,1)}
@@ -1037,6 +1037,8 @@ $('#entra').addEventListener('click', async ()=>{
     }
   }catch(err){ erroreAuth(traduciErrore(err && err.message)); }
   finally{ btn.disabled=false; btn.textContent=et; }
+  /* se qualcosa restasse appeso, il pulsante torna comunque utilizzabile */
+  setTimeout(()=>{ if(btn.disabled){ btn.disabled=false; btn.textContent=et; } }, 15000);
 });
 
 $('#scordata').addEventListener('click', async ()=>{
@@ -1077,9 +1079,9 @@ async function dopoAccesso(appenaCreato){
   const {data:{session}} = await cli.auth.getSession();
   S.io = daSessione(session);
   if(!S.io) return;
+  chiudiIngresso(); mostraIo(); avviaMappaSeServe();
   await collegaVecchioProfilo();
   await controllaGestore();
-  chiudiIngresso(); mostraIo(); avviaMappaSeServe();
   await sincronizza(false, true);
   ridisegna(); vaiA('registra');
   toast(appenaCreato ? `Benvenuto ${S.io.nome}` : `Bentornato ${S.io.nome}`);
