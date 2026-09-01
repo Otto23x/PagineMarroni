@@ -16,7 +16,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 | 📰 **Bacheca** | Tutte le recensioni del gruppo. Filtri per persona, città, paese e voto. Le tue le modifichi o le elimini. |
 | 🗺️ **Mappa** | I pin di tutti. Tocca un pin per leggere la recensione. |
 | 🏆 **Classifica** | Chi ha registrato di più e i bagni col voto più alto. Tocca un nome per le sue statistiche, tocca un bagno per le sue recensioni. |
-| 🚽 **Io** | Le proposte di rinomina da approvare, le tue statistiche, i distintivi, il backup CSV, le notifiche, il codice profilo e il cambio nome. |
+| 🚽 **Io** | Le proposte di rinomina da approvare, le tue statistiche, i distintivi e l'uscita dal profilo. |
 
 ---
 
@@ -104,7 +104,7 @@ Il posto lo **battezza chi lo registra per primo**, non chi ha la data più vecc
 
 ## Il profilo
 
-Si entra con **email e password**. Il nome che vedono gli altri e la faccia si scelgono alla creazione e si cambiano quando si vuole da **Io → Cambia**: lo storico segue.
+Si entra con **email e password**. Il nome che vedono gli altri e la faccia si scelgono alla creazione e si cambiano quando si vuole da **Io → Modifica**: lo storico segue.
 
 - **Cambio telefono**: entri con le stesse credenziali e ritrovi tutto.
 - **Password dimenticata**: dalla schermata di ingresso, ti arriva un'email con il link per sceglierne una nuova.
@@ -122,7 +122,7 @@ I posti del mondo sono infiniti, quindi elencarli come etichette non funziona: d
 
 **Che tipo di posto è** — una sola scelta, nove categorie larghe: Casa, Lavoro, Bar e ristoranti, Negozi, Locali pubblici, Trasporti, Alberghi e simili, All'aperto, Altro. Servono per le statistiche e per il filtro. Il nome preciso — "Autogrill Somaglia Ovest" — sta già nel titolo della recensione, quindi non serve ripeterlo in un'etichetta.
 
-**Cos'è successo** — quante ne vuoi, dodici circostanze: Coda, Spettatori, Bussata, Carta finita, Serratura rotta, Fuori servizio, Senza luce, Alla turca, Bagno chimico, A pagamento, Chiave al bancone, Altro. Queste sì che sono un insieme chiuso: descrivono l'esperienza, non il luogo.
+**Cos'è successo** — quante ne vuoi, dodici circostanze, la prima delle quali è **Tutto ok** ed esclude le altre: Tutto ok, Coda, Spettatori, Bussata, Carta finita, Serratura rotta, Fuori servizio, Senza luce, Alla turca, Bagno chimico, A pagamento, Chiave al bancone. Queste sì che sono un insieme chiuso: descrivono l'esperienza, non il luogo.
 
 ---
 

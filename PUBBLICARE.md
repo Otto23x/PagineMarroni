@@ -363,9 +363,8 @@ Richiede anche una riga nell'app (`await cli.auth.signInAnonymously()` prima del
 
 ## Backup
 
-Il piano gratuito di Supabase non fa backup automatici seri. Due modi per dormire tranquillo:
+Il piano gratuito di Supabase non fa backup automatici seri. Il modo per dormire tranquillo:
 
-- **Dall'app**: Io → **Scarica backup CSV**. Esporta tutto il gruppo in un file che Excel e Fogli Google aprono già in colonne. Sul telefono finisce nei Download, da lì lo mandi su Drive.
 - **Da Supabase**: Table Editor → tre puntini → **Download as CSV**.
 
 Fallo ogni tanto. Costa dieci secondi e ti salva un anno di ricordi.

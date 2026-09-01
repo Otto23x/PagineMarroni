@@ -118,6 +118,12 @@ body.ingresso{overflow:hidden}
 .campo input:not([type=range]):focus,.campo textarea:focus,.campo select:focus{background:var(--porcellana)}
 .campo textarea{min-height:96px;resize:vertical;line-height:1.5}
 .campo input:focus,.campo textarea:focus,.campo select:focus{outline:none;border-color:var(--acqua);box-shadow:0 0 0 4px rgba(15,163,163,.15)}
+.campo-pw{position:relative}
+.campo-pw input{padding-right:56px}
+.campo-pw #occhio{position:absolute;right:8px;bottom:6px;width:44px;height:44px;border-radius:50%;
+  display:grid;place-items:center;font-size:19px;opacity:.55;transition:opacity .15s,background .15s}
+.campo-pw #occhio:active{background:var(--fuga)}
+.campo-pw #occhio.acceso{opacity:1}
 .linguette{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;background:#F1F5F3;border-radius:999px;margin-bottom:18px}
 .ling{min-height:40px;border-radius:999px;font-size:14px;font-weight:700;color:var(--tenue)}
 .ling.attiva{background:var(--porcellana);color:var(--cioccolato);box-shadow:0 4px 10px -6px rgba(42,28,18,.5)}
@@ -377,7 +383,7 @@ body.ingresso{overflow:hidden}
       <div class="blocco">
         <h3>Il racconto</h3>
         <div class="campo" style="margin-bottom:12px">
-          <label for="luogo">Nome del posto o del negozio</label>
+          <label for="luogo">Nome del posto</label>
           <input type="text" id="luogo" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" list="posti-noti" autocomplete="off">
           <datalist id="posti-noti"></datalist>
           <div class="nota-luogo" id="nota-luogo" hidden></div>
@@ -390,10 +396,6 @@ body.ingresso{overflow:hidden}
           <label for="testo-rec">Com'è andata</label>
           <textarea id="testo-rec" maxlength="600" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
           <div class="contatore" id="contatore">0 / 600</div>
-        </div>
-        <div class="campo" style="margin-bottom:12px">
-          <label for="durata">Durata della seduta: <b id="et-durata">5 minuti</b></label>
-          <input type="range" id="durata" min="1" max="45" value="5">
         </div>
         <div class="campo" style="margin-bottom:0">
           <label for="quando">Quando è successo</label>
@@ -434,8 +436,9 @@ body.ingresso{overflow:hidden}
       </div>
 
       <div class="blocco">
-        <h3>Cos'è successo</h3>
-        <div class="tag-lista" id="lista-tag" role="group" aria-label="Etichette"></div>
+        <h3 style="margin-bottom:4px">Cos'è successo</h3>
+        <p class="nota" style="margin-bottom:12px">Se è filato tutto liscio tocca <b>Tutto ok</b>. Altrimenti segna quello che è andato storto: puoi sceglierne più di una.</p>
+        <div class="tag-lista" id="lista-tag" role="group" aria-label="Cos'è successo"></div>
       </div>
 
       <div style="display:flex;gap:10px">
@@ -502,12 +505,11 @@ body.ingresso{overflow:hidden}
       <h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Distintivi</h3>
       <div class="distintivi" id="distintivi"></div>
       <div class="azioni-io" id="azioni-io">
-        <button class="btn fantasma piccolo" id="btn-notifiche">🔔 Avvisami se pubblicano</button>
-        <button class="btn fantasma piccolo" id="btn-backup">💾 Scarica backup CSV</button>
-        <button class="btn fantasma piccolo" id="btn-esci">🚪 Esci dal profilo</button>
+        <button class="btn fantasma piccolo" id="btn-notifiche" hidden>🔔 Avvisami quando pubblicano</button>
       </div>
+      <button class="btn fantasma" id="btn-esci" style="width:100%;margin-top:22px">🚪 Esci dal profilo</button>
       <div id="zona-guida">
-        <p class="nota" id="mio-uid" style="margin-top:10px"></p>
+        <p class="nota" id="mio-uid" style="margin-top:18px"></p>
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
         <div class="scheda guida">
           <ol>
@@ -562,9 +564,10 @@ body.ingresso{overflow:hidden}
       <label for="email">Email</label>
       <input type="email" id="email" autocomplete="email" inputmode="email" placeholder="tu@esempio.it">
     </div>
-    <div class="campo">
+    <div class="campo campo-pw">
       <label for="password">Password</label>
       <input type="password" id="password" autocomplete="current-password" placeholder="almeno 8 caratteri">
+      <button type="button" id="occhio" aria-label="Mostra la password">👁️</button>
     </div>
 
     <div id="solo-registrazione" hidden>
@@ -650,7 +653,7 @@ const PARAMETRI = [
   {id:'pulizia',   nome:'Pulizia',   sub:'Tazza, pavimento, lavandino'},
   {id:'comfort',   nome:'Comfort',   sub:'Seduta, spazio, temperatura'},
   {id:'privacy',   nome:'Privacy',   sub:'Serratura, pareti, silenzio'},
-  {id:'profumo',   nome:'Profumo',   sub:'Chiamiamola "aria"'},
+  {id:'profumo',   nome:'Ambiente',  sub:'Odore, aria, quanto ci resteresti'},
   {id:'dotazione', nome:'Dotazione', sub:'Carta, sapone, specchio'}
 ];
 
@@ -671,10 +674,11 @@ const nomeCategoria = id => (CATEGORIE.find(c=>c.id===id)||{}).nome || '';
 const emCategoria   = id => (CATEGORIE.find(c=>c.id===id)||{}).em || '';
 
 /* Cosa è successo: le circostanze, quante ne vuoi. */
-const TAG = ['Coda','Spettatori','Bussata',
-             'Carta finita','Serratura rotta','Fuori servizio',
-             'Senza luce','Alla turca','Bagno chimico',
-             'A pagamento','Chiave al bancone','Altro'];
+const TAG = ['Tutto ok','Coda','Spettatori',
+             'Bussata','Carta finita','Serratura rotta',
+             'Fuori servizio','Senza luce','Alla turca',
+             'Bagno chimico','A pagamento','Chiave al bancone'];
+const TUTTO_OK = 'Tutto ok';
 
 const DISTINTIVI = [
   {id:'battesimo', em:'🎉', nome:'Battesimo',    desc:'La prima resta impressa',      test:s=>s.totale>=1},
@@ -685,8 +689,9 @@ const DISTINTIVI = [
   {id:'gita',      em:'🚗', nome:'Chilometraggio',desc:'500 km fra una e l\'altra',   test:s=>s.km>=500},
   {id:'notte',     em:'🌙', nome:'Nottambulo',   desc:'Una fra le 2 e le 5',          test:s=>s.notturna},
   {id:'alba',      em:'🐓', nome:'Mattiniero',   desc:'Una prima delle 7',            test:s=>s.mattiniera},
-  {id:'maratona',  em:'⏱️', nome:'Maratoneta',   desc:'Mezz\'ora in una seduta',      test:s=>s.maxDurata>=30},
-  {id:'lampo',     em:'⚡', nome:'Fulmine',      desc:'Dentro e fuori in due minuti', test:s=>s.minDurata!==null&&s.minDurata<=2},
+  {id:'fisso',     em:'🪑', nome:'Cliente fisso', desc:'Cinque volte nello stesso posto', test:s=>s.maxStessoPosto>=5},
+  {id:'padrino',   em:'🏷️', nome:'Padrino',      desc:'Hai battezzato cinque posti',  test:s=>s.battezzati>=5},
+  {id:'diverso',   em:'🧭', nome:'Mai due volte', desc:'Dieci posti tutti diversi',    test:s=>s.posti>=10},
   {id:'foto',      em:'📷', nome:'Fotoreporter', desc:'Cinque foto pubblicate',       test:s=>s.conFoto>=5},
   {id:'penna',     em:'🖋️', nome:'Penna d\'oro', desc:'Un racconto da 300 caratteri', test:s=>s.maxTesto>=300},
   {id:'critico',   em:'🤢', nome:'Critico severo',desc:'Un bagno da 1,5 o meno',      test:s=>s.peggiore!==null&&s.peggiore<=1.5},
@@ -745,13 +750,13 @@ function daRiga(x){
   return {id:x.id, nome:x.nome, faccia:x.faccia, autoreId:x.autore_id, ts:Number(x.ts),
     creatoTs: x.creato ? Date.parse(x.creato) : Number(x.ts),
     luogo:x.luogo, luogoId:x.luogo_id, titolo:x.titolo, testo:x.testo, voti:x.voti||{},
-    tag:x.tag||[], categoria:x.categoria||null, durata:x.durata, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
+    tag:x.tag||[], categoria:x.categoria||null, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
     haFoto:!!x.foto_url, fotoUrl:x.foto_url, reaz:x.reaz||{}};
 }
 function aRiga(r){
   return {id:r.id, nome:r.nome, faccia:r.faccia, autore_id:r.autoreId||null, ts:r.ts,
     luogo:r.luogo, luogo_id:r.luogoId||null, titolo:r.titolo, testo:r.testo, voti:r.voti,
-    tag:r.tag, categoria:r.categoria||null, durata:r.durata, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
+    tag:r.tag, categoria:r.categoria||null, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
     foto_url:r.fotoUrl||null, reaz:r.reaz||{}};
 }
 
@@ -838,7 +843,7 @@ function salvaBozza(){
   if(S.modificaId) return;
   try{ localStorage.setItem(K_BOZZA, JSON.stringify({
     b:S.bozza, luogo:$('#luogo').value, titolo:$('#titolo-rec').value,
-    testo:$('#testo-rec').value, durata:$('#durata').value, quando:$('#quando').value
+    testo:$('#testo-rec').value, quando:$('#quando').value
   })); }catch(e){}
 }
 function scartaBozza(){ try{ localStorage.removeItem(K_BOZZA); }catch(e){} }
@@ -991,6 +996,14 @@ function modo(registrazione){
   $('#password').autocomplete = registrazione ? 'new-password' : 'current-password';
   erroreAuth('');
 }
+$('#occhio').addEventListener('click', ()=>{
+  const i=$('#password'), b=$('#occhio');
+  const visibile = i.type==='text';
+  i.type = visibile ? 'password' : 'text';
+  b.textContent = visibile ? '👁️' : '🙈';
+  b.classList.toggle('acceso', !visibile);
+  b.setAttribute('aria-label', visibile ? 'Mostra la password' : 'Nascondi la password');
+});
 $('#ling-accedi').addEventListener('click', ()=>modo(false));
 $('#ling-registra').addEventListener('click', ()=>modo(true));
 
@@ -1164,7 +1177,17 @@ function vaiA(nome){
   S.vista = nome;
   $$('.vista').forEach(v=>{ const on = v.id==='vista-'+nome; v.classList.toggle('attiva',on); v.hidden=!on; });
   $$('.tab[data-vista]').forEach(t=>t.setAttribute('aria-selected', t.dataset.vista===nome));
-  if(nome==='mappa'){ avviaMappaSeServe(); if(S.mappa) setTimeout(()=>S.mappa.invalidateSize(),60); }
+  if(nome==='mappa'){
+    avviaMappaSeServe();
+    disegnaMappa();
+    /* la mappa nasce dentro una sezione nascosta: senza questi ricalcoli
+       resta con dimensione zero e i pin non si vedono */
+    if(S.mappa){
+      setTimeout(()=>{ S.mappa.invalidateSize(); if(!saltaInquadratura) inquadraTutti(); },60);
+      setTimeout(()=>S.mappa.invalidateSize(),400);
+    }
+    saltaInquadratura=false;
+  }
   if(nome==='bacheca'){ disegnaBacheca(); segnaLette(); }
   if(nome==='classifica') disegnaClassifica();
   if(nome==='profilo'){ disegnaProfilo(); disegnaProposte(); }
@@ -1193,7 +1216,7 @@ function nuovaBozza(){
   $('#salva').textContent='Tira lo sciacquone 🚽';
   $('#elimina-rec').hidden=true; $('#annulla-modifica').hidden=true;
   $('#titolo-rec').value=''; $('#testo-rec').value=''; $('#luogo').value='';
-  $('#contatore').textContent='0 / 600'; $('#durata').value=5; $('#et-durata').textContent='5 minuti';
+  $('#contatore').textContent='0 / 600';
   $('#anteprima').hidden=true; $('#zona-foto').hidden=false;
   $('#luogo').readOnly=false; $('#nota-luogo').hidden=true;
   impostaQuando(Date.now());
@@ -1283,7 +1306,6 @@ async function modifica(id){
     $('#nota-luogo').innerHTML = '<span>✏️ Sei tu ad aver battezzato questo posto: se cambi il nome, cambia per tutte le recensioni fatte qui.</span>';
   }
   $('#contatore').textContent=(r.testo||'').length+' / 600';
-  $('#durata').value=r.durata||5; $('#et-durata').textContent=(r.durata||5)+((r.durata||5)===1?' minuto':' minuti');
   impostaQuando(r.ts);
   $('#punto-gps').className = r.lat!=null?'punto ok':'punto';
   $('#stato-gps').innerHTML = r.lat!=null
@@ -1313,12 +1335,14 @@ $('#scelte-categoria').addEventListener('click', e=>{
 $('#lista-tag').addEventListener('click', e=>{
   const b=e.target.closest('button'); if(!b) return;
   const t=b.dataset.tag, i=S.bozza.tag.indexOf(t);
-  if(i>=0) S.bozza.tag.splice(i,1); else S.bozza.tag.push(t);
-  b.setAttribute('aria-pressed', i<0); salvaBozza();
+  if(i>=0) S.bozza.tag.splice(i,1);
+  else if(t===TUTTO_OK) S.bozza.tag=[TUTTO_OK];          /* è andato tutto bene: niente altro */
+  else S.bozza.tag = S.bozza.tag.filter(x=>x!==TUTTO_OK).concat(t);
+  $$('#lista-tag button').forEach(x=>x.setAttribute('aria-pressed', S.bozza.tag.includes(x.dataset.tag)));
+  salvaBozza();
 });
 $('#testo-rec').addEventListener('input', e=>{ $('#contatore').textContent=e.target.value.length+' / 600'; salvaBozza(); });
 ['#luogo','#titolo-rec'].forEach(sel=>$(sel).addEventListener('input', salvaBozza));
-$('#durata').addEventListener('input', e=>{ $('#et-durata').textContent=e.target.value+(e.target.value==='1'?' minuto':' minuti'); salvaBozza(); });
 
 $('#btn-gps').addEventListener('click', chiediPosizione);
 function chiediPosizione(){
@@ -1401,7 +1425,7 @@ $('#salva').addEventListener('click', async ()=>{
       const r = S.recensioni.find(x=>x.id===S.modificaId);
       Object.assign(r, {
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
-        ts:quandoTs, voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, durata:+$('#durata').value,
+        ts:quandoTs, voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria,
         lat:S.bozza.pos?S.bozza.pos.lat:r.lat, lng:S.bozza.pos?S.bozza.pos.lng:r.lng,
         citta:S.bozza.citta||r.citta, paese:S.bozza.paese||r.paese
       });
@@ -1419,7 +1443,7 @@ $('#salva').addEventListener('click', async ()=>{
       const id = nuovoId('c');
       const r = {id, nome:S.io.nome, faccia:S.io.faccia, autoreId:S.io.id, ts:quandoTs, creatoTs:Date.now(),
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
-        voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, durata:+$('#durata').value,
+        voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria,
         lat:S.bozza.pos?S.bozza.pos.lat:null, lng:S.bozza.pos?S.bozza.pos.lng:null,
         citta:S.bozza.citta, paese:S.bozza.paese, haFoto:!!S.bozza.foto, fotoUrl:null, reaz:{}};
       if(S.bozza.foto) S.foto.set(id, S.bozza.foto);
@@ -1522,34 +1546,46 @@ document.addEventListener('keydown', e=>{
 });
 
 /* ============ BACHECA ============ */
-function filtrate(){
+/* Filtri a cascata: ogni menu mostra solo le voci compatibili con gli altri
+   filtri già scelti. Se scegli Bibi, nei posti vedi solo dove è stato Bibi. */
+function passaFiltri(r, salta){
   const f=S.filtri;
-  return S.recensioni.filter(r=>
-    (!f.utente || chiaveDi(r)===f.utente) &&
-    (!f.categoria || r.categoria===f.categoria) &&
-    (!f.citta  || r.citta===f.citta) &&
-    (!f.paese  || r.paese===f.paese) &&
-    (!f.luogo  || gruppoLuogo(r)===f.luogo) &&
-    (!f.voto   || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto))));
+  return (salta==='utente'    || !f.utente    || chiaveDi(r)===f.utente)
+      && (salta==='luogo'     || !f.luogo     || gruppoLuogo(r)===f.luogo)
+      && (salta==='categoria' || !f.categoria || r.categoria===f.categoria)
+      && (salta==='citta'     || !f.citta     || r.citta===f.citta)
+      && (salta==='paese'     || !f.paese     || r.paese===f.paese)
+      && (salta==='voto'      || !f.voto      || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto)));
 }
-function filtriAttivi(){ return Object.values(S.filtri).some(v=>v); }
+function filtrate(){ return S.recensioni.filter(r=>passaFiltri(r, null)); }
+function candidati(salta){ return S.recensioni.filter(r=>passaFiltri(r, salta)); }
+
 function disegnaFiltriBacheca(){
-  const persone=new Map(), posti=new Map(), citta=new Set(), paesi=new Set();
-  S.recensioni.forEach(r=>{
-    persone.set(chiaveDi(r), (r.faccia||'💩')+' '+r.nome);
-    if(r.luogo) posti.set(gruppoLuogo(r), nomeCanonico(gruppoLuogo(r)));
-    if(r.citta) citta.add(r.citta);
-    if(r.paese) paesi.add(r.paese);
-  });
   const opz=(sel, vuoto, voci, val)=>{
+    const dentro = voci.some(([v])=>v===val);
     sel.innerHTML = `<option value="">${vuoto}</option>` +
-      voci.map(([v,e])=>`<option value="${esc(v)}" ${v===val?'selected':''}>${esc(e)}</option>`).join('');
+      voci.map(([v,e])=>`<option value="${esc(v)}" ${v===val?'selected':''}>${esc(e)}</option>`).join('') +
+      (val && !dentro ? `<option value="${esc(val)}" selected>${esc(val)}</option>` : '');
   };
+
+  const persone=new Map();
+  candidati('utente').forEach(r=>persone.set(chiaveDi(r), (r.faccia||'💩')+' '+r.nome));
   opz($('#f-utente'),'Tutti',Array.from(persone.entries()),S.filtri.utente);
+
+  const posti=new Map();
+  candidati('luogo').forEach(r=>{ if(r.luogo) posti.set(gruppoLuogo(r), nomeCanonico(gruppoLuogo(r))); });
   opz($('#f-luogo'),'Ogni posto',Array.from(posti.entries()).sort((a,b)=>a[1].localeCompare(b[1])),S.filtri.luogo);
-  opz($('#f-categoria'),'Ogni tipo',CATEGORIE.filter(c=>S.recensioni.some(r=>r.categoria===c.id)).map(c=>[c.id,c.em+' '+c.nome]),S.filtri.categoria);
+
+  const cats=candidati('categoria');
+  opz($('#f-categoria'),'Ogni tipo',
+      CATEGORIE.filter(c=>cats.some(r=>r.categoria===c.id)).map(c=>[c.id,c.em+' '+c.nome]),S.filtri.categoria);
+
+  const citta=new Set(); candidati('citta').forEach(r=>{ if(r.citta) citta.add(r.citta); });
   opz($('#f-citta'),'Ogni città',Array.from(citta).sort().map(c=>[c,c]),S.filtri.citta);
+
+  const paesi=new Set(); candidati('paese').forEach(r=>{ if(r.paese) paesi.add(r.paese); });
   opz($('#f-paese'),'Ogni paese',Array.from(paesi).sort().map(c=>[c,c]),S.filtri.paese);
+
   $('#f-voto').value = S.filtri.voto;
   $('#pulisci-filtri').disabled = !filtriAttivi();
 }
@@ -1559,7 +1595,6 @@ function disegnaRiassunto(elenco){
   if(!filtriAttivi() || !elenco.length){ box.hidden=true; return; }
   const voto = elenco.reduce((a,r)=>a+media(r.voti),0)/elenco.length;
   const persone = new Set(elenco.map(chiaveDi)).size;
-  const minuti = elenco.reduce((a,r)=>a+(r.durata||0),0);
   const posti = new Set(elenco.map(gruppoLuogo)).size;
   const ultima = Math.max(...elenco.map(r=>r.ts));
   box.hidden=false;
@@ -1571,7 +1606,6 @@ function disegnaRiassunto(elenco){
     (()=>{ const c={}; elenco.forEach(r=>{ if(r.categoria) c[r.categoria]=(c[r.categoria]||0)+1; });
            const top=Object.keys(c).sort((a,b)=>c[b]-c[a])[0];
            return top ? `<span>più spesso <b>${emCategoria(top)} ${esc(nomeCategoria(top))}</b></span>` : ''; })()+
-    `<span><b>${minuti}</b> minuti in totale</span>`+
     `<span>ultima ${quando(ultima)}</span>`;
 }
 ['f-utente','f-luogo','f-categoria','f-citta','f-paese','f-voto'].forEach(id=>{
@@ -1628,7 +1662,6 @@ function scheda(r){
       <div class="etichette">
         ${r.inCoda?`<span class="etichetta neutra">⏳ In attesa di rete</span>`:''}
         ${r.categoria?`<span class="etichetta neutra">${emCategoria(r.categoria)} ${esc(nomeCategoria(r.categoria))}</span>`:''}
-        ${r.durata?`<span class="etichetta neutra">⏱️ ${r.durata} min</span>`:''}
         ${(r.tag||[]).map(t=>`<span class="etichetta">${esc(t)}</span>`).join('')}
       </div>
     </div>
@@ -1655,11 +1688,12 @@ const FONTI=[
   {url:'https://tile.openstreetmap.de/{z}/{x}/{y}.png', attr:'© OpenStreetMap Deutschland'},
   {url:'https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', attr:'© OpenStreetMap France'}
 ];
-let fonte=0, erroriTessere=0, giaInquadrato=false;
+let fonte=0, erroriTessere=0, saltaInquadratura=false;
 function avviaMappaSeServe(){
   if(S.mappa) return;
   try{ creaMappa(); }catch(e){ console.warn('mappa non disponibile',e); }
   disegnaMappa();
+  if(S.mappa) setTimeout(()=>{ S.mappa.invalidateSize(); inquadraTutti(); }, 250);
 }
 function creaMappa(){
   if(typeof L==='undefined'){
@@ -1693,19 +1727,25 @@ function disegnaMappa(){
   S.strato.clearLayers(); S.perni.clear();
   const el=S.recensioni.filter(r=>r.lat!=null);
   el.forEach(r=>{
-    const m=L.marker([r.lat,r.lng],{icon:L.divIcon({className:'perno',html:`<div class="bolla"><span>${r.faccia||'💩'}</span></div>`,iconSize:[38,38],iconAnchor:[19,36],popupAnchor:[0,-34]}),title:r.luogo||'Cagata'});
-    m.bindPopup(()=>contenutoPopup(r),{minWidth:212});
+    const m=L.marker([r.lat,r.lng],{
+      icon:L.divIcon({className:'perno',html:`<div class="bolla"><span>${r.faccia||'💩'}</span></div>`,iconSize:[38,38],iconAnchor:[19,36],popupAnchor:[0,-34]}),
+      title:(r.luogo||'Cagata'), riseOnHover:true, keyboard:true});
+    m.bindPopup(()=>contenutoPopup(r),{minWidth:212, autoPan:true, closeButton:true});
+    m.on('click', ()=>m.openPopup());
     m.on('popupopen', async ()=>{ if(!r.haFoto) return; const d=await sorgenteFoto(r); const i=document.getElementById('pf-'+r.id); if(i&&d){ i.src=d; i.style.display='block'; } });
     m.addTo(S.strato); S.perni.set(r.id,m);
   });
-  if(!giaInquadrato && el.length){
-    giaInquadrato=true;
-    const punti=el.map(r=>[r.lat,r.lng]);
-    if(punti.length===1) S.mappa.setView(punti[0],14);
-    else S.mappa.fitBounds(L.latLngBounds(punti),{padding:[50,50],maxZoom:13});
-  }
   const paesi=new Set(el.map(r=>r.paese).filter(Boolean)).size;
   $('#conta-perni').textContent = el.length ? `${el.length} pin${paesi?` · ${paesi} ${paesi===1?'paese':'paesi'}`:''}` : 'Nessun pin, per ora';
+}
+/* Inquadra tutti i pin esistenti: si chiama ogni volta che si apre la mappa,
+   così all'ingresso si vede sempre tutto quello che c'è. */
+function inquadraTutti(){
+  if(!S.mappa) return;
+  const punti=S.recensioni.filter(r=>r.lat!=null).map(r=>[r.lat,r.lng]);
+  if(!punti.length) return;
+  if(punti.length===1) S.mappa.setView(punti[0],15);
+  else S.mappa.fitBounds(L.latLngBounds(punti),{padding:[45,45],maxZoom:14});
 }
 function contenutoPopup(r){
   const v=media(r.voti);
@@ -1727,6 +1767,7 @@ $('#btn-io-qui').addEventListener('click',()=>{
 });
 function volaA(id){
   const r=S.recensioni.find(x=>x.id===id); if(!r||r.lat==null){ toast('Questa cagata non ha una posizione'); return; }
+  saltaInquadratura=true;
   vaiA('mappa');
   setTimeout(()=>{ if(!S.mappa) return; S.mappa.flyTo([r.lat,r.lng],15,{duration:1.1});
     const m=S.perni.get(id); if(m) setTimeout(()=>m.openPopup(),1000); },180);
@@ -1737,13 +1778,13 @@ function perPersona(){
   const m=new Map();
   S.recensioni.forEach(r=>{
     const k=chiaveDi(r);
-    if(!m.has(k)) m.set(k,{chiave:k,nome:r.nome,faccia:r.faccia,n:0,somma:0,citta:new Set(),paesi:new Set(),minuti:0,ultimo:0});
+    if(!m.has(k)) m.set(k,{chiave:k,nome:r.nome,faccia:r.faccia,n:0,somma:0,citta:new Set(),paesi:new Set(),posti:new Set(),ultimo:0});
     const u=m.get(k);
-    u.n++; u.somma+=media(r.voti); u.minuti+=(r.durata||0);
+    u.n++; u.somma+=media(r.voti); if(r.luogo) u.posti.add(gruppoLuogo(r));
     if(r.citta) u.citta.add(r.citta); if(r.paese) u.paesi.add(r.paese);
     if(r.ts>u.ultimo){ u.ultimo=r.ts; u.nome=r.nome; u.faccia=r.faccia; }
   });
-  return Array.from(m.values()).map(u=>({...u,medio:u.n?u.somma/u.n:0,citta:u.citta.size,paesi:u.paesi.size}))
+  return Array.from(m.values()).map(u=>({...u,medio:u.n?u.somma/u.n:0,citta:u.citta.size,paesi:u.paesi.size,posti:u.posti.size}))
     .sort((a,b)=>b.n-a.n||b.medio-a.medio);
 }
 function disegnaClassifica(){
@@ -1763,7 +1804,7 @@ function disegnaClassifica(){
   }).join('');
   $('#tabellone').innerHTML=cl.map((u,i)=>`<button class="riga-class" data-chiave="${esc(u.chiave)}">
     <span class="pos">${i+1}</span><span class="avatar">${u.faccia||'💩'}</span>
-    <span class="info"><b>${esc(u.nome)}</b><span>media ${u.medio.toFixed(1)} · ${u.citta} ${u.citta===1?'città':'città'} · ${u.minuti} min seduto</span></span>
+    <span class="info"><b>${esc(u.nome)}</b><span>media ${u.medio.toFixed(1)} · ${u.citta} ${u.citta===1?'città':'città'} · ${u.posti} ${u.posti===1?'posto':'posti'}</span></span>
     <span class="num">${u.n}<span> cagate</span></span></button>`).join('');
 
   const bagni=new Map();
@@ -1795,14 +1836,14 @@ function apriProfiloDi(chiave){ S.profilo=chiave; vaiA('profilo'); }
 
 function statistiche(chiave){
   const mie=S.recensioni.filter(r=>chiaveDi(r)===chiave).slice().sort((a,b)=>a.ts-b.ts);
-  const durate=mie.map(r=>r.durata||0).filter(d=>d>0);
   const s={totale:mie.length, media:0,
     citta:new Set(mie.map(r=>r.citta).filter(Boolean)).size,
     paesi:new Set(mie.map(r=>r.paese).filter(Boolean)).size,
-    minuti:mie.reduce((a,r)=>a+(r.durata||0),0),
+    posti:new Set(mie.filter(r=>r.luogo).map(gruppoLuogo)).size,
+    maxStessoPosto:(()=>{ const c={}; mie.forEach(r=>{ if(r.luogo){ const g=gruppoLuogo(r); c[g]=(c[g]||0)+1; } });
+      return Math.max(0, ...Object.values(c)); })(),
+    battezzati:mie.filter(r=>{ const p=primaDelPosto(gruppoLuogo(r)); return p && p.id===r.id; }).length,
     conFoto:mie.filter(r=>r.haFoto).length,
-    maxDurata:durate.length?Math.max(...durate):0,
-    minDurata:durate.length?Math.min(...durate):null,
     maxTesto:Math.max(0,...mie.map(r=>(r.testo||'').length)),
     notturna:mie.some(r=>{const h=new Date(r.ts).getHours(); return h>=2&&h<5;}),
     mattiniera:mie.some(r=>new Date(r.ts).getHours()<7),
@@ -1830,6 +1871,7 @@ function disegnaProfilo(){
   const faccia = suoi ? (uno?uno.faccia:'💩') : S.io.faccia;
 
   $('#zona-guida').hidden = !!suoi;
+  aggiornaBottoneNotifiche();
   const u=document.getElementById('mio-uid');
   if(u && S.io) u.innerHTML = `Profilo: ${esc(S.io.email||'')} · identificativo <code style="font-size:11px">${esc(S.io.id)}</code>`;
   aggiornaGestore();
@@ -1838,14 +1880,14 @@ function disegnaProfilo(){
       <h2 class="tronca">${esc(nome)}</h2>
       <p>${s.totale? s.totale+' deposizioni certificate' : 'Ancora niente da dichiarare'}</p>
     </div>
-    ${suoi?'':'<button class="btn piccolo fantasma" style="margin-left:auto;flex:none" onclick="apriModificaProfilo()">Cambia</button>'}`;
+    ${suoi?'':'<button class="btn piccolo fantasma" style="margin-left:auto;flex:none" onclick="apriModificaProfilo()">Modifica</button>'}`;
 
   $('#statistiche').innerHTML = [
     ['Cagate', s.totale],
     ['Voto medio', s.totale?s.media.toFixed(1):'–'],
+    ['Posti', s.posti],
     ['Città', s.citta],
     ['Paesi', s.paesi],
-    ['Minuti', s.minuti],
     ['Km', s.km]
   ].map(([e,v])=>`<div class="stat"><b>${v}</b><span>${e}</span></div>`).join('');
 
@@ -1969,29 +2011,16 @@ function annuncia(arrivate){
     try{ new Notification('Pagine Marroni', {body:testo, icon:'icon-192.png?v=3', tag:'pagine-marroni'}); }catch(e){}
   }
 }
+/* compare solo se il permesso non è ancora stato deciso: se le notifiche sono
+   già attive il pulsante non serve a niente e sta solo in mezzo */
+function aggiornaBottoneNotifiche(){
+  const b=document.getElementById('btn-notifiche'); if(!b) return;
+  b.hidden = !('Notification' in window) || Notification.permission!=='default';
+}
 $('#btn-notifiche').addEventListener('click', async ()=>{
-  if(!('Notification' in window)){ toast('Questo browser non supporta le notifiche'); return; }
-  if(Notification.permission==='granted'){ toast('Le notifiche sono già attive'); return; }
-  if(Notification.permission==='denied'){ toast('Le hai bloccate: riattivale dalle impostazioni del sito'); return; }
   const p = await Notification.requestPermission();
+  aggiornaBottoneNotifiche();
   toast(p==='granted' ? 'Ti avviso quando pubblicano' : 'Niente notifiche, va bene lo stesso');
-});
-
-/* backup: tutto il gruppo, in un CSV apribile con Excel o Fogli Google */
-$('#btn-backup').addEventListener('click', ()=>{
-  const col=['id','data','autore','luogo','citta','paese','lat','lng','titolo','testo','durata','tag','voto_medio']
-    .concat(PARAMETRI.map(p=>p.id));
-  const cella=v=>{ const t=String(v==null?'':v); return /[";\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t; };
-  const righe=[col.join(';')].concat(S.recensioni.map(r=>[
-    r.id, new Date(r.ts).toISOString(), r.nome, r.luogo, r.citta, r.paese, r.lat, r.lng,
-    r.titolo, r.testo, r.durata, (r.tag||[]).join(', '), media(r.voti).toFixed(2)
-  ].concat(PARAMETRI.map(p=>r.voti[p.id]||'')).map(cella).join(';')));
-  const b=new Blob(['\ufeff'+righe.join('\n')],{type:'text/csv;charset=utf-8'});
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(b);
-  a.download='pagine-marroni-'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),3000);
-  toast(S.recensioni.length+' recensioni salvate sul telefono');
 });
 
 /* tira giù per aggiornare */
@@ -2106,7 +2135,6 @@ document.addEventListener('click', async e=>{
     coda=[]; salvaCoda(); scartaBozza();
     try{ localStorage.removeItem(K_LETTO); }catch(err){}
     ultimoLetto=0;
-    giaInquadrato=false;
     aggiornaSuggerimenti(); ridisegna(); aggiornaPastiglia(); disegnaProposte();
     await chiedi('Fatto', `Cancellate ${quante} ${quante===1?'recensione':'recensioni'} e ${foto} ${foto===1?'foto':'foto'}. Il database è vuoto: la prima cagata di questa nuova era è tutta tua.`, {ok:'Bene', no:'Chiudi'});
   }catch(err){
