@@ -238,7 +238,7 @@ body.ingresso{overflow:hidden}
 .par .cacche i.on{opacity:1}
 .etichette{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:12px}
 .etichetta{font-size:11.5px;font-weight:600;padding:6px 8px;border-radius:999px;background:rgba(15,163,163,.12);color:var(--acqua-scuro);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.riga-pastiglie{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.riga-pastiglie{display:flex;flex-wrap:wrap;gap:6px;margin:9px 0 9px}
 .pastiglia-info{font-size:12px;font-weight:700;color:var(--acqua-scuro);background:rgba(15,163,163,.12);
   border-radius:999px;padding:4px 10px;white-space:nowrap}
 .pastiglia-info.tempo{color:#7a5c14;background:rgba(242,194,48,.22)}
@@ -435,6 +435,19 @@ body.ingresso{overflow:hidden}
 .riquadro p{font-size:14.5px;line-height:1.5;color:#3D2C1F;white-space:pre-wrap;word-break:break-word}
 .campo-dlg{width:100%;min-height:52px;margin-top:14px;padding:14px 16px;border-radius:var(--r-l);border:1.5px solid var(--fuga);background:#FBFDFC;-webkit-appearance:none;appearance:none}
 .campo-dlg:focus{outline:none;border-color:var(--acqua);box-shadow:0 0 0 4px rgba(15,163,163,.15)}
+.menu{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:44px;padding:0 14px;
+  border-radius:999px;background:var(--porcellana);border:var(--bordo);box-shadow:var(--ombra);
+  font-size:12.5px;font-weight:600;color:var(--cioccolato);text-align:left;overflow:hidden}
+.menu .et{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.menu .freccia{flex:none;opacity:.45;font-size:11px}
+.menu.attivo{border-color:var(--acqua);color:var(--acqua-scuro);background:rgba(15,163,163,.08)}
+.barra-comandi .menu{font-size:13.5px}
+.lista-scelte{max-height:52dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
+.lista-scelte button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:14px 15px;
+  border-bottom:1px solid var(--fuga);font-size:14px;color:var(--cioccolato)}
+.lista-scelte button:last-child{border-bottom:none}
+.lista-scelte button[aria-selected="true"]{background:rgba(15,163,163,.10);font-weight:700;color:var(--acqua-scuro)}
+.lista-scelte .segno{flex:none;width:18px;text-align:center;color:var(--acqua);font-weight:800}
 .lista-profili{max-height:44dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
 .lista-profili button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-bottom:1px solid var(--fuga)}
 .lista-profili button:last-child{border-bottom:none}
@@ -565,31 +578,17 @@ body.ingresso{overflow:hidden}
         <div><h2>Bacheca</h2><p id="conta-bacheca">Le ultime del gruppo</p></div>
       </div>
       <div class="barra-comandi">
-        <select id="ordina" aria-label="Ordina le recensioni">
-          <option value="registrata">Ultime recensioni</option>
-          <option value="registrata-su">Prime recensioni</option>
-          <option value="accaduta">Cagate più recenti</option>
-          <option value="accaduta-su">Cagate più vecchie</option>
-          <option value="voto-alto">Voto più alto</option>
-          <option value="voto-basso">Voto più basso</option>
-          <option value="posto">Posto dalla A alla Z</option>
-          <option value="posto-giu">Posto dalla Z alla A</option>
-        </select>
+        <button class="menu" id="ordina" aria-haspopup="listbox"><span class="et">Pubblicate: prima le nuove</span><span class="freccia">▾</span></button>
         <button class="btn-filtri" id="apri-filtri" aria-expanded="false">Filtri<span class="quanti" id="quanti-filtri" hidden></span></button>
       </div>
       <div class="pannello-filtri" id="pannello-filtri" hidden>
         <div class="barra-filtri">
-          <select id="f-utente" aria-label="Filtra per persona"><option value="">Tutti</option></select>
-          <select id="f-luogo" aria-label="Filtra per posto"><option value="">Ogni posto</option></select>
-          <select id="f-categoria" aria-label="Filtra per tipo di posto"><option value="">Ogni tipo</option></select>
-          <select id="f-citta" aria-label="Filtra per città"><option value="">Ogni città</option></select>
-          <select id="f-paese" aria-label="Filtra per paese"><option value="">Ogni paese</option></select>
-          <select id="f-voto" aria-label="Filtra per voto">
-            <option value="">Ogni voto</option>
-            <option value="4">💩 Da 4 in su</option>
-            <option value="3">💩 Da 3 in su</option>
-            <option value="basso">💩 Sotto il 3</option>
-          </select>
+          <button class="menu" id="f-utente" aria-haspopup="listbox"><span class="et">Tutti</span><span class="freccia">▾</span></button>
+          <button class="menu" id="f-luogo" aria-haspopup="listbox"><span class="et">Ogni posto</span><span class="freccia">▾</span></button>
+          <button class="menu" id="f-categoria" aria-haspopup="listbox"><span class="et">Ogni tipo</span><span class="freccia">▾</span></button>
+          <button class="menu" id="f-citta" aria-haspopup="listbox"><span class="et">Ogni città</span><span class="freccia">▾</span></button>
+          <button class="menu" id="f-paese" aria-haspopup="listbox"><span class="et">Ogni paese</span><span class="freccia">▾</span></button>
+          <button class="menu" id="f-voto" aria-haspopup="listbox"><span class="et">Ogni voto</span><span class="freccia">▾</span></button>
         </div>
         <button class="pulisci" id="pulisci-filtri">Pulisci filtri</button>
       </div>
@@ -769,6 +768,33 @@ body.ingresso{overflow:hidden}
   <div class="piede-sel">
     <span id="coord-sel">Tocca la mappa nel punto giusto</span>
     <button class="btn scuro" id="usa-punto" disabled>Usa questo punto</button>
+  </div>
+</div>
+
+<div class="finestra" id="modifica-profilo" hidden>
+  <div class="scheda riquadro" role="dialog" aria-modal="true" aria-labelledby="mp-tit">
+    <h3 id="mp-tit">Il tuo profilo</h3>
+    <p>Nome e faccia si aggiornano in tutte le tue recensioni.</p>
+    <div class="campo" style="margin-top:14px">
+      <label for="mp-nome">Come ti chiamano gli amici</label>
+      <input type="text" id="mp-nome" maxlength="18" autocomplete="off" data-lpignore="true" data-form-type="other">
+    </div>
+    <div class="campo">
+      <label id="mp-et">La tua faccia</label>
+      <div class="griglia-emoji" id="griglia-mp" role="group" aria-labelledby="mp-et"></div>
+    </div>
+    <div class="dlg-azioni">
+      <button class="btn fantasma" id="mp-annulla">Annulla</button>
+      <button class="btn scuro" id="mp-salva">Salva</button>
+    </div>
+  </div>
+</div>
+
+<div class="finestra" id="elenco" hidden>
+  <div class="scheda riquadro" role="dialog" aria-modal="true" aria-labelledby="el-titolo">
+    <h3 id="el-titolo"></h3>
+    <div class="lista-scelte" id="el-voci"></div>
+    <div class="dlg-azioni"><button class="btn fantasma" id="el-annulla">Annulla</button></div>
   </div>
 </div>
 
@@ -1399,17 +1425,31 @@ async function salvaProfilo(nome, nuovaFaccia){
   mostraIo(); ridisegna();
   toast('Aggiornato in tutto il tuo storico');
 }
-async function apriModificaProfilo(){
-  const nome = await chiedi('Come ti chiami', 'Il nome che vedono gli altri. Cambiarlo aggiorna tutte le tue recensioni.',
-    {campo:'testo', segnaposto:S.io.nome, ok:'Avanti'});
-  if(!nome || nome===true) return;
-  if(String(nome).trim().length<2){ toast('Serve un nome di almeno 2 lettere'); return; }
-  const scelte = FACCE.map((f,i)=>`${i+1}. ${f}`).join('   ');
-  const n = await chiedi('E la faccia?', `Scrivi il numero della faccia che vuoi:\n\n${scelte}`,
-    {campo:'testo', segnaposto:'numero', ok:'Salva'});
-  const idx = parseInt(n,10);
-  await salvaProfilo(String(nome).trim(), (idx>=1 && idx<=FACCE.length) ? FACCE[idx-1] : S.io.faccia);
+/* Nome e faccia insieme, con le facce da toccare invece che da numerare. */
+function apriModificaProfilo(){
+  if(!S.io) return;
+  facciaScelta = S.io.faccia;
+  $('#mp-nome').value = S.io.nome;
+  $('#griglia-mp').innerHTML = FACCE.map(f=>
+    `<button type="button" data-f="${f}" aria-pressed="${f===facciaScelta}" aria-label="Faccia ${f}">${f}</button>`).join('');
+  $('#modifica-profilo').hidden=false;
+  setTimeout(()=>$('#mp-nome').focus(), 80);
 }
+let facciaScelta='💩';
+$('#griglia-mp').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-f]'); if(!b) return;
+  facciaScelta=b.dataset.f;
+  $$('#griglia-mp button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.f===facciaScelta));
+});
+$('#mp-annulla').addEventListener('click', ()=>{ $('#modifica-profilo').hidden=true; });
+$('#modifica-profilo').addEventListener('click', e=>{ if(e.target.id==='modifica-profilo') $('#modifica-profilo').hidden=true; });
+$('#mp-salva').addEventListener('click', async ()=>{
+  const nome=$('#mp-nome').value.trim();
+  if(nome.length<2){ toast('Serve un nome di almeno 2 lettere'); return; }
+  const b=$('#mp-salva'); b.disabled=true;
+  try{ await salvaProfilo(nome, facciaScelta); $('#modifica-profilo').hidden=true; }
+  finally{ b.disabled=false; }
+});
 
 $('#btn-esci').addEventListener('click', async ()=>{
   const ok = await chiedi('Esci dal profilo?', 'Le tue recensioni restano dove sono. Rientri con email e password.', {ok:'Esci', no:'Resta'});
@@ -1964,6 +2004,17 @@ function passaFiltri(r, salta){
       && (salta==='paese'     || !f.paese     || r.paese===f.paese)
       && (salta==='voto'      || !f.voto      || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto)));
 }
+/* Nomi espliciti: "ultime" e "prime" si prestavano a due letture opposte. */
+const ORDINAMENTI = [
+  ['registrata',    'Pubblicate: prima le nuove'],
+  ['registrata-su', 'Pubblicate: prima le vecchie'],
+  ['accaduta',      'Cagate: prima le recenti'],
+  ['accaduta-su',   'Cagate: prima le vecchie'],
+  ['voto-alto',     'Voto più alto'],
+  ['voto-basso',    'Voto più basso'],
+  ['posto',         'Posto dalla A alla Z'],
+  ['posto-giu',     'Posto dalla Z alla A']
+];
 function filtrate(){
   const el = S.recensioni.filter(r=>passaFiltri(r, null));
   const quando = r => r.creatoTs || r.ts;
@@ -1979,26 +2030,67 @@ function filtrate(){
   }
   return el;
 }
+/* Menu in stile app: i <select> aprivano l'elenco nero del sistema, che non si
+   può vestire. Questi aprono una finestra nostra, con le stesse regole grafiche. */
+const VOCI_MENU = {};
+let risolviElenco=null;
+function scegliDaElenco(titolo, voci, attuale){
+  $('#el-titolo').textContent = titolo;
+  $('#el-voci').innerHTML = voci.map(([v,e])=>
+    `<button type="button" data-valore="${esc(v)}" aria-selected="${v===attuale}">
+       <span class="segno">${v===attuale?'✓':''}</span><span>${esc(e)}</span></button>`).join('');
+  $('#elenco').hidden=false;
+  return new Promise(res=>{ risolviElenco=res; });
+}
+function chiudiElenco(v){
+  $('#elenco').hidden=true;
+  if(risolviElenco){ risolviElenco(v); risolviElenco=null; }
+}
+$('#el-annulla').addEventListener('click', ()=>chiudiElenco(null));
+$('#elenco').addEventListener('click', e=>{
+  if(e.target.id==='elenco') return chiudiElenco(null);
+  const b=e.target.closest('button[data-valore]');
+  if(b) chiudiElenco(b.dataset.valore);
+});
+
+function impostaMenu(id, titolo, voci, valore){
+  VOCI_MENU[id] = {titolo, voci};
+  const b=document.getElementById(id); if(!b) return;
+  const trovata = voci.find(([v])=>v===valore);
+  b.querySelector('.et').textContent = trovata ? trovata[1] : (voci[0]?voci[0][1]:'');
+  b.classList.toggle('attivo', !!valore);
+  b.dataset.valore = valore || '';
+}
+document.addEventListener('click', async e=>{
+  const b=e.target.closest('.menu'); if(!b) return;
+  const cfg=VOCI_MENU[b.id]; if(!cfg) return;
+  const scelto = await scegliDaElenco(cfg.titolo, cfg.voci, b.dataset.valore||'');
+  if(scelto===null) return;
+  if(b.id==='ordina'){ S.ordina=scelto; }
+  else { S.filtri[b.id.slice(2)] = scelto; }
+  disegnaBacheca();
+});
+
 function filtriAttivi(){ return Object.values(S.filtri).some(x=>x); }
 function candidati(salta){ return S.recensioni.filter(r=>passaFiltri(r, salta)); }
 
 function disegnaFiltriBacheca(){
-  const opz=(sel, vuoto, voci, val, etichettaPersa)=>{
+  const opz=(id, vuoto, voci, val, etichettaPersa)=>{
     const dentro = voci.some(([v])=>v===val);
-    sel.innerHTML = `<option value="">${vuoto}</option>` +
-      voci.map(([v,e])=>`<option value="${esc(v)}" ${v===val?'selected':''}>${esc(e)}</option>`).join('') +
-      (val && !dentro ? `<option value="${esc(val)}" selected>${esc((etichettaPersa&&etichettaPersa(val))||val)}</option>` : '');
+    const tutte = [['',vuoto]].concat(voci)
+      .concat(val && !dentro ? [[val, (etichettaPersa&&etichettaPersa(val))||val]] : []);
+    impostaMenu(id, vuoto, tutte, val);
   };
 
   const persone=new Map();
   candidati('utente').forEach(r=>persone.set(chiaveDi(r), (r.faccia||'💩')+' '+r.nome));
-  opz($('#f-utente'),'Tutti',Array.from(persone.entries()),S.filtri.utente);
+  opz('f-utente','Tutti',Array.from(persone.entries()),S.filtri.utente);
 
   const posti=new Map();
   candidati('luogo').forEach(r=>{ if(r.luogo) posti.set(chiaveBagno(r), etichettaBagno(r)); });
   /* dal pin della mappa arriva la chiave del POSTO, che nell'elenco dei bagni
      non c'è: senza questo si leggeva l'identificativo grezzo */
-  opz($('#f-luogo'),'Ogni posto',Array.from(posti.entries()).sort((a,b)=>a[1].localeCompare(b[1])),S.filtri.luogo,
+  opz('f-luogo','Ogni posto',Array.from(posti.entries()).sort((a,b)=>a[1].localeCompare(b[1])),S.filtri.luogo,
       v=>{
         const r=S.recensioni.find(x=>gruppoLuogo(x)===v);
         if(!r) return v;
@@ -2007,16 +2099,17 @@ function disegnaFiltriBacheca(){
       });
 
   const cats=candidati('categoria');
-  opz($('#f-categoria'),'Ogni tipo',
+  opz('f-categoria','Ogni tipo',
       CATEGORIE.filter(c=>cats.some(r=>r.categoria===c.id)).map(c=>[c.id,c.em+' '+c.nome]),S.filtri.categoria);
 
   const citta=new Set(); candidati('citta').forEach(r=>{ if(r.citta) citta.add(r.citta); });
-  opz($('#f-citta'),'Ogni città',Array.from(citta).sort().map(c=>[c,c]),S.filtri.citta);
+  opz('f-citta','Ogni città',Array.from(citta).sort().map(c=>[c,c]),S.filtri.citta);
 
   const paesi=new Set(); candidati('paese').forEach(r=>{ if(r.paese) paesi.add(r.paese); });
-  opz($('#f-paese'),'Ogni paese',Array.from(paesi).sort().map(c=>[c,c]),S.filtri.paese);
+  opz('f-paese','Ogni paese',Array.from(paesi).sort().map(c=>[c,c]),S.filtri.paese);
 
-  $('#f-voto').value = S.filtri.voto;
+  impostaMenu('f-voto','Ogni voto',[['','Ogni voto'],['4','💩 Da 4 in su'],['3','💩 Da 3 in su'],['basso','💩 Sotto il 3']],S.filtri.voto);
+  impostaMenu('ordina','Come ordinare',ORDINAMENTI,S.ordina);
   $('#pulisci-filtri').disabled = !filtriAttivi();
   const q=Object.values(S.filtri).filter(Boolean).length;
   const eq=$('#quanti-filtri');
@@ -2026,7 +2119,7 @@ function disegnaFiltriBacheca(){
     $('#apri-filtri').setAttribute('aria-expanded','true');
     $('#pannello-filtri').hidden=false;
   }
-  $('#ordina').value = S.ordina;
+
 }
 /* quando filtri, le statistiche di quel taglio: quanto si è cagato lì, con che voto */
 function disegnaRiassunto(elenco){
@@ -2047,13 +2140,6 @@ function disegnaRiassunto(elenco){
            return top ? `<span>più spesso <b>${emCategoria(top)} ${esc(nomeCategoria(top))}</b></span>` : ''; })()+
     `<span>ultima ${quando(ultima)}</span>`;
 }
-['f-utente','f-luogo','f-categoria','f-citta','f-paese','f-voto'].forEach(id=>{
-  document.getElementById(id).addEventListener('change', e=>{
-    S.filtri[id.slice(2)] = e.target.value;
-    disegnaBacheca();
-  });
-});
-$('#ordina').addEventListener('change', e=>{ S.ordina=e.target.value; disegnaBacheca(); });
 $('#apri-filtri').addEventListener('click', ()=>{
   const b=$('#apri-filtri'), p=$('#pannello-filtri');
   const aperto = b.getAttribute('aria-expanded')==='true';
@@ -2155,6 +2241,17 @@ function creaMappa(){
   window.addEventListener('resize',()=>S.mappa&&S.mappa.invalidateSize());
   S.strato=L.layerGroup().addTo(S.mappa);
   S.mappa.on('dragstart', ()=>{ utenteHaMosso=true; });
+  /* se il browser lo supporta, ogni cambio di dimensione del riquadro
+     fa ricalcolare la mappa: è il modo più affidabile di tenerla giusta */
+  if(window.ResizeObserver){
+    try{
+      new ResizeObserver(()=>{
+        if(!S.mappa || S.vista!=='mappa') return;
+        S.mappa.invalidateSize({animate:false});
+        if(!utenteHaMosso) inquadraTutti();
+      }).observe(document.getElementById('mappa'));
+    }catch(e){}
+  }
   montaTessere();
 }
 function montaTessere(){
@@ -2299,6 +2396,16 @@ function sistemaMappa(salta){
   S.mappa.invalidateSize({animate:false});
   if(!salta && !utenteHaMosso) inquadraTutti();
 }
+/* Su alcuni browser (Firefox su Android in particolare) il contenitore della
+   mappa arriva alle sue dimensioni vere molto dopo l'apertura della sezione.
+   Finché è alto zero, Leaflet posiziona i perni fuori campo: da qui i pin
+   invisibili finché non si toccava "Dove sono". Invece di indovinare un
+   ritardo giusto, si controlla finché l'altezza non è reale. */
+let sorveglianzaMappa=null;
+function altezzaMappa(){
+  const el=document.getElementById('mappa');
+  return el ? el.getBoundingClientRect().height : 0;
+}
 function apriMappa(){
   avviaMappaSeServe();
   if(!S.mappa) return;
@@ -2306,9 +2413,23 @@ function apriMappa(){
   const salta = saltaInquadratura;
   saltaInquadratura = false;
   utenteHaMosso = false;
-  requestAnimationFrame(()=>requestAnimationFrame(()=>sistemaMappa(salta)));
-  setTimeout(()=>sistemaMappa(salta), 300);
-  setTimeout(()=>sistemaMappa(salta), 700);
+
+  clearInterval(sorveglianzaMappa);
+  let ultimaAltezza = -1, tentativi = 0;
+  const controlla = () => {
+    if(S.vista!=='mappa'){ clearInterval(sorveglianzaMappa); return; }
+    const h = altezzaMappa();
+    if(h > 0 && h !== ultimaAltezza){     /* la mappa ha cambiato dimensione: ricalcola */
+      ultimaAltezza = h;
+      sistemaMappa(salta);
+    }
+    if(++tentativi >= 20){
+      clearInterval(sorveglianzaMappa);
+      if(ultimaAltezza <= 0) sistemaMappa(salta);   /* misura mai arrivata: si prova comunque */
+    }
+  };
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{ sistemaMappa(salta); controlla(); }));
+  sorveglianzaMappa = setInterval(controlla, 120);
 }
 function contenutoPopup(r){
   const v=media(r.voti);
@@ -2325,9 +2446,11 @@ $('#btn-tutti').addEventListener('click',()=>{
   if(!S.mappa){ toast('La mappa non è pronta'); return; }
   S.mappa.invalidateSize({animate:false});
   const punti=S.recensioni.filter(r=>r.lat!=null);
-  if(!punti.length){ toast('Non c\'è ancora nessun pin'); return; }
+  if(!punti.length){ toast('Non c\'è ancora nessun pin da mostrare'); return; }
+  disegnaMappa(true);
   inquadraTutti();
-  toast(`${punti.length} ${punti.length===1?'cagata':'cagate'} sulla mappa`);
+  const posti=new Set(punti.map(gruppoLuogo)).size;
+  toast(`${posti} ${posti===1?'posto':'posti'}, ${punti.length} ${punti.length===1?'cagata':'cagate'}`);
 });
 $('#btn-io-qui').addEventListener('click',()=>{
   if(!navigator.geolocation||!S.mappa){ toast('Posizione non disponibile'); return; }
@@ -3013,8 +3136,16 @@ document.addEventListener('click', async e=>{
 });
 
 /* ============ BANNER INSTALLAZIONE ============ */
+/* Firefox non offre l'installazione guidata e non dichiara di essere in modo
+   applicazione: senza memoria del rifiuto, la fascia tornerebbe per sempre. */
+const K_INSTALLA='pagine-marroni:installa-no:v1';
 let promptInstalla=null, bannerChiuso=false;
-const installata = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+try{ bannerChiuso = localStorage.getItem(K_INSTALLA)==='1'; }catch(e){}
+const installata = window.matchMedia('(display-mode: standalone)').matches
+  || window.matchMedia('(display-mode: minimal-ui)').matches
+  || window.matchMedia('(display-mode: fullscreen)').matches
+  || window.navigator.standalone === true
+  || document.referrer.startsWith('android-app://');
 window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); promptInstalla=e; mostraBanner(); });
 function mostraBanner(){
   if(installata || bannerChiuso) return;
@@ -3025,7 +3156,16 @@ $('#installa-si').addEventListener('click', async ()=>{
   if(promptInstalla){ promptInstalla.prompt(); await promptInstalla.userChoice; promptInstalla=null; $('#banner-installa').hidden=true; }
   else toast('Menu del browser → Aggiungi a schermata Home');
 });
-$('#installa-no').addEventListener('click',()=>{ bannerChiuso=true; $('#banner-installa').hidden=true; });
+$('#installa-no').addEventListener('click',()=>{
+  bannerChiuso=true;
+  try{ localStorage.setItem(K_INSTALLA,'1'); }catch(e){}
+  $('#banner-installa').hidden=true;
+  toast('Non te lo chiedo più');
+});
+$('#installa-si').addEventListener('click',()=>{
+  /* anche chi la installa a mano non deve rivederla */
+  try{ localStorage.setItem(K_INSTALLA,'1'); }catch(e){}
+});
 
 /* utile in console per capire cosa c'è nella bozza in questo momento */
 window.PM = { get stato(){ return S; }, get bozza(){ return S.bozza; }, schedaPosto, mostraVicini, nuovaBozza, disegnaMappa };
