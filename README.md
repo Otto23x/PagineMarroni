@@ -1,6 +1,6 @@
 # Pagine Marroni 💩
 
-**Versione 1.7**
+**Versione 1.0.0**
 
 La mappa mondiale delle cagate. Tu e i tuoi amici registrate dove siete stati, con foto, voti in cacche e recensione: tutto finisce in bacheca e come pin su una mappa del mondo condivisa.
 
@@ -67,8 +67,8 @@ I telefoni si aggiornano da soli: pagina, icone e manifest arrivano sempre dalla
 
 Quando pubblichi una versione nuova, allinea due numeri:
 
-- `const VERSIONE = '1.7';` in `index.html` — è quello che si legge in fondo alla schermata Io
-- `const CACHE = 'pagine-marroni-1.7';` in `sw.js` — rinnova la copia di riserva per l'uso offline
+- `const VERSIONE = '1.0.0';` in `index.html` — è quello che si legge in fondo alla schermata Io
+- `const CACHE = 'pagine-marroni-1.0.0';` in `sw.js` — rinnova la copia di riserva per l'uso offline
 
 ---
 
@@ -120,6 +120,28 @@ Due recensioni sono nello stesso posto se le coordinate distano meno di **60 met
 - **Senza posizione non posso riconoscere il bagno** — si registra lo stesso, ma senza pin e senza unione con le altre.
 
 *Non è questo posto* crea un posto nuovo e lascia il pulsante *Era il posto di prima* per tornare indietro se hai sbagliato.
+
+### Mezzi di trasporto
+
+Scegliendo la categoria **Trasporto** si apre il riquadro **Il viaggio**: mezzo, compagnia e le due città. Il nome del posto lo compone l'app — `Ryanair · Barcellona–Venezia` — e non è modificabile: così la stessa tratta non finisce scritta in tre modi diversi.
+
+- **Il posto è la tratta**, non il singolo aereo o treno: chi la rifà si aggiunge lì.
+- **Andata e ritorno sono lo stesso bagno**: le città vengono ordinate alfabeticamente nel nome.
+- **Le compagnie sono un elenco chiuso**, ordinato mettendo in cima quelle del tuo paese e della tratta. Se manca, il pulsante *La mia compagnia non c'è* manda una proposta al gestore.
+- **Le città sono nell'app**, con le coordinate: la ricerca funziona anche a diecimila metri e senza rete.
+- **Nessun battesimo e nessuna rinomina**: il nome è composto, non scelto.
+
+### Dico la mia
+
+Sulle recensioni degli altri, nel piè di pagina, c'è **✍️ Dico la mia**: apre il modulo già agganciato a quel posto e a quel bagno, con la stessa categoria. Voti, racconto e foto restano tuoi — non si copia niente di personale, altrimenti nascerebbero recensioni fotocopia.
+
+Serve anche dove il GPS non arriva: in nave, in aereo, in cantina. Il posto arriva dalla recensione di partenza, non dalle coordinate.
+
+### Bagni che non ci sono più
+
+I chimici di una sagra, un cantiere finito, un bar chiuso. Apri il pin sulla mappa e tocca **🚫 Questo bagno non c'è più**.
+
+Non si cancella niente: le recensioni restano in grigio con l'etichetta 🚫, il pin sulla mappa si spegne, e chiunque può riaccendere il posto con **✅ È tornato** — utile per la sagra che torna ogni anno.
 
 ### Recensioni a posteriori
 

@@ -32,6 +32,11 @@ Senza questo, il link nell'email non funziona.
 alter table recensioni add column if not exists categoria text;
 -- quale bagno, dentro lo stesso posto (piano terra, uomini, in fondo a destra…)
 alter table recensioni add column if not exists settore text;
+-- viaggi: mezzo, compagnia e le due città della tratta
+alter table recensioni add column if not exists mezzo text;
+alter table recensioni add column if not exists compagnia text;
+alter table recensioni add column if not exists citta_da text;
+alter table recensioni add column if not exists citta_a text;
 
 -- chi può fare il gestore: modificare ed eliminare le recensioni di tutti
 create table if not exists gestori (
@@ -141,6 +146,121 @@ Stessa cosa si può fare con **Confirm signup** e **Magic Link**, se un giorno l
 ⚠️ Quello che **non** puoi cambiare senza il Passo 5 è il mittente: resterà un indirizzo di Supabase tipo `noreply@mail.app.supabase.io`. Per far arrivare le email da un tuo indirizzo serve l'SMTP personalizzato.
 
 ---
+
+
+---
+
+# Parte 6 — Prepararsi al pubblico
+
+Finché siete un gruppo di amici le regole del Passo 3 bastano. Se un giorno l'indirizzo gira fuori dal gruppo, servono queste: chiudono la modifica delle recensioni altrui e mettono un tetto alle proposte di rinomina. **SQL Editor**, una volta sola.
+
+```sql
+-- ============ 1. posti che non ci sono più ============
+create table if not exists luoghi_stato (
+  luogo_id text primary key,
+  presente  boolean not null default true,
+  da_id     text,
+  da_nome   text,
+  ts        bigint
+);
+alter table luoghi_stato enable row level security;
+create policy "tutti leggono gli stati"  on luoghi_stato for select using (true);
+create policy "segna chi ha un profilo"  on luoghi_stato for insert with check (auth.uid() is not null);
+create policy "riaccende chi ha un profilo" on luoghi_stato for update
+  using (auth.uid() is not null) with check (auth.uid() is not null);
+
+-- ============ 2. la cacca si mette con una funzione, non modificando la riga ============
+create or replace function reagisci(p_id text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid text := auth.uid()::text;
+  v_chi jsonb;
+begin
+  if v_uid is null then raise exception 'serve un profilo'; end if;
+  select coalesce(voti_reaz, '[]'::jsonb) into v_chi
+    from (select coalesce(reaz->'💩','[]'::jsonb) as voti_reaz from recensioni where id = p_id) t;
+  if v_chi ? v_uid then
+    update recensioni
+       set reaz = jsonb_set(coalesce(reaz,'{}'::jsonb), '{💩}', (v_chi - v_uid))
+     where id = p_id;
+  else
+    update recensioni
+       set reaz = jsonb_set(coalesce(reaz,'{}'::jsonb), '{💩}', (v_chi || to_jsonb(v_uid)))
+     where id = p_id;
+  end if;
+end $$;
+revoke all on function reagisci(text) from public;
+grant execute on function reagisci(text) to authenticated;
+
+-- ============ 3. rinominare un posto: solo il battezzatore o un gestore ============
+create or replace function rinomina_luogo(p_luogo_id text, p_nome text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid text := auth.uid()::text;
+  v_primo text;
+begin
+  if v_uid is null then raise exception 'serve un profilo'; end if;
+  select autore_id into v_primo
+    from recensioni where luogo_id = p_luogo_id order by creato asc limit 1;
+  if v_primo is distinct from v_uid
+     and not exists (select 1 from gestori g where g.uid = auth.uid()) then
+    raise exception 'solo chi ha battezzato il posto può rinominarlo';
+  end if;
+  update recensioni set luogo = p_nome where luogo_id = p_luogo_id;
+end $$;
+revoke all on function rinomina_luogo(text, text) from public;
+grant execute on function rinomina_luogo(text, text) to authenticated;
+
+-- ============ 4. si modificano solo le proprie recensioni ============
+drop policy if exists "aggiorna chi ha un profilo" on recensioni;
+create policy "modifica le tue" on recensioni
+  for update
+  using (
+    autore_id = auth.uid()::text
+    or exists (select 1 from gestori g where g.uid = auth.uid())
+  )
+  with check (
+    autore_id = auth.uid()::text
+    or exists (select 1 from gestori g where g.uid = auth.uid())
+  );
+
+-- ============ 5. massimo tre proposte di rinomina al giorno ============
+create or replace function limite_proposte()
+returns trigger
+language plpgsql
+as $$
+begin
+  if (select count(*) from proposte
+       where da_id = new.da_id and ts > (extract(epoch from now())*1000 - 86400000)) >= 3 then
+    raise exception 'troppe proposte: massimo tre al giorno';
+  end if;
+  return new;
+end $$;
+drop trigger if exists tre_proposte_al_giorno on proposte;
+create trigger tre_proposte_al_giorno before insert on proposte
+  for each row execute function limite_proposte();
+```
+
+**Cosa cambia dopo questo blocco**
+
+| Azione | Prima | Dopo |
+|---|---|---|
+| Modificare la propria recensione | ✅ | ✅ |
+| Modificare quella di un altro | ✅ (chiunque con un profilo) | ❌ solo il gestore |
+| Mettere la cacca | scriveva dentro la riga altrui | funzione controllata sul server |
+| Rinominare un posto | chiunque | solo il battezzatore o il gestore |
+| Proposte di rinomina | infinite | tre al giorno a persona |
+| Segnare un bagno come sparito | — | chiunque abbia un profilo, ed è reversibile |
+
+⚠️ **Lancia questo blocco insieme alla pubblicazione della versione che lo usa**, non prima: le versioni precedenti dell'app mettevano la cacca scrivendo direttamente nella riga, e con la regola nuova quella scrittura verrebbe rifiutata.
 
 ## Passo 5 (facoltativo) — Email vere
 

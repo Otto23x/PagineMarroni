@@ -1,6 +1,6 @@
 # Pagine Marroni — guida completa alla pubblicazione
 
-**Versione 1.7**
+**Versione 1.0.0**
 
 Questa guida ti porta da una cartella di file a un'app installata sul telefono tuo e dei tuoi amici, con le recensioni condivise. Non serve saper programmare. Serve copiare e incollare.
 
@@ -294,7 +294,7 @@ Quando cambi qualcosa e ricarichi i file, i telefoni si aggiornano da soli: pagi
 L'unica cosa che resta in memoria è la copia di riserva per l'uso offline. Per rinnovare anche quella, quando pubblichi una versione nuova apri **`sw.js`** e cambia il numero nella terza riga:
 
 ```js
-const CACHE = 'pagine-marroni-1.7';
+const CACHE = 'pagine-marroni-1.0.0';
 ```
 
 Da `1.0` a `1.1`, e così via — lo stesso numero che scrivi in `const VERSIONE` dentro `index.html`, così i due restano allineati e sai sempre cosa c'è online.

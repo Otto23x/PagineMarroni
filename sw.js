@@ -1,6 +1,6 @@
 /* Pagine Marroni — service worker.
    Guscio in cache-first, mappe e API in network-first. */
-const CACHE = 'pagine-marroni-1.7';  // cambia questo numero a ogni nuova versione dell'app
+const CACHE = 'pagine-marroni-1.0.0';  // cambia questo numero a ogni nuova versione dell'app
 const GUSCIO = [
   './', './index.html', './manifest.json',
   './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon.png',

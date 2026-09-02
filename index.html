@@ -166,6 +166,9 @@ body.ingresso{overflow:hidden}
 .ap-voto{flex:none;text-align:center;background:var(--cioccolato);color:#fff;border-radius:14px;padding:7px 11px}
 .ap-voto b{display:block;font-family:var(--font-display);font-size:19px;line-height:1}
 .ap-voto span{font-size:10px;opacity:.75}
+.ap-nota{margin-top:10px;padding:8px 11px;border-radius:12px;background:rgba(78,50,32,.10);font-size:12px;color:var(--cioccolato)}
+.ap-segnala{width:100%;margin-top:10px;min-height:38px;border-radius:999px;background:var(--ceramica);
+  border:var(--bordo);font-size:12.5px;font-weight:700;color:var(--cioccolato)}
 .ap-azioni{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
 .ap-btn{min-height:44px;border-radius:999px;background:var(--acqua);color:#fff;font-size:13.5px;font-weight:700;padding:0 10px}
 .ap-btn.fantasma{background:var(--ceramica);color:var(--cioccolato);border:var(--bordo)}
@@ -242,12 +245,29 @@ body.ingresso{overflow:hidden}
 .pastiglia-info{font-size:12px;font-weight:700;color:var(--acqua-scuro);background:rgba(15,163,163,.12);
   border-radius:999px;padding:4px 10px;white-space:nowrap}
 .pastiglia-info.tempo{color:#7a5c14;background:rgba(242,194,48,.22)}
+.pastiglia-info.sparito{color:#7b6a5e;background:rgba(78,50,32,.12)}
+.scheda.assente{opacity:.62;filter:grayscale(.55)}
+.scheda.assente:focus-within,.scheda.assente:hover{opacity:.9;filter:none}
+.perno.spento .bolla{border-color:#9C8F86;background:#EFEFEC;opacity:.75}
+/* azzurro pastello per i mezzi, verde pastello per gli eventi */
+.perno.tratta .bolla{border-color:#7FC4DE;background:#EAF6FB}
+.perno.evento .bolla{border-color:#8FCB9B;background:#EDF7EF}
+/* bordo tratteggiato: il punto è calcolato lungo la rotta, non rilevato */
+.perno.stimato .bolla{border-style:dashed}
 .etichetta.neutra{background:rgba(78,50,32,.10);color:var(--cioccolato)}
-.piede{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--fuga);background:#FBFDFC;flex-wrap:wrap}
+.piede{display:flex;align-items:center;gap:6px;padding:10px 12px;border-top:1px solid var(--fuga);background:#FBFDFC;flex-wrap:nowrap;overflow:hidden}
+.piede .azione{flex:none;min-width:0}
+.piede .fine{margin-left:auto}
 .azione{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:13px;font-weight:600;transition:transform .12s}
 .azione:active{transform:scale(.93)}
 .azione[aria-pressed="true"]{background:rgba(242,194,48,.22);border-color:rgba(242,194,48,.5)}
 .azione small{font-size:12px;color:var(--tenue);font-weight:700}
+.et-testato{font-weight:700;color:var(--cioccolato-2);opacity:.75}
+.dico{background:rgba(15,163,163,.12);border-color:rgba(15,163,163,.35);color:var(--acqua-scuro)}
+.dico small{color:var(--acqua-scuro)}
+.data-pub{gap:4px;padding:0 10px;font-size:11.5px;color:var(--tenue);cursor:default}
+.data-pub small{font-size:11.5px;color:var(--cioccolato);white-space:nowrap}
+@media (max-width:400px){.azione{padding:0 10px}.piede{gap:5px}.azione small{font-size:11.5px}}
 .azione.fine{margin-left:auto}
 .vuoto{text-align:center;padding:42px 24px}
 .vuoto .faccia{font-size:50px;display:block;margin-bottom:10px}
@@ -390,6 +410,23 @@ body.ingresso{overflow:hidden}
 .scheda-posto{margin-top:14px}
 .due-bottoni{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
 .due-bottoni .btn{width:100%;padding:0 8px}
+.viaggio{margin-top:16px;padding-top:16px;border-top:1px solid var(--fuga)}
+.viaggio h4{font-family:var(--font-display);font-size:16px;color:var(--cioccolato);margin:0 0 2px}
+.viaggio .nota{margin-bottom:12px}
+.scelte-mezzo{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.scelte-mezzo button{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:62px;
+  border-radius:var(--r-m);background:#FBFDFC;border:1.5px solid var(--fuga);font-size:11.5px;font-weight:600}
+.scelte-mezzo button .em{font-size:19px}
+.scelte-mezzo button[aria-pressed="true"]{border-color:var(--cioccolato);background:rgba(78,50,32,.07)}
+.due-campi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.suggerimenti{position:relative;z-index:5;margin-top:4px;background:var(--porcellana);border:var(--bordo);
+  border-radius:var(--r-m);box-shadow:var(--ombra);overflow:hidden;max-height:200px;overflow-y:auto}
+.suggerimenti[hidden]{display:none}
+.suggerimenti button{display:block;width:100%;text-align:left;padding:10px 13px;font-size:13px;
+  border-bottom:1px solid var(--fuga);color:var(--cioccolato)}
+.suggerimenti button:last-child{border-bottom:none}
+.suggerimenti .paese{color:var(--tenue);font-size:11.5px}
+.manca{margin-top:8px;font-size:12px;font-weight:700;color:var(--acqua-scuro);text-decoration:underline}
 .settore{margin-top:14px;padding-top:14px;border-top:1px solid var(--fuga)}
 .settore label{display:block;font-size:13px;font-weight:700;color:var(--cioccolato);margin-bottom:8px}
 #settore-txt{width:100%;min-height:46px;padding:12px 14px;border-radius:var(--r-l);border:1.5px solid var(--fuga);background:#FBFDFC}
@@ -512,6 +549,33 @@ body.ingresso{overflow:hidden}
               <datalist id="posti-noti"></datalist>
             </div>
             <div class="sp-azioni" id="sp-azioni"></div>
+
+            <div class="viaggio" id="viaggio" hidden>
+              <h4>Il viaggio</h4>
+              <p class="nota">Il nome del posto lo scrivo io, uguale per tutti.</p>
+              <div class="scelte-mezzo" id="scelte-mezzo" role="group" aria-label="Mezzo"></div>
+              <div class="campo" style="margin-top:12px">
+                <label for="compagnia">Compagnia</label>
+                <input type="text" id="compagnia" maxlength="40" placeholder="Scrivi le prime lettere"
+                       autocomplete="off" data-lpignore="true" data-form-type="other">
+                <div class="suggerimenti" id="sug-compagnia" hidden></div>
+                <button type="button" class="manca" id="manca-compagnia">La mia compagnia non c'è</button>
+              </div>
+              <div class="due-campi">
+                <div class="campo">
+                  <label for="citta-da">Da</label>
+                  <input type="text" id="citta-da" maxlength="40" placeholder="Partenza"
+                         autocomplete="off" data-lpignore="true" data-form-type="other">
+                  <div class="suggerimenti" id="sug-da" hidden></div>
+                </div>
+                <div class="campo">
+                  <label for="citta-a">A</label>
+                  <input type="text" id="citta-a" maxlength="40" placeholder="Arrivo"
+                         autocomplete="off" data-lpignore="true" data-form-type="other">
+                  <div class="suggerimenti" id="sug-a" hidden></div>
+                </div>
+              </div>
+            </div>
             <div class="settore" id="settore">
               <label for="settore-txt">Quale bagno, di preciso <span class="facolt">se ce n'è più d'uno</span></label>
               <input type="text" id="settore-txt" name="quale-bagno" maxlength="28" placeholder="es. Primo piano, Disabili, in fondo a destra"
@@ -579,7 +643,7 @@ body.ingresso{overflow:hidden}
         <div><h2>Bacheca</h2><p id="conta-bacheca">Le ultime del gruppo</p></div>
       </div>
       <div class="barra-comandi">
-        <button class="menu" id="ordina" aria-haspopup="listbox"><span class="et">Pubblicate: prima le nuove</span><span class="freccia">▾</span></button>
+        <button class="menu" id="ordina" aria-haspopup="listbox"><span class="et">Cagate: prima le recenti</span><span class="freccia">▾</span></button>
         <button class="btn-filtri" id="apri-filtri" aria-expanded="false">Filtri<span class="quanti" id="quanti-filtri" hidden></span></button>
       </div>
       <div class="pannello-filtri" id="pannello-filtri" hidden>
@@ -668,7 +732,12 @@ body.ingresso{overflow:hidden}
             <li>In bacheca filtri per persona, posto, tipo di posto, città, paese o voto: in cima compaiono le statistiche di quel taglio.</li>
             <li>Tocca la miniatura per vedere la foto in grande, tocca un pin per leggere la recensione.</li>
             <li>Il nome di un posto lo dà chi ci arriva per primo: se registri dove è già stato qualcuno, lo trovi già scritto e uguale per tutti. Tu scrivi il titolo.</li>
-            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla.</li>
+            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla. Se ne possono mandare tre al giorno.</li>
+            <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete.</li>
+            <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
+            <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
+            <li>Su una recensione di un altro c'è <b>Dico la mia</b>: apre il modulo già agganciato a quel bagno, senza bisogno del GPS. Voti e racconto restano tuoi.</li>
+            <li>Se un bagno non esiste più — i chimici di una sagra, un cantiere finito — apri il suo pin sulla mappa e tocca <b>Questo bagno non c'è più</b>. Le recensioni non si cancellano: restano in grigio con l'etichetta 🚫 e il pin spento. Chiunque può riaccenderlo con <b>È tornato</b>.</li>
             <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
             <li>Nome e faccia si cambiano da "Io" → Cambia: lo storico ti segue.</li>
           </ol>
@@ -676,7 +745,7 @@ body.ingresso{overflow:hidden}
             <span>🔑 Modalità gestore attiva: vedi Gestisci ed Elimina su tutte le recensioni</span>
           </div>
           <button class="btn piccolo rossa" id="azzera-db" hidden style="width:100%;margin-top:8px">🧨 Svuota tutto e riparti da zero</button>
-          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.7</b> <span id="costruita"></span> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
+          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.0.0</b> <span id="costruita"></span> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
         </div>
       </div>
     </section>
@@ -819,7 +888,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.7';
+const VERSIONE = '1.0.0';
 const COSTRUITA = '2026-09-02';   /* aggiornata a ogni pubblicazione: serve a capire chi ha quale versione */
 
 /* ============ CONTENUTI ============ */
@@ -836,15 +905,395 @@ const PARAMETRI = [
    Il nome preciso del bagno sta già nel titolo, qui serve solo per le statistiche. */
 const CATEGORIE = [
   {id:'casa',      em:'🏠', nome:'Casa'},
-  {id:'lavoro',    em:'💼', nome:'Lavoro'},
-  {id:'ristoro',   em:'🍝', nome:'Bar e ristoranti'},
-  {id:'negozi',    em:'🛒', nome:'Negozi'},
-  {id:'pubblico',  em:'🏛️', nome:'Locali pubblici'},
-  {id:'trasporti', em:'🚆', nome:'Trasporti'},
-  {id:'vacanza',   em:'🏨', nome:'Alberghi e simili'},
+  {id:'lavoro',    em:'🏢', nome:'Azienda'},
+  {id:'ristoro',   em:'🍽️', nome:'Ospitalità'},
+  {id:'negozi',    em:'🛒', nome:'Negozio'},
+  {id:'pubblico',  em:'🏛️', nome:'Locale pubblico'},
+  {id:'trasporti', em:'🚆', nome:'Trasporto'},
+  {id:'evento',    em:'🎪', nome:'Evento'},
   {id:'aperto',    em:'🌳', nome:"All'aperto"},
   {id:'altro',     em:'❓', nome:'Altro'}
 ];
+
+/* Città note all'app: nome|lat|lng|paese. Servono a calcolare il punto della
+   rotta senza rete. Coordinate al centesimo di grado: bastano e avanzano per
+   piazzare un pin a metà di una tratta. */
+const CITTA = `Agrigento|37.31|13.58|IT
+Alessandria|44.91|8.62|IT
+Ancona|43.62|13.51|IT
+Aosta|45.74|7.32|IT
+Arezzo|43.46|11.88|IT
+Ascoli Piceno|42.85|13.58|IT
+Asti|44.90|8.21|IT
+Avellino|40.91|14.79|IT
+Bari|41.12|16.87|IT
+Belluno|46.14|12.22|IT
+Benevento|41.13|14.78|IT
+Bergamo|45.70|9.67|IT
+Biella|45.56|8.05|IT
+Bologna|44.49|11.34|IT
+Bolzano|46.50|11.35|IT
+Brescia|45.54|10.22|IT
+Brindisi|40.63|17.94|IT
+Cagliari|39.22|9.12|IT
+Caltanissetta|37.49|14.06|IT
+Campobasso|41.56|14.66|IT
+Caserta|41.07|14.33|IT
+Catania|37.51|15.08|IT
+Catanzaro|38.91|16.59|IT
+Chieti|42.35|14.17|IT
+Como|45.81|9.09|IT
+Cosenza|39.30|16.25|IT
+Cremona|45.13|10.02|IT
+Crotone|39.08|17.13|IT
+Cuneo|44.39|7.55|IT
+Enna|37.57|14.28|IT
+Ferrara|44.84|11.62|IT
+Firenze|43.77|11.26|IT
+Foggia|41.46|15.55|IT
+Forlì|44.22|12.04|IT
+Frosinone|41.64|13.34|IT
+Genova|44.41|8.93|IT
+Gorizia|45.94|13.62|IT
+Grosseto|42.76|11.11|IT
+Imperia|43.89|8.04|IT
+Isernia|41.60|14.23|IT
+La Spezia|44.11|9.83|IT
+L'Aquila|42.35|13.40|IT
+Latina|41.47|12.90|IT
+Lecce|40.35|18.17|IT
+Lecco|45.86|9.39|IT
+Livorno|43.55|10.31|IT
+Lodi|45.31|9.50|IT
+Lucca|43.84|10.50|IT
+Macerata|43.30|13.45|IT
+Mantova|45.16|10.79|IT
+Massa|44.03|10.14|IT
+Matera|40.67|16.60|IT
+Messina|38.19|15.55|IT
+Milano|45.46|9.19|IT
+Modena|44.65|10.93|IT
+Monza|45.58|9.27|IT
+Napoli|40.85|14.27|IT
+Novara|45.45|8.62|IT
+Nuoro|40.32|9.33|IT
+Oristano|39.90|8.59|IT
+Padova|45.41|11.88|IT
+Palermo|38.12|13.36|IT
+Parma|44.80|10.33|IT
+Pavia|45.19|9.16|IT
+Perugia|43.11|12.39|IT
+Pesaro|43.91|12.91|IT
+Pescara|42.46|14.22|IT
+Piacenza|45.05|9.69|IT
+Pisa|43.72|10.40|IT
+Pistoia|43.93|10.92|IT
+Pordenone|45.96|12.66|IT
+Potenza|40.64|15.81|IT
+Prato|43.88|11.10|IT
+Ragusa|36.93|14.72|IT
+Ravenna|44.42|12.20|IT
+Reggio Calabria|38.11|15.65|IT
+Reggio Emilia|44.70|10.63|IT
+Rieti|42.40|12.86|IT
+Rimini|44.06|12.57|IT
+Roma|41.90|12.50|IT
+Rovigo|45.07|11.79|IT
+Salerno|40.68|14.77|IT
+Sassari|40.73|8.56|IT
+Savona|44.31|8.48|IT
+Siena|43.32|11.33|IT
+Siracusa|37.08|15.28|IT
+Sondrio|46.17|9.87|IT
+Taranto|40.47|17.24|IT
+Teramo|42.66|13.70|IT
+Terni|42.56|12.65|IT
+Torino|45.07|7.69|IT
+Trapani|38.02|12.54|IT
+Trento|46.07|11.12|IT
+Treviso|45.67|12.24|IT
+Trieste|45.65|13.78|IT
+Udine|46.06|13.24|IT
+Varese|45.82|8.83|IT
+Venezia|45.44|12.32|IT
+Verbania|45.92|8.55|IT
+Vercelli|45.32|8.42|IT
+Verona|45.44|10.99|IT
+Vibo Valentia|38.68|16.10|IT
+Vicenza|45.55|11.55|IT
+Viterbo|42.42|12.10|IT
+Olbia|40.92|9.50|IT
+Porto Torres|40.84|8.40|IT
+Civitavecchia|42.09|11.79|IT
+Piombino|42.93|10.52|IT
+Portoferraio|42.81|10.32|IT
+Bastia|42.70|9.45|FR
+Ajaccio|41.93|8.74|FR
+Rimini Marina|44.08|12.58|IT
+Amsterdam|52.37|4.90|NL
+Atene|37.98|23.73|GR
+Barcellona|41.39|2.17|ES
+Basilea|47.56|7.59|CH
+Belgrado|44.79|20.45|RS
+Berlino|52.52|13.40|DE
+Berna|46.95|7.45|CH
+Bilbao|43.26|-2.93|ES
+Birmingham|52.49|-1.89|GB
+Bratislava|48.15|17.11|SK
+Brema|53.08|8.81|DE
+Bruxelles|50.85|4.35|BE
+Bucarest|44.43|26.10|RO
+Budapest|47.50|19.04|HU
+Colonia|50.94|6.96|DE
+Copenaghen|55.68|12.57|DK
+Dublino|53.35|-6.26|IE
+Dubrovnik|42.65|18.09|HR
+Düsseldorf|51.23|6.78|DE
+Edimburgo|55.95|-3.19|GB
+Francoforte|50.11|8.68|DE
+Ginevra|46.20|6.14|CH
+Glasgow|55.86|-4.25|GB
+Göteborg|57.71|11.97|SE
+Amburgo|53.55|9.99|DE
+Helsinki|60.17|24.94|FI
+Istanbul|41.01|28.98|TR
+Kiev|50.45|30.52|UA
+Cracovia|50.06|19.94|PL
+Lione|45.76|4.84|FR
+Lisbona|38.72|-9.14|PT
+Lubiana|46.06|14.51|SI
+Londra|51.51|-0.13|GB
+Lussemburgo|49.61|6.13|LU
+Madrid|40.42|-3.70|ES
+Malaga|36.72|-4.42|ES
+Malta|35.90|14.51|MT
+Manchester|53.48|-2.24|GB
+Marsiglia|43.30|5.37|FR
+Monaco di Baviera|48.14|11.58|DE
+Mosca|55.76|37.62|RU
+Nizza|43.70|7.27|FR
+Oslo|59.91|10.75|NO
+Palma di Maiorca|39.57|2.65|ES
+Parigi|48.86|2.35|FR
+Praga|50.08|14.44|CZ
+Riga|56.95|24.11|LV
+Rotterdam|51.92|4.48|NL
+Salonicco|40.64|22.94|GR
+Siviglia|37.39|-6.00|ES
+Sofia|42.70|23.32|BG
+Spalato|43.51|16.44|HR
+Stoccarda|48.78|9.18|DE
+Stoccolma|59.33|18.07|SE
+Tallinn|59.44|24.75|EE
+Tirana|41.33|19.82|AL
+Tolosa|43.60|1.44|FR
+Valencia|39.47|-0.38|ES
+Varsavia|52.23|21.01|PL
+Vienna|48.21|16.37|AT
+Vilnius|54.69|25.28|LT
+Zagabria|45.81|15.98|HR
+Zurigo|47.38|8.54|CH
+Abu Dhabi|24.45|54.38|AE
+Addis Abeba|9.03|38.75|ET
+Algeri|36.75|3.06|DZ
+Amman|31.95|35.93|JO
+Bangkok|13.76|100.50|TH
+Pechino|39.90|116.41|CN
+Beirut|33.89|35.50|LB
+Bogotà|4.71|-74.07|CO
+Buenos Aires|-34.60|-58.38|AR
+Il Cairo|30.04|31.24|EG
+Cape Town|-33.92|18.42|ZA
+Caracas|10.48|-66.90|VE
+Casablanca|33.57|-7.59|MA
+Chicago|41.88|-87.63|US
+Dakar|14.72|-17.47|SN
+Dallas|32.78|-96.80|US
+Delhi|28.61|77.21|IN
+Denver|39.74|-104.99|US
+Doha|25.29|51.53|QA
+Dubai|25.20|55.27|AE
+Giacarta|-6.21|106.85|ID
+Hanoi|21.03|105.85|VN
+Havana|23.11|-82.37|CU
+Ho Chi Minh|10.82|106.63|VN
+Hong Kong|22.32|114.17|HK
+Honolulu|21.31|-157.86|US
+Houston|29.76|-95.37|US
+Johannesburg|-26.20|28.05|ZA
+Kuala Lumpur|3.14|101.69|MY
+Lagos|6.52|3.38|NG
+Lima|-12.05|-77.04|PE
+Los Angeles|34.05|-118.24|US
+Manila|14.60|120.98|PH
+Melbourne|-37.81|144.96|AU
+Città del Messico|19.43|-99.13|MX
+Miami|25.76|-80.19|US
+Montreal|45.50|-73.57|CA
+Mumbai|19.08|72.88|IN
+Nairobi|-1.29|36.82|KE
+New York|40.71|-74.01|US
+Osaka|34.69|135.50|JP
+Panama|8.98|-79.52|PA
+Rio de Janeiro|-22.91|-43.17|BR
+Riad|24.71|46.68|SA
+San Francisco|37.77|-122.42|US
+San Paolo|-23.55|-46.63|BR
+Santiago del Cile|-33.45|-70.67|CL
+Seattle|47.61|-122.33|US
+Seul|37.57|126.98|KR
+Shanghai|31.23|121.47|CN
+Singapore|1.35|103.82|SG
+Sydney|-33.87|151.21|AU
+Taipei|25.03|121.57|TW
+Tel Aviv|32.08|34.78|IL
+Tokyo|35.68|139.65|JP
+Toronto|43.65|-79.38|CA
+Tunisi|36.81|10.18|TN
+Vancouver|49.28|-123.12|CA
+Washington|38.91|-77.04|US`.split('\n').map(r=>{
+  const [nome,lat,lng,paese]=r.split('|');
+  return {nome, lat:+lat, lng:+lng, paese};
+});
+
+/* Compagnie: nome|paese|mezzi. Elenco chiuso, si allunga solo con l'approvazione
+   del gestore: così nessuno scrive "Rayanair" e i posti restano puliti. */
+const COMPAGNIE = `Trenitalia|IT|treno
+Italo|IT|treno
+Trenord|IT|treno
+Ferrovie del Sud Est|IT|treno
+Trentino Trasporti|IT|treno
+SAD|IT|treno
+ÖBB|AT|treno
+SBB|CH|treno
+DB|DE|treno
+SNCF|FR|treno
+Renfe|ES|treno
+Eurostar|GB|treno
+Thalys|BE|treno
+Amtrak|US|treno
+ITA Airways|IT|aereo
+Ryanair|IE|aereo
+easyJet|GB|aereo
+Wizz Air|HU|aereo
+Vueling|ES|aereo
+Lufthansa|DE|aereo
+Air France|FR|aereo
+KLM|NL|aereo
+British Airways|GB|aereo
+Iberia|ES|aereo
+Swiss|CH|aereo
+Austrian|AT|aereo
+Brussels Airlines|BE|aereo
+TAP|PT|aereo
+Aegean|GR|aereo
+Turkish Airlines|TR|aereo
+Emirates|AE|aereo
+Qatar Airways|QA|aereo
+Etihad|AE|aereo
+Singapore Airlines|SG|aereo
+Cathay Pacific|HK|aereo
+Japan Airlines|JP|aereo
+ANA|JP|aereo
+Korean Air|KR|aereo
+Delta|US|aereo
+United|US|aereo
+American Airlines|US|aereo
+Air Canada|CA|aereo
+LATAM|BR|aereo
+Qantas|AU|aereo
+Ethiopian|ET|aereo
+Aeroflot|RU|aereo
+Norwegian|NO|aereo
+SAS|SE|aereo
+Finnair|FI|aereo
+LOT|PL|aereo
+Moby|IT|nave
+Grandi Navi Veloci|IT|nave
+Tirrenia|IT|nave
+Grimaldi Lines|IT|nave
+Snav|IT|nave
+Caronte & Tourist|IT|nave
+Liberty Lines|IT|nave
+Corsica Ferries|FR|nave
+Jadrolinija|HR|nave
+Minoan Lines|GR|nave
+Anek Lines|GR|nave
+Brittany Ferries|FR|nave
+DFDS|DK|nave
+Stena Line|SE|nave
+MSC Crociere|CH|nave
+Costa Crociere|IT|nave
+Royal Caribbean|US|nave
+Flixbus|DE|bus
+Itabus|IT|bus
+Marino Autolinee|IT|bus
+Baltour|IT|bus
+ATVO|IT|bus
+Dolomiti Bus|IT|bus
+Autoguidovie|IT|bus
+ATM|IT|bus
+ATAC|IT|bus
+GTT|IT|bus
+National Express|GB|bus
+BlaBlaCar Bus|FR|bus
+ALSA|ES|bus`.split('\n').map(r=>{
+  const [nome,paese,mezzo]=r.split('|');
+  return {nome, paese, mezzo};
+});
+
+const MEZZI = [
+  {id:'aereo', em:'✈️', nome:'Aereo'},
+  {id:'treno', em:'🚆', nome:'Treno'},
+  {id:'nave',  em:'🛳️', nome:'Nave'},
+  {id:'bus',   em:'🚌', nome:'Bus'}
+];
+
+/* Punto lungo la rotta, calcolato sull'arco vero della sfera: su una tratta
+   lunga la media dei numeri finirebbe a centinaia di chilometri di distanza. */
+function puntoSuRotta(a, b, f){
+  const R=Math.PI/180;
+  const la1=a.lat*R, lo1=a.lng*R, la2=b.lat*R, lo2=b.lng*R;
+  const d=2*Math.asin(Math.sqrt(Math.sin((la2-la1)/2)**2 + Math.cos(la1)*Math.cos(la2)*Math.sin((lo2-lo1)/2)**2));
+  if(!d) return {lat:a.lat, lng:a.lng};
+  const A=Math.sin((1-f)*d)/Math.sin(d), B=Math.sin(f*d)/Math.sin(d);
+  const x=A*Math.cos(la1)*Math.cos(lo1)+B*Math.cos(la2)*Math.cos(lo2);
+  const y=A*Math.cos(la1)*Math.sin(lo1)+B*Math.cos(la2)*Math.sin(lo2);
+  const z=A*Math.sin(la1)+B*Math.sin(la2);
+  return {lat:Math.atan2(z, Math.hypot(x,y))/R, lng:Math.atan2(y,x)/R};
+}
+/* Quanto dista un punto dalla rotta: serve a capire se il GPS ha detto una
+   cosa sensata o si è ricordato di dov'eri ieri. */
+function distanzaDallaRotta(p, a, b){
+  let min=Infinity;
+  for(let i=0;i<=40;i++){
+    const q=puntoSuRotta(a,b,i/40);
+    const d=distanza(p,q);
+    if(d<min) min=d;
+  }
+  return min;
+}
+const cittaDi = nome => CITTA.find(c=>c.nome.toLowerCase()===String(nome||'').toLowerCase().trim());
+function cittaVicine(nome, quante){
+  const q=String(nome||'').toLowerCase().trim();
+  if(!q) return [];
+  const iniziano=CITTA.filter(c=>c.nome.toLowerCase().startsWith(q));
+  const contengono=CITTA.filter(c=>!c.nome.toLowerCase().startsWith(q) && c.nome.toLowerCase().includes(q));
+  return iniziano.concat(contengono).slice(0, quante||8);
+}
+/* Nome del posto composto dall'app: nessuno lo scrive a mano, quindi non
+   esisteranno mai tre grafie diverse della stessa tratta. Andata e ritorno
+   sono lo stesso bagno, quindi le città si ordinano alfabeticamente. */
+function nomeTratta(compagnia, da, a){
+  const due=[da,a].filter(Boolean).sort((x,y)=>x.localeCompare(y));
+  return due.length===2 ? `${compagnia} · ${due[0]}–${due[1]}` : compagnia;
+}
+function idTratta(compagnia, da, a){
+  const pulisci = t => String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'');
+  const due=[da,a].filter(Boolean).sort((x,y)=>x.localeCompare(y)).map(pulisci);
+  return 't:'+pulisci(compagnia)+':'+due.join('-');
+}
+
 const nomeCategoria = id => (CATEGORIE.find(c=>c.id===id)||{}).nome || '';
 const emCategoria   = id => (CATEGORIE.find(c=>c.id===id)||{}).em || '';
 
@@ -923,13 +1372,15 @@ function daRiga(x){
   return {id:x.id, nome:x.nome, faccia:x.faccia, autoreId:x.autore_id, ts:Number(x.ts),
     creatoTs: x.creato ? Date.parse(x.creato) : Number(x.ts),
     luogo:x.luogo, luogoId:x.luogo_id, titolo:x.titolo, testo:x.testo, voti:x.voti||{},
-    tag:x.tag||[], categoria:x.categoria||null, settore:x.settore||'', lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
+    tag:x.tag||[], categoria:x.categoria||null, settore:x.settore||'',
+    mezzo:x.mezzo||null, compagnia:x.compagnia||null, da:x.citta_da||null, a:x.citta_a||null, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
     haFoto:!!x.foto_url, fotoUrl:x.foto_url, reaz:x.reaz||{}};
 }
 function aRiga(r){
   return {id:r.id, nome:r.nome, faccia:r.faccia, autore_id:r.autoreId||null, ts:r.ts,
     luogo:r.luogo, luogo_id:r.luogoId||null, titolo:r.titolo, testo:r.testo, voti:r.voti,
-    tag:r.tag, categoria:r.categoria||null, settore:r.settore||null, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
+    tag:r.tag, categoria:r.categoria||null, settore:r.settore||null,
+    mezzo:r.mezzo||null, compagnia:r.compagnia||null, citta_da:r.da||null, citta_a:r.a||null, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
     foto_url:r.fotoUrl||null, reaz:r.reaz||{}};
 }
 
@@ -962,7 +1413,13 @@ const DB = {
       await cli.from('proposte').update({a_id:nuovo}).eq('a_id',vecchio);
     }catch(e){}
   },
-  async rinominaLuogo(luogoId,nome){ await cli.from('recensioni').update({luogo:nome}).eq('luogo_id',luogoId); },
+  /* Rinomina tutte le recensioni di un posto. La funzione sul server verifica
+     che a chiedere sia il battezzatore o un gestore: l'app non ha il permesso
+     di toccare le righe altrui. */
+  async rinominaLuogo(luogoId,nome){
+    const {error} = await cli.rpc('rinomina_luogo', {p_luogo_id:luogoId, p_nome:nome});
+    if(error) throw error;
+  },
 
   /* Azzeramento totale: solo per chi è nella tabella "gestori". */
   async azzeraTutto(){
@@ -980,6 +1437,19 @@ const DB = {
     const r = await cli.from('recensioni').delete().gte('ts', 0);
     if(r.error) throw r.error;
     return foto;
+  },
+  /* Posti che non ci sono più: i bagni chimici di una sagra, il cantiere finito.
+     Non si cancella niente, si spegne. Chiunque può spegnere e riaccendere. */
+  async caricaStati(){
+    if(!cli) return [];
+    const {data,error} = await cli.from('luoghi_stato').select('*');
+    if(error){ console.warn('stati:', error.message); return []; }
+    return (data||[]).map(x=>({luogoId:x.luogo_id, presente:x.presente!==false, daNome:x.da_nome, ts:Number(x.ts)}));
+  },
+  async segnaStato(luogoId, presente, daNome){
+    const {error} = await cli.from('luoghi_stato')
+      .upsert({luogo_id:luogoId, presente, da_nome:daNome, da_id:(S.io&&S.io.id)||null, ts:Date.now()}, {onConflict:'luogo_id'});
+    if(error) throw error;
   },
   async caricaProposte(){
     if(!cli) return [];
@@ -1057,6 +1527,9 @@ function recuperaBozza(){
   $('#testo-rec').value = d.testo||'';
   if(d.quando) $('#quando').value = d.quando;
   if(d.settore!==undefined) $('#settore-txt').value = d.settore;
+  S.bozza.mezzo=b.mezzo||null; S.bozza.compagnia=b.compagnia||null; S.bozza.da=b.da||null; S.bozza.a=b.a||null;
+  if(b.compagnia){ $('#compagnia').value=b.compagnia; $('#citta-da').value=b.da||''; $('#citta-a').value=b.a||''; }
+  aggiornaViaggio(); aggiornaSuggerimentoEvento();
   $('#contatore').textContent = (d.testo||'').length+' / 600';
   costruisciModulo();
   if(S.bozza.pos){
@@ -1073,9 +1546,9 @@ let gestore = false;
 
 
 /* ============ STATO ============ */
-const S = {io:null, recensioni:[], proposte:[], vista:'registra', foto:new Map(), modificaId:null,
+const S = {io:null, recensioni:[], proposte:[], stati:new Map(), vista:'registra', foto:new Map(), modificaId:null,
            bozza:null, profilo:null, mappa:null, strato:null, perni:new Map(),
-           ordina:'registrata',
+           ordina:'nuove',
            filtri:{utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''}};
 
 const $  = s => document.querySelector(s);
@@ -1118,8 +1591,14 @@ function gruppoLuogo(r){ return r.luogoId || ('n:'+chiaveLuogo(r.luogo)); }
    Il POSTO resta uno (nome, battesimo, pin sulla mappa); il BAGNO è la
    suddivisione interna, e ha statistiche e recensioni sue. */
 const settoreDi = r => (r.settore||'').trim();
+/* un posto è "assente" se qualcuno l'ha segnato come non più esistente */
+function postoAssente(gruppo){
+  const st = S.stati.get(gruppo);
+  return !!st && st.presente===false;
+}
 /* Scritta a memoria: l'evento è di almeno un giorno prima della registrazione. */
 const A_POSTERIORI = 86400000;
+const dataBreve = ts => new Date(ts).toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',year:'numeric'});
 function aPosteriori(r){
   const reg = r.creatoTs || r.ts;
   return (reg - r.ts) >= A_POSTERIORI;
@@ -1148,6 +1627,7 @@ function nomeCanonico(gruppo){
   return p ? p.luogo : 'Posto senza nome';
 }
 function possoRinominare(r){
+  if(r && r.categoria==='trasporti') return false;   /* il nome lo compone l'app */
   if(gestore) return true;
   if(!S.io || r.autoreId!==S.io.id) return false;
   const p = primaDelPosto(gruppoLuogo(r));
@@ -1276,6 +1756,7 @@ function traduciErrore(m){
   if(m.includes('invalid email') || m.includes('valid email')) return "L'email non sembra scritta bene.";
   if(m.includes('email not confirmed')) return 'Devi prima confermare l\'email: controlla la posta.';
   if(m.includes('rate limit') || m.includes('too many')) return 'Troppi tentativi ravvicinati, riprova fra qualche minuto.';
+  if(m.includes('troppe proposte')) return 'Hai già mandato tre proposte oggi: riprova domani.';
   if(m.includes('failed to fetch')) return 'Nessuna connessione al server.';
   return m ? m.charAt(0).toUpperCase()+m.slice(1) : 'Qualcosa non ha funzionato.';
 }
@@ -1502,7 +1983,10 @@ function ridisegna(){
 /* ============ REGISTRA ============ */
 function nuovaBozza(){
   S.modificaId = null;
-  S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null};
+  S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null,
+             mezzo:null, compagnia:null, da:null, a:null};
+  $('#viaggio').hidden=true;
+  $('#compagnia').value=''; $('#citta-da').value=''; $('#citta-a').value='';
   $('#titolo-registra').textContent='Registra la cagata';
   $('#sotto-registra').textContent='Ci metti meno di quanto ci hai messo dentro';
   $('#salva').textContent='Tira lo sciacquone 🚽';
@@ -1591,6 +2075,129 @@ function disegnaSettori(gruppo){
 }
 $('#settore-txt').addEventListener('input', salvaBozza);
 
+/* ---- Il viaggio: compare solo scegliendo Trasporto ------------------------
+   Mezzo, compagnia e due città bastano a comporre il nome del posto e a
+   piazzare il pin, anche senza rete e senza GPS. */
+function disegnaMezzi(){
+  $('#scelte-mezzo').innerHTML = MEZZI.map(m=>
+    `<button type="button" data-mezzo="${m.id}" aria-pressed="${S.bozza.mezzo===m.id}">
+       <span class="em">${m.em}</span>${m.nome}</button>`).join('');
+}
+$('#scelte-mezzo').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-mezzo]'); if(!b) return;
+  S.bozza.mezzo = S.bozza.mezzo===b.dataset.mezzo ? null : b.dataset.mezzo;
+  disegnaMezzi(); componiTratta();
+});
+
+/* Le compagnie del mezzo scelto, con quelle del tuo paese e della tratta in
+   cima: l'elenco resta completo, cambia solo l'ordine. */
+function compagnieUtili(q){
+  const paesi = new Set([ (cittaDi($('#citta-da').value)||{}).paese,
+                          (cittaDi($('#citta-a').value)||{}).paese, 'IT' ].filter(Boolean));
+  const testo = String(q||'').toLowerCase().trim();
+  return COMPAGNIE
+    .filter(c=>!S.bozza.mezzo || c.mezzo===S.bozza.mezzo)
+    .filter(c=>!testo || c.nome.toLowerCase().includes(testo))
+    .sort((a,b)=>{
+      const pa=paesi.has(a.paese)?0:1, pb=paesi.has(b.paese)?0:1;
+      if(pa!==pb) return pa-pb;
+      return a.nome.localeCompare(b.nome);
+    }).slice(0,10);
+}
+function mostraSuggerimenti(box, voci, scegli){
+  if(!voci.length){ box.hidden=true; box.innerHTML=''; return; }
+  box.hidden=false;
+  box.innerHTML = voci.map((v,i)=>`<button type="button" data-i="${i}">${esc(v.nome)} <span class="paese">${esc(v.paese||'')}</span></button>`).join('');
+  box.onclick = e=>{
+    const b=e.target.closest('button[data-i]'); if(!b) return;
+    scegli(voci[+b.dataset.i]);
+    box.hidden=true;
+  };
+}
+function scegliCompagnia(c){
+  $('#compagnia').value=c.nome;
+  if(!S.bozza.mezzo){ S.bozza.mezzo=c.mezzo; disegnaMezzi(); }
+  componiTratta();
+}
+$('#compagnia').addEventListener('input', e=>
+  mostraSuggerimenti($('#sug-compagnia'), compagnieUtili(e.target.value), scegliCompagnia));
+$('#compagnia').addEventListener('focus', ()=>
+  mostraSuggerimenti($('#sug-compagnia'), compagnieUtili(''), scegliCompagnia));
+[['#citta-da','#sug-da'],['#citta-a','#sug-a']].forEach(([campo,box])=>{
+  $(campo).addEventListener('input', e=>
+    mostraSuggerimenti($(box), cittaVicine(e.target.value), c=>{ $(campo).value=c.nome; componiTratta(); }));
+});
+$('#manca-compagnia').addEventListener('click', async ()=>{
+  if(!S.io) return apriIngresso();
+  const nome = await chiedi('Manca una compagnia',
+    'Scrivila come si scrive davvero: dopo un controllo la aggiungo all\'elenco per tutti, così nessuno la scrive in tre modi diversi.',
+    {campo:'testo', segnaposto:'es. Air Dolomiti', ok:'Proponi'});
+  if(!nome || nome===true) return;
+  const p = {id:nuovoId('p'), luogoId:'compagnia', nomeAttuale:'(nuova compagnia)',
+             nomeProposto:titoloMaiuscolo(String(nome)),
+             motivo:'Compagnia da aggiungere ('+(S.bozza.mezzo||'mezzo non scelto')+')',
+             daId:S.io.id, daNome:S.io.nome, aId:null, ts:Date.now(), stato:'attesa'};
+  try{ await DB.proponi(p); S.proposte.unshift(p); toast('Proposta mandata al gestore'); }
+  catch(e){
+    const m=String(e&&e.message||'').toLowerCase();
+    toast(m.includes('troppe proposte') ? 'Hai già mandato tre proposte oggi' : 'Non è riuscita, riprova');
+  }
+});
+
+/* Compone nome e identificativo del posto dalle scelte fatte. */
+function componiTratta(){
+  const comp=$('#compagnia').value.trim();
+  const da=$('#citta-da').value.trim(), a=$('#citta-a').value.trim();
+  S.bozza.compagnia=comp; S.bozza.da=da; S.bozza.a=a;
+  if(comp){
+    $('#luogo').value = nomeTratta(comp, da, a);
+    $('#luogo').readOnly = true;
+    S.bozza.luogoId = idTratta(comp, da, a);
+    S.bozza.bloccato = true;
+    ultimoRiconoscimento = null;
+  }
+  salvaBozza(); segnaPassi();
+}
+
+/* Il pannello si accende scegliendo Trasporto e si spegne cambiando idea. */
+function aggiornaViaggio(){
+  const acceso = S.bozza.categoria==='trasporti';
+  $('#viaggio').hidden = !acceso;
+  if(acceso){
+    disegnaMezzi();
+    $('#campo-nome-posto').hidden=false;
+    $('#luogo').readOnly=true;
+    $('#vicini').hidden=true;
+    $('#sp-azioni').innerHTML='';
+    $('#sp-corpo').className='sp-corpo visibile';
+    $('#sp-corpo').innerHTML = `🚆 <b>Sei su un mezzo</b>
+      <span class="dett">Il posto è la tratta, non il singolo treno o aereo: chi la rifà si aggiunge qui. Il pin va lungo il percorso.</span>`;
+    componiTratta();
+  } else if(S.bozza.compagnia || S.bozza.mezzo){
+    S.bozza.compagnia=S.bozza.da=S.bozza.a=S.bozza.mezzo=null;
+    $('#compagnia').value=''; $('#citta-da').value=''; $('#citta-a').value='';
+    $('#luogo').value=''; $('#luogo').readOnly=false;
+    schedaPosto(S.bozza.pos ? {tipo:'nuovo'} : {tipo:'senza'});
+    salvaBozza(); segnaPassi();
+  }
+}
+
+/* All'evento cambia il suggerimento: il nome del posto è il nome della sagra,
+   così tutte le recensioni di quella sagra stanno insieme. */
+function aggiornaSuggerimentoEvento(){
+  const i=$('#luogo');
+  if(S.bozza.categoria==='evento'){
+    i.placeholder = 'es. Sagra del Rospo 2026';
+    if(!S.bozza.bloccato){
+      $('#sp-corpo').className='sp-corpo visibile nuovo';
+      $('#sp-corpo').innerHTML = `🎪 <b>Scrivi il nome dell'evento</b>
+        <span class="dett">La sagra, il concerto, la fiera. I bagni chimici sono tanti e cambiano: quello che resta è l'evento.</span>`;
+    }
+  } else if(i.placeholder.startsWith('es. Sagra')){
+    i.placeholder = 'es. Autogrill Somaglia Ovest';
+  }
+}
+
 function sbloccaLuogo(vuota){
   if(vuota) $('#luogo').value='';
   schedaPosto({tipo:'nuovo', tornaIndietro:!!ultimoRiconoscimento});
@@ -1676,6 +2283,32 @@ function costruisciModulo(){
   $('#scelte-categoria').innerHTML = CATEGORIE.map(c=>
     `<button type="button" class="scelta" data-cat="${c.id}" aria-pressed="${S.bozza.categoria===c.id}"><span class="em">${c.em}</span>${c.nome}</button>`).join('');
 }
+/* Parte da una recensione altrui e ne eredita SOLO il posto, il bagno e la
+   categoria: voti e racconto sono tuoi, se li copiasse nascerebbero cloni.
+   Serve anche dove il GPS non arriva: il posto arriva dalla recensione. */
+function dicoLaMia(id){
+  const r = S.recensioni.find(x=>x.id===id); if(!r) return;
+  if(!S.io) return apriIngresso();
+  nuovaBozza();
+  S.bozza.luogoId = r.luogoId || null;
+  S.bozza.categoria = r.categoria || null;
+  S.bozza.citta = r.citta || null;
+  S.bozza.paese = r.paese || null;
+  if(r.lat!=null) S.bozza.pos = {lat:r.lat, lng:r.lng, acc:null, ereditata:true};
+  $('#settore-txt').value = settoreDi(r);
+  const gruppo = gruppoLuogo(r);
+  ultimoRiconoscimento = {tipo:'conosciuto', nome:nomeCanonico(gruppo), luogoId:r.luogoId||null,
+                          gruppo, prima:primaDelPosto(gruppo), metri:null};
+  schedaPosto(ultimoRiconoscimento);
+  disegnaSettori(gruppo);
+  costruisciModulo();
+  $('#stato-gps').innerHTML = `<b>Stesso posto di ${esc(r.nome)}</b>Non serve il GPS: il bagno è già quello.`;
+  $('#punto-gps').className = r.lat!=null ? 'punto ok' : 'punto';
+  salvaBozza(); segnaPassi();
+  vaiA('registra');
+  toast('Racconta la tua: il posto è già impostato');
+}
+
 async function modifica(id){
   const r = S.recensioni.find(x=>x.id===id); if(!r) return;
   S.modificaId = id;
@@ -1689,6 +2322,9 @@ async function modifica(id){
   $('#luogo').value=r.luogo||''; $('#luogo').readOnly=false;
   $('#settore-txt').value=settoreDi(r);
   disegnaSettori(gruppoLuogo(r));
+  S.bozza.mezzo=r.mezzo||null; S.bozza.compagnia=r.compagnia||null; S.bozza.da=r.da||null; S.bozza.a=r.a||null;
+  $('#compagnia').value=r.compagnia||''; $('#citta-da').value=r.da||''; $('#citta-a').value=r.a||'';
+  aggiornaViaggio(); aggiornaSuggerimentoEvento();
   ultimoRiconoscimento=null;
   const p=primaDelPosto(gruppoLuogo(r));
   if(!possoRinominare(r)){
@@ -1729,6 +2365,8 @@ $('#scelte-categoria').addEventListener('click', e=>{
   const b=e.target.closest('.scelta'); if(!b) return;
   S.bozza.categoria = S.bozza.categoria===b.dataset.cat ? null : b.dataset.cat;
   $$('#scelte-categoria .scelta').forEach(x=>x.setAttribute('aria-pressed', x.dataset.cat===S.bozza.categoria));
+  aggiornaViaggio();
+  aggiornaSuggerimentoEvento();
   salvaBozza(); segnaPassi();
 });
 $('#lista-tag').addEventListener('click', e=>{
@@ -1834,7 +2472,16 @@ $('#salva').addEventListener('click', async ()=>{
     toast(messaggio);
     const el=$(sel); if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
   };
-  if(!S.bozza.pos){
+  const inViaggio = S.bozza.categoria==='trasporti';
+  if(inViaggio){
+    if(!S.bozza.mezzo){ vaiA_blocco('#scelte-mezzo', 'Scegli il mezzo'); return; }
+    if(!S.bozza.compagnia){ vaiA_blocco('#compagnia', 'Scegli la compagnia dall\'elenco'); return; }
+    if(!S.bozza.da || !S.bozza.a){ vaiA_blocco('#citta-da', 'Scrivi da dove parti e dove arrivi'); return; }
+    if(!cittaDi(S.bozza.da) || !cittaDi(S.bozza.a)){
+      vaiA_blocco('#citta-da', 'Scegli le città dai suggerimenti: mi servono per mettere il pin');
+      return;
+    }
+  } else if(!S.bozza.pos){
     vaiA_blocco('#punto-gps', 'Serve la posizione: tocca Rileva, oppure scegli il punto sulla mappa');
     return;
   }
@@ -1880,6 +2527,7 @@ $('#salva').addEventListener('click', async ()=>{
       Object.assign(r, {
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
         ts:quandoTs, voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, settore:$('#settore-txt').value.trim(),
+        mezzo:S.bozza.mezzo||null, compagnia:S.bozza.compagnia||null, da:S.bozza.da||null, a:S.bozza.a||null,
         lat:S.bozza.pos?S.bozza.pos.lat:r.lat, lng:S.bozza.pos?S.bozza.pos.lng:r.lng,
         citta:S.bozza.citta||r.citta, paese:S.bozza.paese||r.paese
       });
@@ -1898,6 +2546,7 @@ $('#salva').addEventListener('click', async ()=>{
       const r = {id, nome:S.io.nome, faccia:S.io.faccia, autoreId:S.io.id, ts:quandoTs, creatoTs:Date.now(),
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
         voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, settore:$('#settore-txt').value.trim(),
+        mezzo:S.bozza.mezzo||null, compagnia:S.bozza.compagnia||null, da:S.bozza.da||null, a:S.bozza.a||null,
         lat:S.bozza.pos?S.bozza.pos.lat:null, lng:S.bozza.pos?S.bozza.pos.lng:null,
         citta:S.bozza.citta, paese:S.bozza.paese, haFoto:!!S.bozza.foto, fotoUrl:null, reaz:{}};
       if(S.bozza.foto) S.foto.set(id, S.bozza.foto);
@@ -2019,31 +2668,37 @@ function passaFiltri(r, salta){
       && (salta==='voto'      || !f.voto      || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto)));
 }
 /* Nomi espliciti: "ultime" e "prime" si prestavano a due letture opposte. */
+/* Una sola nozione di tempo: la data della cagata, che è quella scritta sulla
+   scheda. Distinguere "pubblicate" da "accadute" confondeva e basta. */
 const ORDINAMENTI = [
-  ['registrata',    'Pubblicate: prima le nuove'],
-  ['registrata-su', 'Pubblicate: prima le vecchie'],
-  ['accaduta',      'Cagate: prima le recenti'],
-  ['accaduta-su',   'Cagate: prima le vecchie'],
-  ['voto-alto',     'Voto più alto'],
-  ['voto-basso',    'Voto più basso'],
-  ['posto',         'Posto dalla A alla Z'],
-  ['posto-giu',     'Posto dalla Z alla A']
+  ['nuove',      'Cagate: prima le recenti'],
+  ['vecchie',    'Cagate: prima le vecchie'],
+  ['pub-nuove',  'Pubblicate: prima le nuove'],
+  ['pub-vecchie','Pubblicate: prima le vecchie'],
+  ['voto-alto',  'Voto più alto'],
+  ['voto-basso', 'Voto più basso'],
+  ['posto',      'Posto dalla A alla Z'],
+  ['posto-giu',  'Posto dalla Z alla A']
 ];
 function filtrate(){
   const el = S.recensioni.filter(r=>passaFiltri(r, null));
-  const quando = r => r.creatoTs || r.ts;
+  /* "recente" è sempre la data della cagata, non quella in cui è stata scritta:
+     è quella che conta per chi legge. Le scritte in ritardo hanno la loro
+     etichetta "A posteriori" e si infilano al posto giusto della cronologia. */
+  const pub = r => r.creatoTs || r.ts;
   switch(S.ordina){
-    case 'registrata-su': el.sort((a,b)=>quando(a)-quando(b)); break;
-    case 'accaduta':   el.sort((a,b)=>b.ts-a.ts); break;
-    case 'accaduta-su':el.sort((a,b)=>a.ts-b.ts); break;
+    case 'vecchie':    el.sort((a,b)=>a.ts-b.ts); break;
+    case 'pub-nuove':  el.sort((a,b)=>pub(b)-pub(a)); break;
+    case 'pub-vecchie':el.sort((a,b)=>pub(a)-pub(b)); break;
     case 'voto-alto':  el.sort((a,b)=>media(b.voti)-media(a.voti) || b.ts-a.ts); break;
     case 'voto-basso': el.sort((a,b)=>media(a.voti)-media(b.voti) || b.ts-a.ts); break;
     case 'posto':      el.sort((a,b)=>etichettaBagno(a).localeCompare(etichettaBagno(b)) || b.ts-a.ts); break;
     case 'posto-giu':  el.sort((a,b)=>etichettaBagno(b).localeCompare(etichettaBagno(a)) || b.ts-a.ts); break;
-    default:           el.sort((a,b)=>quando(b)-quando(a));   /* ultime registrate */
+    default:           el.sort((a,b)=>b.ts-a.ts);
   }
   return el;
 }
+
 /* Menu in stile app: i <select> aprivano l'elenco nero del sistema, che non si
    può vestire. Questi aprono una finestra nostra, con le stesse regole grafiche. */
 const VOCI_MENU = {};
@@ -2072,7 +2727,7 @@ function impostaMenu(id, titolo, voci, valore){
   const b=document.getElementById(id); if(!b) return;
   const trovata = voci.find(([v])=>v===valore);
   b.querySelector('.et').textContent = trovata ? trovata[1] : (voci[0]?voci[0][1]:'');
-  b.classList.toggle('attivo', !!valore);
+  b.classList.toggle('attivo', !!valore && id!=='ordina');   /* l'ordinamento è sempre impostato: non è un filtro */
   b.dataset.valore = valore || '';
 }
 document.addEventListener('click', async e=>{
@@ -2187,12 +2842,12 @@ function scheda(r){
   const mia = propria || gestore;
   const cacca=(r.reaz&&r.reaz['💩'])||[];
   const miaR = S.io && cacca.includes(S.io.id);
-  return `<article class="scheda">
+  return `<article class="scheda${postoAssente(gruppoLuogo(r))?' assente':''}">
     <header class="targa">
       <span class="avatar" aria-hidden="true">${r.faccia||'💩'}</span>
       <div style="min-width:0">
         <div class="chi tronca">${esc(r.nome)}</div>
-        <div class="dove tronca">${quando(r.ts)}${r.citta?' · '+esc(r.citta):''}</div>
+        <div class="dove tronca"><span class="et-testato">Testato</span> ${quando(r.ts)}${r.citta?' · '+esc(r.citta):''}</div>
       </div>
       <div class="voto-globale"><b>${v.toFixed(1)}</b><span>SU 5</span></div>
     </header>
@@ -2201,7 +2856,8 @@ function scheda(r){
         <span class="lente">Tocca per ingrandire</span></button>`:''}
     <div class="corpo">
       <h3>${esc(r.luogo||'Posto misterioso')}</h3>
-      ${(aPosteriori(r)||settoreDi(r))?`<div class="riga-pastiglie">
+      ${(aPosteriori(r)||settoreDi(r)||postoAssente(gruppoLuogo(r)))?`<div class="riga-pastiglie">
+        ${postoAssente(gruppoLuogo(r))?`<span class="pastiglia-info sparito" title="Segnalato come non più esistente">🚫 Non c'è più</span>`:''}
         ${aPosteriori(r)?`<span class="pastiglia-info tempo" title="Scritta più di un giorno dopo">🕰️ A posteriori</span>`:''}
         ${settoreDi(r)?`<span class="pastiglia-info">${esc(settoreDi(r))}</span>`:''}
       </div>`:''}
@@ -2218,7 +2874,9 @@ function scheda(r){
     </div>
     <footer class="piede">
       <button class="azione" aria-pressed="${!!miaR}" onclick="reagisci('${r.id}')">💩${cacca.length?` <small>${cacca.length}</small>`:''}</button>
-      ${r.lat!=null?`<button class="azione" onclick="volaA('${r.id}')">🗺️ <small>Mappa</small></button>`:''}
+      ${(r.lat!=null||r.categoria==='trasporti')?`<button class="azione" onclick="volaA('${r.id}')">🗺️ <small>Mappa</small></button>`:''}
+      <span class="azione data-pub" title="Data di pubblicazione">DP <small>${dataBreve(r.creatoTs||r.ts)}</small></span>
+      ${(!propria && S.io)?`<button class="azione dico fine" onclick="dicoLaMia('${r.id}')">✍️ <small>Dico la mia</small></button>`:''}
       ${mia?`<button class="azione fine" onclick="modifica('${r.id}')">✏️ <small>${propria?'Modifica':'Gestisci'}</small></button>`:''}
     </footer>
   </article>`;
@@ -2230,7 +2888,17 @@ async function reagisci(id){
   const i=chi.indexOf(S.io.id);
   if(i>=0) chi.splice(i,1); else chi.push(S.io.id);
   disegnaBacheca();
-  try{ await DB.aggiorna(r); }catch(e){}
+  /* la cacca si mette con una funzione del server: l'app non può scrivere
+     dentro le recensioni degli altri */
+  try{
+    const {error} = await cli.rpc('reagisci', {p_id:id});
+    if(error) throw error;
+  }catch(e){
+    console.warn('reazione:', e);
+    if(i>=0) chi.push(S.io.id); else chi.splice(chi.indexOf(S.io.id),1);
+    disegnaBacheca();
+    toast('Non è riuscita, riprova');
+  }
 }
 
 /* ============ MAPPA ============ */
@@ -2288,14 +2956,50 @@ function mappaSenzaTessere(){
 /* Un pin per POSTO, non per recensione: due cagate nello stesso bagno erano
    due perni sovrapposti, e il secondo era irraggiungibile. Il fumetto riassume
    il posto e porta alle sue recensioni. */
+/* Dove va il pin di una recensione.
+   · posto fermo   → dove diceva il GPS
+   · tratta        → il GPS se cade entro 100 km dalla rotta (allora era vero),
+                     altrimenti un punto lungo la rotta, in ordine di
+                     registrazione: la prima al 20%, la seconda al 40%…
+   Così le recensioni di una tratta si allineano lungo il percorso invece di
+   accatastarsi in un punto solo, e nessuna finisce dove il mezzo non è passato. */
+const SCARTO_ROTTA_KM = 100;
+function puntiTratta(rec){
+  const primo=rec[0];
+  const da=cittaDi(primo.da), a=cittaDi(primo.a);
+  const ordinate=rec.slice().sort((x,y)=>(x.creatoTs||x.ts)-(y.creatoTs||y.ts));
+  const n=ordinate.length;
+  const punti=new Map();
+  ordinate.forEach((r,i)=>{
+    if(da && a){
+      if(r.lat!=null && distanzaDallaRotta({lat:r.lat,lng:r.lng}, da, a) <= SCARTO_ROTTA_KM){
+        punti.set(r.id, {lat:r.lat, lng:r.lng, vero:true});
+      } else {
+        const p=puntoSuRotta(da, a, (i+1)/(n+1));
+        punti.set(r.id, {lat:p.lat, lng:p.lng, vero:false});
+      }
+    } else if(r.lat!=null){
+      punti.set(r.id, {lat:r.lat, lng:r.lng, vero:true});
+    }
+  });
+  return punti;
+}
 function postiSullaMappa(){
   const m=new Map();
-  S.recensioni.filter(r=>r.lat!=null).forEach(r=>{
+  /* prima si raggruppa per posto, poi si decide dove mettere ogni perno */
+  S.recensioni.forEach(r=>{
     const g=gruppoLuogo(r);
-    if(!m.has(g)) m.set(g,{gruppo:g, lat:r.lat, lng:r.lng, rec:[]});
+    if(!m.has(g)) m.set(g,{gruppo:g, rec:[], tratta:r.categoria==='trasporti', evento:r.categoria==='evento'});
     m.get(g).rec.push(r);
   });
-  m.forEach(p=>p.rec.sort((a,b)=>b.ts-a.ts));
+  const fuori=[];
+  m.forEach((p,g)=>{
+    p.rec.sort((a,b)=>b.ts-a.ts);
+    p.punti = p.tratta ? puntiTratta(p.rec)
+                       : new Map(p.rec.filter(r=>r.lat!=null).map(r=>[r.id,{lat:r.lat,lng:r.lng,vero:true}]));
+    if(!p.punti.size) fuori.push(g);
+  });
+  fuori.forEach(g=>m.delete(g));   /* niente coordinate, niente pin */
   return m;
 }
 /* se in quel posto ci sono più bagni distinti, si scelgono dal fumetto */
@@ -2319,6 +3023,7 @@ function mostraAnteprimaPosto(gruppo){
   const ultima=rec[0];
   const bagni=new Map();
   rec.forEach(r=>{ const k=chiaveBagno(r); if(!bagni.has(k)) bagni.set(k,{et:settoreDi(r), n:0}); bagni.get(k).n++; });
+  const assente=postoAssente(gruppo), stato=S.stati.get(gruppo)||{};
   const box=$('#anteprima-posto');
   box.innerHTML = `
     <div class="ap-riga">
@@ -2331,6 +3036,8 @@ function mostraAnteprimaPosto(gruppo){
     </div>
     ${bagni.size>1 ? `<div class="ap-bagni">`+[...bagni.entries()].map(([k,v])=>
       `<button data-bagno="${esc(k)}">${esc(v.et||'Senza indicazione')} · ${v.n}</button>`).join('')+`</div>` : ''}
+    ${assente?`<div class="ap-nota">🚫 Segnalato come non più esistente da ${esc(stato.daNome||'qualcuno')}</div>`:''}
+    <button class="ap-segnala" id="ap-segnala">${assente?'✅ È tornato, riattivalo':'🚫 Questo bagno non c\'è più'}</button>
     <div class="ap-azioni">
       <button class="ap-btn fantasma" id="ap-chiudi">Chiudi</button>
       <button class="ap-btn" id="ap-apri">${rec.length===1?'Leggi la recensione':'Leggi tutte e '+rec.length}</button>
@@ -2338,7 +3045,24 @@ function mostraAnteprimaPosto(gruppo){
   box.hidden=false;
 }
 function chiudiAnteprimaPosto(){ $('#anteprima-posto').hidden=true; postoInAnteprima=null; }
-document.addEventListener('click', e=>{
+document.addEventListener('click', async e=>{
+  if(e.target.closest('#ap-segnala')){
+    if(!S.io) return apriIngresso();
+    const g=postoInAnteprima; if(!g) return;
+    const assente=postoAssente(g);
+    const ok = await chiedi(assente?'Il bagno è tornato?':'Questo bagno non c\'è più?',
+      assente ? 'Le recensioni tornano in evidenza e il pin sulla mappa si riaccende.'
+              : 'Succede con i bagni chimici di una sagra o con i cantieri finiti. Le recensioni non si cancellano: restano in grigio, con il pin spento, e chiunque può riaccenderle.',
+      {ok: assente?'Sì, è tornato':'Sì, non c\'è più', no:'Annulla'});
+    if(ok!==true) return;
+    try{
+      await DB.segnaStato(g, assente, S.io.nome);
+      S.stati.set(g, {luogoId:g, presente:assente, daNome:S.io.nome, ts:Date.now()});
+      mostraAnteprimaPosto(g); disegnaMappa(true); ridisegna();
+      toast(assente?'Riacceso':'Segnato come non più esistente');
+    }catch(err){ console.warn(err); toast('Non ha funzionato, riprova'); }
+    return;
+  }
   if(e.target.closest('#ap-chiudi')) return chiudiAnteprimaPosto();
   const b=e.target.closest('[data-bagno]');
   if(b){ chiudiAnteprimaPosto(); apriBagno(b.dataset.bagno); return; }
@@ -2373,16 +3097,34 @@ function disegnaMappa(forza){
   const posti=postiSullaMappa();
   posti.forEach(p=>{
     const n=p.rec.length, ultima=p.rec[0];
-    const m=L.marker([p.lat,p.lng],{
-      icon:L.divIcon({className:'perno',
-        html:`<div class="bolla"><span>${ultima.faccia||'💩'}</span>${n>1?`<i class="conta">${n}</i>`:''}</div>`,
+    const spento=postoAssente(p.gruppo);
+    const genere = p.tratta ? ' tratta' : (p.evento ? ' evento' : '');
+    if(p.tratta){
+      /* una tratta ha un perno per recensione, allineati lungo il percorso */
+      p.rec.forEach(r=>{
+        const pt=p.punti.get(r.id); if(!pt) return;
+        const m=L.marker([pt.lat,pt.lng],{
+          icon:L.divIcon({className:'perno'+genere+(spento?' spento':'')+(pt.vero?'':' stimato'),
+            html:`<div class="bolla"><span>${spento?'🚫':(r.faccia||'💩')}</span></div>`,
+            iconSize:[38,38], iconAnchor:[19,36], popupAnchor:[0,-34]}),
+          title:nomeCanonico(p.gruppo), riseOnHover:true, keyboard:true});
+        m.on('click', ()=>mostraAnteprimaPosto(p.gruppo));
+        m.addTo(S.strato);
+      });
+      S.perni.set(p.gruppo, null);
+      return;
+    }
+    const pt = p.punti.get(p.rec.find(r=>p.punti.has(r.id)).id);
+    const m=L.marker([pt.lat,pt.lng],{
+      icon:L.divIcon({className:'perno'+genere+(spento?' spento':''),
+        html:`<div class="bolla"><span>${spento?'🚫':(ultima.faccia||'💩')}</span>${n>1?`<i class="conta">${n}</i>`:''}</div>`,
         iconSize:[38,38], iconAnchor:[19,36], popupAnchor:[0,-34]}),
       title:nomeCanonico(p.gruppo), riseOnHover:true, keyboard:true});
     m.on('click', ()=>mostraAnteprimaPosto(p.gruppo));
     m.addTo(S.strato);
     S.perni.set(p.gruppo, m);
   });
-  const tutte=S.recensioni.filter(r=>r.lat!=null);
+  const tutte=S.recensioni.filter(r=>r.lat!=null || r.categoria==='trasporti');
   const paesi=new Set(tutte.map(r=>r.paese).filter(Boolean)).size;
   $('#conta-perni').textContent = posti.size
     ? `${posti.size} ${posti.size===1?'posto':'posti'} · ${tutte.length} ${tutte.length===1?'cagata':'cagate'}${paesi?` · ${paesi} ${paesi===1?'paese':'paesi'}`:''}`
@@ -2391,9 +3133,14 @@ function disegnaMappa(forza){
 
 /* Inquadra tutti i pin esistenti. Senza animazione: all'apertura deve essere
    già giusta, non arrivarci con uno zoom avanti e indietro. */
+function tuttiIPunti(){
+  const out=[];
+  postiSullaMappa().forEach(p=>p.punti.forEach(pt=>out.push([pt.lat,pt.lng])));
+  return out;
+}
 function inquadraTutti(){
   if(!S.mappa) return;
-  const punti=S.recensioni.filter(r=>r.lat!=null).map(r=>[r.lat,r.lng]);
+  const punti=tuttiIPunti();
   if(!punti.length) return;
   if(punti.length===1) S.mappa.setView(punti[0], 15, {animate:false});
   else S.mappa.fitBounds(L.latLngBounds(punti), {padding:[45,45], maxZoom:14, animate:false});
@@ -2461,12 +3208,12 @@ $('#btn-tutti').addEventListener('click',()=>{
   utenteHaMosso=false;
   if(!S.mappa){ toast('La mappa non è pronta'); return; }
   S.mappa.invalidateSize({animate:false});
-  const punti=S.recensioni.filter(r=>r.lat!=null);
-  if(!punti.length){ toast('Non c\'è ancora nessun pin da mostrare'); return; }
   disegnaMappa(true);
+  const punti=tuttiIPunti();
+  if(!punti.length){ toast('Non c\'è ancora nessun pin da mostrare'); return; }
   inquadraTutti();
-  const posti=new Set(punti.map(gruppoLuogo)).size;
-  toast(`${posti} ${posti===1?'posto':'posti'}, ${punti.length} ${punti.length===1?'cagata':'cagate'}`);
+  const posti=postiSullaMappa().size;
+  toast(`${posti} ${posti===1?'posto':'posti'}, ${punti.length} ${punti.length===1?'cagata':'cagate'} sulla mappa`);
 });
 $('#btn-io-qui').addEventListener('click',()=>{
   if(!navigator.geolocation||!S.mappa){ toast('Posizione non disponibile'); return; }
@@ -2477,14 +3224,17 @@ $('#btn-io-qui').addEventListener('click',()=>{
     {enableHighAccuracy:true,timeout:12000});
 });
 function volaA(id){
-  const r=S.recensioni.find(x=>x.id===id); if(!r||r.lat==null){ toast('Questa cagata non ha una posizione'); return; }
+  const r=S.recensioni.find(x=>x.id===id); if(!r){ return; }
+  const posto=postiSullaMappa().get(gruppoLuogo(r));
+  const pt=posto && posto.punti.get(id);
+  if(!pt){ toast('Questa cagata non ha una posizione'); return; }
   saltaInquadratura=true;
   vaiA('mappa');
   /* si aspetta che la mappa abbia le sue dimensioni vere, poi si vola */
   setTimeout(()=>{
     if(!S.mappa) return;
     S.mappa.invalidateSize({animate:false});
-    S.mappa.flyTo([r.lat,r.lng], 16, {duration:.9});
+    S.mappa.flyTo([pt.lat, pt.lng], posto.tratta?7:16, {duration:.9});
     setTimeout(()=>mostraAnteprimaPosto(gruppoLuogo(r)), 950);
   }, 260);
 }
@@ -2691,6 +3441,7 @@ async function sincronizza(avvisa, forza){
     const nuove = await DB.carica();
     const propPrima = proposteInArrivo().length;
     try{ S.proposte = await DB.caricaProposte(); }catch(e){}
+    try{ S.stati = new Map((await DB.caricaStati()).map(x=>[x.luogoId,x])); }catch(e){}
     const propDopo = proposteInArrivo().length;
     if(propDopo>propPrima){
       const p = proposteInArrivo()[0];
@@ -3070,7 +3821,10 @@ $('#prop-si').addEventListener('click', async ()=>{
     S.proposte.unshift(p);
   }catch(e){
     console.warn('proposta:', e);
-    toast('Non sono riuscito a inviarla, riprova');
+    const m=String(e&&e.message||'').toLowerCase();
+    toast(m.includes('troppe proposte')
+      ? 'Hai già mandato tre proposte oggi: riprova domani'
+      : 'Non sono riuscito a inviarla, riprova');
     btn.disabled=false;
     return;
   }
@@ -3192,6 +3946,7 @@ window.PM = { get stato(){ return S; }, get bozza(){ return S.bozza; }, schedaPo
   caricaCoda();
   await inizializzaSessione();
   try{ S.proposte = await DB.caricaProposte(); }catch(e){ S.proposte=[]; }
+  try{ S.stati = new Map((await DB.caricaStati()).map(x=>[x.luogoId,x])); }catch(e){ S.stati=new Map(); }
   try{ S.recensioni = await DB.carica(); }
   catch(e){ S.recensioni = []; toast('Database non raggiungibile: vedrai solo quello che hai in coda.'); }
   innestaCoda();
