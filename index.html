@@ -142,10 +142,10 @@ body.ingresso{overflow:hidden}
 /* ---------- mappa ---------- */
 .guscio-mappa{position:relative;isolation:isolate;z-index:0;width:100%;max-width:100%;height:clamp(320px,56dvh,560px);border-radius:var(--r-l);overflow:hidden;border:var(--bordo);box-shadow:var(--ombra)}
 #mappa{position:absolute;inset:0;background:#DCE7E2}
-.guscio-mappa .leaflet-pane,.guscio-mappa .leaflet-top,.guscio-mappa .leaflet-bottom{z-index:auto}
-.guscio-mappa .leaflet-control{z-index:2}
+.guscio-mappa .leaflet-marker-pane{z-index:600}
+.guscio-mappa .leaflet-tile-pane{z-index:200}
 .leaflet-container{font-family:var(--font-ui);background:#DCE7E2}
-.avviso-mappa{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;background:rgba(255,255,255,.95);border-radius:var(--r-m);padding:10px 14px;font-size:12.5px;color:var(--cioccolato-2);box-shadow:var(--ombra)}
+.avviso-mappa{position:absolute;left:12px;right:12px;bottom:12px;z-index:1100;background:rgba(255,255,255,.95);border-radius:var(--r-m);padding:10px 14px;font-size:12.5px;color:var(--cioccolato-2);box-shadow:var(--ombra)}
 .avviso-mappa[hidden]{display:none}
 .perno{display:grid;place-items:center;filter:drop-shadow(0 4px 6px rgba(42,28,18,.4))}
 .perno .bolla{position:relative;width:38px;height:38px;border-radius:50% 50% 50% 6px;transform:rotate(45deg);background:var(--porcellana);border:3px solid var(--cioccolato);display:grid;place-items:center}
@@ -154,7 +154,7 @@ body.ingresso{overflow:hidden}
 .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.5;width:212px !important}
 .pop-titolo{font-family:var(--font-display);font-weight:800;font-size:16px;color:var(--cioccolato);margin-bottom:2px}
 .pop-ultima{margin-top:6px;font-size:12px;color:var(--tenue);line-height:1.4}
-.anteprima-posto{position:absolute;left:10px;right:10px;bottom:10px;z-index:500;
+.anteprima-posto{position:absolute;left:10px;right:10px;bottom:10px;z-index:1200;
   background:var(--porcellana);border:var(--bordo);border-radius:var(--r-l);box-shadow:0 16px 34px -14px rgba(42,28,18,.7);
   padding:14px 16px;animation:sali .22s cubic-bezier(.22,1,.36,1)}
 .anteprima-posto[hidden]{display:none}
@@ -423,7 +423,8 @@ body.ingresso{overflow:hidden}
 .esiti-sel button:last-child{border-bottom:none}
 .mappa-sel{flex:1;position:relative;isolation:isolate;z-index:0;margin:0 16px;border-radius:var(--r-l);overflow:hidden;border:var(--bordo);min-height:200px}
 #mappa-scelta{position:absolute;inset:0;background:#DCE7E2}
-.mappa-sel .leaflet-pane,.mappa-sel .leaflet-top,.mappa-sel .leaflet-bottom{z-index:auto}
+.mappa-sel .leaflet-marker-pane{z-index:600}
+.mappa-sel .leaflet-tile-pane{z-index:200}
 .piede-sel{display:flex;align-items:center;gap:12px;padding:12px 16px calc(14px + var(--safe-b))}
 .piede-sel span{flex:1;min-width:0;font-size:12.5px;color:var(--tenue);line-height:1.35}
 .finestra{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:22px;background:rgba(42,28,18,.55);backdrop-filter:blur(5px);animation:sfuma .18s ease-out}
