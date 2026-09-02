@@ -13,7 +13,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 | Sezione | Cosa fa |
 |---|---|
 | 💩 **Registra** | Cinque passi numerati: dove sei, che posto è, il voto, cos'è successo, il racconto. **È sempre la schermata di apertura**, a ogni avvio. |
-| 📰 **Bacheca** | Tutte le recensioni del gruppo. Filtri per persona, città, paese e voto. Le tue le modifichi o le elimini. |
+| 📰 **Bacheca** | Tutte le recensioni del gruppo. In cima l'ordinamento e il pulsante Filtri (persona, posto, tipo, città, paese, voto). Le tue le modifichi o le elimini. |
 | 🗺️ **Mappa** | I pin di tutti. Tocca un pin per leggere la recensione. |
 | 🏆 **Classifica** | Chi ha registrato di più e i bagni col voto più alto. Tocca un nome per le sue statistiche, tocca un bagno per le sue recensioni. |
 | 🚽 **Io** | Le proposte di rinomina da approvare, le tue statistiche, i distintivi e l'uscita dal profilo. |
@@ -24,35 +24,17 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 
 | File | Obbligatorio | A cosa serve |
 |---|:---:|---|
-| `index.html` | ✅ | **L'app.** Quale delle due versioni usare è spiegato qui sotto. |
+| `index.html` | ✅ | **L'app**, con le chiavi del database già dentro. |
 | `manifest.json` | ✅ | Nome e icone per l'installazione sul telefono. |
 | `sw.js` | ✅ | Fa funzionare l'app offline e gestisce gli aggiornamenti. |
 | `icon-192.png` `icon-512.png` | ✅ | Icone dell'app. |
 | `icon-maskable-512.png` | ✅ | Icona per Android, che la ritaglia a cerchio o a goccia. |
 | `apple-touch-icon.png` | ✅ | Icona per iPhone (iOS non gestisce la trasparenza). |
 | `favicon.png` | consigliato | Icona nella scheda del browser. |
-| `index-supabase.html` | — | Il modello della versione condivisa, con le chiavi da compilare. **Non va caricato nel repo**: una volta compilato diventa `index.html`. |
 | `PUBBLICARE.md` | — | La guida completa passo passo. |
 | `AUTENTICAZIONE.md` | — | Come configurare l'accesso con email e password. **Da leggere prima di pubblicare.** |
 | `email-recupero-password.html` | — | Modello grafico per l'email di recupero password, da incollare su Supabase. |
 | `README.md` | — | Questo file. |
-
----
-
-## Le due versioni dell'app: quale scegliere
-
-Nel repo va **un solo file HTML, e deve chiamarsi `index.html`**. Quello di questo repo è già la versione condivisa, con le chiavi del database dentro.
-
-| | `index.html` (base) | `index-supabase.html` (condivisa) |
-|---|---|---|
-| Dove finiscono le recensioni | Nel telefono di chi le scrive | In un database in rete |
-| Chi le vede | Solo tu | Tutto il gruppo |
-| Foto | Nel telefono | Su uno spazio in rete |
-| Aggiornamento fra amici | — | In tempo reale, senza ricaricare |
-| Configurazione | Nessuna | Due chiavi da incollare |
-| A cosa serve | Provarla | **Usarla davvero** |
-
-Per un gruppo di amici serve la seconda. Come si prepara sta in [`PUBBLICARE.md`](PUBBLICARE.md), ma il riassunto è qui sotto.
 
 ---
 
@@ -62,7 +44,7 @@ Per un gruppo di amici serve la seconda. Come si prepara sta in [`PUBBLICARE.md`
 2. **SQL Editor** → incolla lo script della guida → Run. Crea la tabella delle recensioni.
 3. **Storage** → New bucket chiamato `foto`, spuntato come pubblico → più due righe di SQL.
 4. **Project Settings → API** → copia il *Project URL* e la chiave *anon public*.
-5. Apri `index-supabase.html` con un editor di testo, incolla le due chiavi nelle righe che contengono `INCOLLA_QUI`, salva e **rinomina il file in `index.html`**.
+5. Le chiavi del database sono già dentro `index.html`: se un giorno cambiassi progetto Supabase, cercale con `SUPABASE_URL` vicino all'inizio del codice e sostituiscile.
 6. Carica nel repo tutti i file obbligatori della tabella qui sopra, nella cartella principale.
 7. Settings → Pages → Source: branch `main`, cartella `/ (root)`.
 8. Apri il link dal telefono e installa l'app.

@@ -187,6 +187,9 @@ La chiave *publishable* ha sostituito quella che una volta si chiamava *anon*: f
 
 # Parte 3 — Mettere le chiavi nell'app
 
+> **Se il pacchetto che hai in mano contiene già `index.html` e non `index-supabase.html`, questa parte è già stata fatta per te**: le chiavi sono dentro. Salta alla Parte 4.
+
+
 1. Apri **`index-supabase.html`** con Blocco note, TextEdit o VS Code.
 2. Cerca `INCOLLA_QUI` (Ctrl+F, o Cmd+F su Mac). Sono due righe, vicino all'inizio della parte di codice:
 

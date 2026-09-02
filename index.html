@@ -207,7 +207,7 @@ body.ingresso{overflow:hidden}
 .riassunto[hidden]{display:none}
 .riassunto b{font-family:var(--font-display);color:var(--cioccolato);font-size:15px}
 .riassunto span{color:var(--tenue)}
-.nuove{position:sticky;top:8px;z-index:6;display:block;width:100%;margin-bottom:14px;min-height:46px;
+.nuove{position:sticky;top:calc(64px + env(safe-area-inset-top,0px));z-index:6;display:block;width:100%;margin-bottom:14px;min-height:46px;
   border-radius:999px;background:var(--acqua);color:#fff;font-size:13.5px;font-weight:700;
   box-shadow:0 10px 24px -10px var(--acqua-scuro);animation:scendi .25s ease-out}
 @keyframes scendi{from{transform:translateY(-10px);opacity:0}to{transform:none;opacity:1}}
@@ -907,8 +907,6 @@ const VECCHIE_IO = ['merdiano:io:v2','merdiano:io:v1','merdiano:io'];
 const configurato = !SUPABASE_URL.startsWith('INCOLLA');
 const cli = configurato ? window.supabase.createClient(SUPABASE_URL, SUPABASE_CHIAVE) : null;
 
-async function leggiIo(){ try{ return localStorage.getItem(K_IO); }catch(e){ return null; } }
-async function scriviIo(v){ try{ localStorage.setItem(K_IO, v); }catch(e){} }
 /* Recupera l'eventuale identità locale delle versioni precedenti: serve solo
    per proporre il collegamento delle vecchie recensioni al profilo con email. */
 function ripulisciIdentita(){
@@ -1745,7 +1743,7 @@ $('#lista-tag').addEventListener('click', e=>{
 $('#testo-rec').addEventListener('input', e=>{ $('#contatore').textContent=e.target.value.length+' / 600'; salvaBozza(); });
 ['#luogo','#titolo-rec'].forEach(sel=>$(sel).addEventListener('input', salvaBozza));
 
-$('#btn-gps').addEventListener('click', chiediPosizione);
+$('#btn-gps').addEventListener('click', ()=>chiediPosizione(false));
 /* automatica=true quando è l'app a chiederla aprendo Registra.
    Se il browser non ha ancora un permesso salvato, chiedere da soli farebbe
    spuntare il riquadro di sistema a ogni apertura: meglio aspettare il tocco. */
@@ -2130,8 +2128,9 @@ function disegnaFiltriBacheca(){
   const q=Object.values(S.filtri).filter(Boolean).length;
   const eq=$('#quanti-filtri');
   eq.hidden = q===0; eq.textContent = q;
-  if(q && $('#pannello-filtri').hidden===true && $('#apri-filtri').getAttribute('aria-expanded')!=='true'){
-    /* se arrivi da un pin con un filtro già impostato, il pannello si apre da solo */
+  if(apriPannelloFiltri){
+    /* arrivi da un pin con un filtro già impostato: il pannello si apre una volta */
+    apriPannelloFiltri=false;
     $('#apri-filtri').setAttribute('aria-expanded','true');
     $('#pannello-filtri').hidden=false;
   }
@@ -2257,6 +2256,7 @@ function creaMappa(){
   window.addEventListener('resize',()=>S.mappa&&S.mappa.invalidateSize());
   S.strato=L.layerGroup().addTo(S.mappa);
   S.mappa.on('dragstart', ()=>{ utenteHaMosso=true; });
+  document.getElementById('mappa').addEventListener('pointerdown', ()=>{ utenteHaMosso=true; }, {passive:true});
   /* se il browser lo supporta, ogni cambio di dimensione del riquadro
      fa ricalcolare la mappa: è il modo più affidabile di tenerla giusta */
   if(window.ResizeObserver){
@@ -2542,8 +2542,10 @@ function disegnaClassifica(){
 $('#migliori-bagni').addEventListener('click', e=>{
   const b=e.target.closest('[data-luogo]'); if(b) apriBagno(b.dataset.luogo);
 });
+let apriPannelloFiltri=false;
 function apriBagno(luogo){
   S.filtri={utente:'',luogo,categoria:'',citta:'',paese:'',voto:''};
+  apriPannelloFiltri=true;
   vaiA('bacheca');
 }
 
@@ -3169,6 +3171,7 @@ function mostraBanner(){
   $('#banner-installa').hidden=false;
 }
 $('#installa-si').addEventListener('click', async ()=>{
+  try{ localStorage.setItem(K_INSTALLA,'1'); }catch(e){}   /* chi la installa non deve rivedere la fascia */
   if(promptInstalla){ promptInstalla.prompt(); await promptInstalla.userChoice; promptInstalla=null; $('#banner-installa').hidden=true; }
   else toast('Menu del browser → Aggiungi a schermata Home');
 });
@@ -3177,10 +3180,6 @@ $('#installa-no').addEventListener('click',()=>{
   try{ localStorage.setItem(K_INSTALLA,'1'); }catch(e){}
   $('#banner-installa').hidden=true;
   toast('Non te lo chiedo più');
-});
-$('#installa-si').addEventListener('click',()=>{
-  /* anche chi la installa a mano non deve rivederla */
-  try{ localStorage.setItem(K_INSTALLA,'1'); }catch(e){}
 });
 
 /* utile in console per capire cosa c'è nella bozza in questo momento */
