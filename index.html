@@ -246,8 +246,10 @@ body.ingresso{overflow:hidden}
   border-radius:999px;padding:4px 10px;white-space:nowrap}
 .pastiglia-info.tempo{color:#7a5c14;background:rgba(242,194,48,.22)}
 .pastiglia-info.sparito{color:#7b6a5e;background:rgba(78,50,32,.12)}
-.scheda.assente{opacity:.62;filter:grayscale(.55)}
-.scheda.assente:focus-within,.scheda.assente:hover{opacity:.9;filter:none}
+.pastiglia-info.dubbi{color:#9c3123;background:rgba(217,80,63,.14)}
+.pastiglia-info.storia{color:var(--tenue);background:rgba(78,50,32,.07);font-weight:600}
+.scheda.assente .corpo,.scheda.assente .targa{opacity:.55;filter:grayscale(.6)}
+.scheda.assente .piede{opacity:1;filter:none}   /* i comandi restano sempre vivi */
 .perno.spento .bolla{border-color:#9C8F86;background:#EFEFEC;opacity:.75}
 /* azzurro pastello per i mezzi, verde pastello per gli eventi */
 .perno.tratta .bolla{border-color:#7FC4DE;background:#EAF6FB}
@@ -262,6 +264,8 @@ body.ingresso{overflow:hidden}
 .piede .azione{flex:1 1 0;min-width:0;padding:0;font-size:16px;justify-content:center}
 .piede .azione small{font-size:12px}
 .piede .azione.rossa{color:var(--allarme);border-color:rgba(217,80,63,.35);background:rgba(217,80,63,.08)}
+.piede .azione.dubbio[aria-pressed="true"]{background:rgba(217,80,63,.14);border-color:rgba(217,80,63,.45)}
+.scheda.contestata{border:1.5px solid rgba(217,80,63,.45)}
 .azione{display:inline-flex;align-items:center;gap:5px;height:36px;white-space:nowrap;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:13px;font-weight:600;transition:transform .12s}
 .azione:active{transform:scale(.93)}
 .azione[aria-pressed="true"]{background:rgba(242,194,48,.22);border-color:rgba(242,194,48,.5)}
@@ -433,6 +437,7 @@ body.ingresso{overflow:hidden}
 .suggerimenti button:last-child{border-bottom:none}
 .suggerimenti .paese{color:var(--tenue);font-size:11.5px}
 .manca{margin-top:8px;font-size:12px;font-weight:700;color:var(--acqua-scuro);text-decoration:underline}
+.anteprima-nome{margin-top:6px;color:var(--acqua-scuro);font-weight:600}
 .settore{margin-top:14px;padding-top:14px;border-top:1px solid var(--fuga)}
 .settore label{display:block;font-size:13px;font-weight:700;color:var(--cioccolato);margin-bottom:8px}
 #settore-txt{width:100%;min-height:46px;padding:12px 14px;border-radius:var(--r-l);border:1.5px solid var(--fuga);background:#FBFDFC}
@@ -553,9 +558,10 @@ body.ingresso{overflow:hidden}
           <div class="scheda-posto" id="scheda-posto">
             <div class="sp-corpo" id="sp-corpo"></div>
             <div class="campo" id="campo-nome-posto">
-              <label for="luogo">Nome del posto</label>
+              <label for="luogo" id="etichetta-luogo">Nome del posto</label>
               <input type="text" id="luogo" name="nome-posto" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" autocomplete="off" data-lpignore="true" data-form-type="other">
               <datalist id="posti-noti"></datalist>
+              <p class="nota anteprima-nome" id="anteprima-nome" hidden></p>
             </div>
             <div class="sp-azioni" id="sp-azioni"></div>
 
@@ -746,8 +752,10 @@ body.ingresso{overflow:hidden}
             <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete.</li>
             <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
             <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
-            <li>Le icone in fondo a ogni recensione: <b>💩</b> metti la cacca, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le ultime due compaiono solo sulle tue (e al gestore su tutte).</li>
-            <li>Un bagno che non esiste più — locale chiuso, sagra finita, tratta soppressa — si segnala dal suo pin sulla mappa con <b>🚫 Questo bagno non c'è più</b>: le recensioni restano ma diventano grigie e il pin si spegne. Chiunque può riaccenderlo con <b>✅ È tornato</b>.</li>
+            <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
+            <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
+            <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>.</li>
+            <li>Un bagno che non esiste più — locale chiuso, sagra finita, tratta soppressa — si segnala dal suo pin sulla mappa con <b>🚫 Questo bagno non c'è più</b>: le recensioni restano ma diventano grigie e il pin si spegne. Per riaccenderlo non basta un tocco: serve che qualcuno ci vada e <b>scriva una recensione nuova</b>, non a posteriori.</li>
             <li>Su una recensione di un altro c'è <b>Dico la mia</b>: apre il modulo già agganciato a quel bagno, senza bisogno del GPS. Voti e racconto restano tuoi.</li>
             <li>Se un bagno non esiste più — i chimici di una sagra, un cantiere finito — apri il suo pin sulla mappa e tocca <b>Questo bagno non c'è più</b>. Le recensioni non si cancellano: restano in grigio con l'etichetta 🚫 e il pin spento. Chiunque può riaccenderlo con <b>È tornato</b>.</li>
             <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
@@ -915,20 +923,24 @@ const PARAMETRI = [
 
 /* Che posto è: categorie larghe, una sola per recensione.
    Il nome preciso del bagno sta già nel titolo, qui serve solo per le statistiche. */
+/* Ogni categoria sa che nome serve:
+   · auto  → lo compone l'app dall'indirizzo (casa, all'aperto) o dalla tratta
+   · invito → la domanda da fare all'utente, con le parole di quella categoria */
 const CATEGORIE = [
-  {id:'casa',      em:'🏠', nome:'Casa'},
-  {id:'lavoro',    em:'🏢', nome:'Azienda'},
-  {id:'ristoro',   em:'🍽️', nome:'Ristorante e bar'},
-  {id:'vacanza',   em:'🏨', nome:'Hotel e B&B'},
-  {id:'negozi',    em:'🛒', nome:'Negozio'},
-  {id:'locali',    em:'🪩', nome:'Locale notturno'},
-  {id:'pubblico',  em:'🏛️', nome:'Servizio pubblico'},
-  {id:'sport',     em:'⚽', nome:'Sport'},
-  {id:'trasporti', em:'🚆', nome:'Trasporto'},
-  {id:'evento',    em:'🎪', nome:'Evento'},
-  {id:'aperto',    em:'🌳', nome:"All'aperto"},
-  {id:'altro',     em:'❓', nome:'Altro'}
+  {id:'casa',      em:'🏠', nome:'Casa',              auto:'casa'},
+  {id:'lavoro',    em:'🏢', nome:'Azienda',           invito:"Come si chiama l'azienda in cui ti trovi?"},
+  {id:'ristoro',   em:'🍽️', nome:'Ristorante e bar',  invito:'Come si chiama il ristorante o il bar?'},
+  {id:'vacanza',   em:'🏨', nome:'Hotel e B&B',       invito:"Come si chiama l'hotel o il B&B?"},
+  {id:'negozi',    em:'🛒', nome:'Negozio',           invito:'Come si chiama il negozio?'},
+  {id:'locali',    em:'🪩', nome:'Locale notturno',   invito:'Come si chiama il locale?'},
+  {id:'pubblico',  em:'🏛️', nome:'Servizio pubblico', invito:'Che posto è? Comune, ospedale, biblioteca…', componi:true},
+  {id:'sport',     em:'⚽', nome:'Sport',             invito:'Come si chiama la struttura sportiva?'},
+  {id:'trasporti', em:'🚆', nome:'Trasporto',         auto:'tratta'},
+  {id:'evento',    em:'🎪', nome:'Evento',            invito:"Come si chiama l'evento?"},
+  {id:'aperto',    em:'🌳', nome:"All'aperto",        auto:'aperto'},
+  {id:'altro',     em:'❓', nome:'Altro',             invito:'In che luogo ti trovi?'}
 ];
+const categoriaDi = id => CATEGORIE.find(c=>c.id===id) || {};
 
 /* Città note all'app: nome|lat|lng|paese. Servono a calcolare il punto della
    rotta senza rete. Coordinate al centesimo di grado: bastano e avanzano per
@@ -1713,7 +1725,15 @@ const DB = {
     if(!cli) return [];
     const {data,error} = await cli.from('luoghi_stato').select('*');
     if(error){ console.warn('stati:', error.message); return []; }
-    return (data||[]).map(x=>({luogoId:x.luogo_id, presente:x.presente!==false, daNome:x.da_nome, ts:Number(x.ts)}));
+    return (data||[]).map(x=>({luogoId:x.luogo_id, presente:x.presente!==false, daNome:x.da_nome,
+                               nomePrima:x.nome_prima||null, ts:Number(x.ts)}));
+  },
+  /* il nome precedente di un posto, per la riga "Prima: Bar Sport" */
+  async segnaNomePrima(luogoId, nome){
+    if(!nome || nome==='Posto senza nome') return;
+    const {error} = await cli.from('luoghi_stato')
+      .upsert({luogo_id:luogoId, nome_prima:nome, ts:Date.now()}, {onConflict:'luogo_id'});
+    if(error) throw error;
   },
   async segnaStato(luogoId, presente, daNome){
     const {error} = await cli.from('luoghi_stato')
@@ -1860,7 +1880,51 @@ function gruppoLuogo(r){ return r.luogoId || ('n:'+chiaveLuogo(r.luogo)); }
    Il POSTO resta uno (nome, battesimo, pin sulla mappa); il BAGNO è la
    suddivisione interna, e ha statistiche e recensioni sue. */
 const settoreDi = r => (r.settore||'').trim();
+
+/* Due reazioni, che si escludono a vicenda:
+   💩 "bella cagata", il gradimento di sempre
+   🤨 "non ci credo", per segnalare una recensione falsa o sbagliata.
+   Con abbastanza 🤨 il gestore se ne accorge e decide. */
+const SEGNI = {su:'😄', giu:'😠'};
+const SEGNO_VECCHIO = '💩';      /* le cacche già messe restano valide come "mi piace" */
+const SOGLIA_DUBBI = 3;          /* da qui in poi la recensione è segnalata al gestore */
+function reazioniDi(r, segno){
+  const q = (r.reaz && r.reaz[SEGNI[segno]]) || [];
+  if(segno!=='su') return q;
+  const vecchie = (r.reaz && r.reaz[SEGNO_VECCHIO]) || [];
+  return q.concat(vecchie.filter(x=>!q.includes(x)));
+}
+function mioSegno(r){
+  if(!S.io) return null;
+  if(reazioniDi(r,'su').includes(S.io.id)) return 'su';
+  if(reazioniDi(r,'giu').includes(S.io.id)) return 'giu';
+  return null;
+}
 /* un posto è "assente" se qualcuno l'ha segnato come non più esistente */
+/* Quante recensioni nuove servono per riaccendere un posto spento.
+   Fra amici ne basta una; aprendo al pubblico si alza. */
+const RECENSIONI_PER_RIATTIVARE = 1;
+async function forseRiattiva(gruppo, recensione){
+  if(!postoAssente(gruppo)) return;
+  if(aPosteriori(recensione)) return;          /* un ricordo non prova niente */
+  const st=S.stati.get(gruppo) || {};
+  const dopo = S.recensioni.filter(r=>
+    gruppoLuogo(r)===gruppo && !aPosteriori(r) && (r.creatoTs||r.ts) > (st.ts||0)).length;
+  if(dopo < RECENSIONI_PER_RIATTIVARE) return;
+  try{
+    await DB.segnaStato(gruppo, true, S.io.nome);
+    S.stati.set(gruppo, {...st, luogoId:gruppo, presente:true, daNome:S.io.nome, ts:Date.now()});
+    ridisegna(); disegnaMappa(true);
+    toast('Il bagno è tornato in elenco: ci sei stato tu a dirlo');
+  }catch(e){ console.warn(e); }
+}
+
+/* Un locale che cambia insegna resta lo stesso bagno: si tiene il nome vecchio
+   e lo si mostra sotto, così chi torna dopo mesi lo riconosce. */
+function nomePrima(gruppo){
+  const st=S.stati.get(gruppo);
+  return (st && st.nomePrima) || null;
+}
 function postoAssente(gruppo){
   const st = S.stati.get(gruppo);
   return !!st && st.presente===false;
@@ -2256,7 +2320,7 @@ function ridisegna(){
 function nuovaBozza(){
   S.modificaId = null;
   S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null,
-             mezzo:null, compagnia:null, da:null, a:null};
+             indirizzo:null, mezzo:null, compagnia:null, da:null, a:null};
   $('#viaggio').hidden=true;
   $('#compagnia').value=''; $('#citta-da').value=''; $('#citta-a').value='';
   $('#titolo-registra').textContent='Registra la cagata';
@@ -2311,9 +2375,20 @@ function schedaPosto(stato){
   if(stato.tipo==='nuovo'){
     S.bozza.luogoId=null;
     corpo.className='sp-corpo visibile nuovo';
+    const cc=categoriaDi(S.bozza.categoria);
     corpo.innerHTML = `✨ <b>Qui non c'è ancora una recensione</b>
-      <span class="dett">Il nome che scegli resterà per tutti, scegli bene.</span>`;
-    if(stato.tornaIndietro) azioni.innerHTML = `<button type="button" id="ripristina-luogo">Era il posto di prima</button>`;
+      <span class="dett">${cc.auto==='casa'||cc.auto==='aperto'
+        ? 'Il nome lo scrivo io dall\'indirizzo: se preferisci, cambialo.'
+        : 'Il nome che scegli resterà per tutti, scegli bene.'}</span>`;
+    /* Due strade: il nome del locale, oppure l'indirizzo rilevato dal telefono.
+       Il secondo è comodo per i bagni che un nome non ce l'hanno. */
+    const c=categoriaDi(S.bozza.categoria);
+    azioni.innerHTML =
+      /* solo dove il nome è libero: su casa e all'aperto lo compila l'app,
+         sugli altri il nome del locale va scritto per esteso */
+      ((S.bozza.indirizzo && (!S.bozza.categoria || c.id==='altro' || c.id==='pubblico'))
+        ? `<button type="button" id="usa-indirizzo">📍 Usa “${esc(S.bozza.indirizzo)}”</button>` : '') +
+      (stato.tornaIndietro ? `<button type="button" id="ripristina-luogo">Era il posto di prima</button>` : '');
     disegnaSettori(null);
     return;
   }
@@ -2463,6 +2538,55 @@ function aggiornaViaggio(){
 
 /* All'evento cambia il suggerimento: il nome del posto è il nome della sagra,
    così tutte le recensioni di quella sagra stanno insieme. */
+/* Compila il nome per le categorie che possono farlo da sole, e cambia la
+   domanda per tutte le altre. Non tocca mai quello che hai scritto tu. */
+function nomeAutomatico(){
+  const c=categoriaDi(S.bozza.categoria);
+  if(!c.auto || c.auto==='tratta' || !S.bozza.indirizzo) return null;
+  if(c.auto==='casa')   return `Casa · ${S.bozza.indirizzo}`;
+  if(c.auto==='aperto') return `All'aperto · vicino a ${S.bozza.indirizzo}`;
+  return null;
+}
+function aggiornaNomePosto(){
+  const i=$('#luogo'), c=categoriaDi(S.bozza.categoria);
+  if(c.auto==='tratta') return;                 /* ci pensa il viaggio */
+
+  const et=document.getElementById('etichetta-luogo');
+  if(et) et.textContent = c.invito || 'Nome del posto';
+  i.placeholder = c.invito ? 'Scrivilo qui' : 'es. Autogrill Somaglia Ovest';
+
+  const auto=nomeAutomatico();
+  if(auto){
+    /* lo scrive l'app: non si tocca, così tutti scrivono lo stesso nome */
+    i.value = auto; i.readOnly = true; S.bozza.nomeAuto = true;
+  } else {
+    if(S.bozza.nomeAuto){ i.value=''; S.bozza.nomeAuto=false; }
+    i.readOnly = false;
+  }
+  anteprimaComposta();
+  salvaBozza(); segnaPassi();
+}
+/* Servizio pubblico: alla biblioteca ci aggiungo io l'indirizzo, altrimenti
+   tutte le biblioteche del mondo si chiamerebbero uguale. */
+function nomeComposto(base){
+  const c=categoriaDi(S.bozza.categoria);
+  const b=String(base||'').trim();
+  if(!c.componi || !S.bozza.indirizzo || !b) return b;
+  const coda = ' · '+S.bozza.indirizzo;
+  return b.endsWith(coda) ? b : b+coda;
+}
+function anteprimaComposta(){
+  const p=document.getElementById('anteprima-nome');
+  if(!p) return;
+  const c=categoriaDi(S.bozza.categoria);
+  const base=$('#luogo').value.trim();
+  const fatto=nomeComposto(base);
+  const mostra = c.componi && S.bozza.indirizzo && base && fatto!==base;
+  p.hidden=!mostra;
+  if(mostra) p.textContent = 'Si chiamerà: '+fatto;
+}
+$('#luogo').addEventListener('input', ()=>{ S.bozza.nomeAuto=false; anteprimaComposta(); });
+
 function aggiornaSuggerimentoEvento(){
   const i=$('#luogo');
   if(S.bozza.categoria==='evento'){
@@ -2500,6 +2624,13 @@ function ripristinaLuogo(){
 document.addEventListener('click', e=>{
   if(e.target.closest('#sblocca-luogo')) sbloccaLuogo(true);
   if(e.target.closest('#ripristina-luogo')) ripristinaLuogo();
+  if(e.target.closest('#usa-indirizzo')){
+    const i=$('#luogo');
+    i.value = S.bozza.indirizzo || '';
+    i.readOnly = false;
+    salvaBozza(); segnaPassi();
+    toast('Nome preso dall\'indirizzo: puoi ancora cambiarlo');
+  }
 });
 
 /* i passi si spuntano man mano che li completi */
@@ -2682,6 +2813,7 @@ $('#scelte-categoria').addEventListener('click', e=>{
   $$('#scelte-categoria .scelta').forEach(x=>x.setAttribute('aria-pressed', x.dataset.cat===S.bozza.categoria));
   aggiornaViaggio();
   aggiornaSuggerimentoEvento();
+  aggiornaNomePosto();
   salvaBozza(); segnaPassi();
 });
 $('#lista-tag').addEventListener('click', e=>{
@@ -2729,7 +2861,11 @@ async function chiediPosizione(automatica){
       S.bozza.citta=n.citta; S.bozza.paese=n.paese;
       const dove=[n.indirizzo, n.etichetta&&n.etichetta.split(',')[0], n.citta].filter(Boolean)[0];
       if(dove) $('#stato-gps').innerHTML=`<b>Sei qui</b>${esc(dove)}`;
-      if(n.etichetta && !S.bozza.bloccato) $('#luogo').placeholder = 'Che bagno è, a '+n.etichetta.split(',')[0]+'?';
+      /* l'indirizzo si tiene da parte: se il posto è nuovo si offre come nome */
+      S.bozza.indirizzo = dove ? titoloMaiuscolo(dove) : null;
+      if(!S.bozza.bloccato && S.bozza.categoria!=='trasporti' && !$('#luogo').value.trim())
+        schedaPosto({tipo:'nuovo'});
+      aggiornaNomePosto();
       salvaBozza();
     }
   }, err=>{
@@ -2801,7 +2937,7 @@ $('#salva').addEventListener('click', async ()=>{
     return;
   }
   if(!$('#luogo').value.trim()){
-    vaiA_blocco('#scheda-posto', 'Dai un nome al posto: è il titolo della recensione');
+    vaiA_blocco('#scheda-posto', categoriaDi(S.bozza.categoria).invito || 'Dai un nome al posto');
     setTimeout(()=>$('#luogo').focus(), 350);
     return;
   }
@@ -2820,7 +2956,7 @@ $('#salva').addEventListener('click', async ()=>{
     return;
   }
   const quandoTs = (!scelta || isNaN(scelta)) ? Date.now() : Math.min(scelta, Date.now());
-  let nomePosto = titoloMaiuscolo($('#luogo').value);
+  let nomePosto = titoloMaiuscolo(nomeComposto($('#luogo').value));
   if(nomePosto.length<2){
     vaiA_blocco('#luogo', 'Dai un nome al posto: è il titolo della recensione');
     setTimeout(()=>$('#luogo').focus(), 350);
@@ -2850,8 +2986,10 @@ $('#salva').addEventListener('click', async ()=>{
       else if(S.bozza.tolta){ r.haFoto=false; r.fotoUrl=null; S.foto.delete(r.id); }
       await DB.aggiorna(r);
       if(rinomina && idLuogo){
+        const vecchio = nomeCanonico(idLuogo);
         S.recensioni.forEach(x=>{ if(x.luogoId===idLuogo) x.luogo=nomePosto; });
         try{ await DB.rinominaLuogo(idLuogo, nomePosto); }catch(e){ console.warn(e); }
+        try{ await DB.segnaNomePrima(idLuogo, vecchio); }catch(e){ console.warn(e); }
       }
       scartaBozza();
       toast(rinomina ? 'Posto rinominato per tutti' : 'Recensione aggiornata');
@@ -2877,6 +3015,7 @@ $('#salva').addEventListener('click', async ()=>{
         r.inCoda=true;
       }
       S.recensioni.unshift(r);
+      if(pubblicata) forseRiattiva(gruppoLuogo(r), r);   /* una cagata vera riaccende il posto */
       scartaBozza();
       sciacquone();
       toast(pubblicata ? 'Registrata. Il mondo ne è al corrente.'
@@ -3170,9 +3309,10 @@ function scheda(r){
   const v=media(r.voti);
   const propria = S.io && r.autoreId===S.io.id;
   const mia = propria || gestore;
-  const cacca=(r.reaz&&r.reaz['💩'])||[];
-  const miaR = S.io && cacca.includes(S.io.id);
-  return `<article class="scheda${postoAssente(gruppoLuogo(r))?' assente':''}" data-rec="${r.id}">
+  const su=reazioniDi(r,'su'), giu=reazioniDi(r,'giu');
+  const segno=mioSegno(r);
+  const contestata = giu.length>=SOGLIA_DUBBI;
+  return `<article class="scheda${postoAssente(gruppoLuogo(r))?' assente':''}${contestata?' contestata':''}" data-rec="${r.id}">
     <header class="targa">
       <span class="avatar" aria-hidden="true">${r.faccia||'💩'}</span>
       <div style="min-width:0">
@@ -3187,7 +3327,9 @@ function scheda(r){
         <span class="lente">Tocca per ingrandire</span></button>`:''}
     <div class="corpo">
       <h3>${esc(r.luogo||'Posto misterioso')}</h3>
-      ${(aPosteriori(r)||settoreDi(r)||postoAssente(gruppoLuogo(r)))?`<div class="riga-pastiglie">
+      ${(aPosteriori(r)||settoreDi(r)||postoAssente(gruppoLuogo(r))||contestata||nomePrima(gruppoLuogo(r)))?`<div class="riga-pastiglie">
+        ${contestata?`<span class="pastiglia-info dubbi" title="${giu.length} persone non sono convinte">😠 In dubbio</span>`:''}
+        ${nomePrima(gruppoLuogo(r))?`<span class="pastiglia-info storia">Prima: ${esc(nomePrima(gruppoLuogo(r)))}</span>`:''}
         ${postoAssente(gruppoLuogo(r))?`<span class="pastiglia-info sparito" title="Segnalato come non più esistente">🚫 Non c'è più</span>`:''}
         ${aPosteriori(r)?`<span class="pastiglia-info tempo" title="Scritta più di un giorno dopo">🕰️ A posteriori</span>`:''}
         ${settoreDi(r)?`<span class="pastiglia-info">${esc(settoreDi(r))}</span>`:''}
@@ -3204,7 +3346,8 @@ function scheda(r){
       </div>
     </div>
     <footer class="piede">
-      <button class="azione" aria-pressed="${!!miaR}" onclick="reagisci('${r.id}')" title="Metti la cacca" aria-label="Metti la cacca">💩${cacca.length?` <small>${cacca.length}</small>`:''}</button>
+      <button class="azione" aria-pressed="${segno==='su'}" onclick="reagisci('${r.id}','su')" title="Mi piace" aria-label="Mi piace">😄${su.length?` <small>${su.length}</small>`:''}</button>
+      <button class="azione dubbio" aria-pressed="${segno==='giu'}" onclick="reagisci('${r.id}','giu')" title="Non mi convince" aria-label="Non mi convince">😠${giu.length?` <small>${giu.length}</small>`:''}</button>
       ${(r.lat!=null||r.categoria==='trasporti')?`<button class="azione" onclick="volaA('${r.id}')" title="Vedi sulla mappa" aria-label="Vedi sulla mappa">🗺️</button>`:''}
       ${S.io?`<button class="azione dico" onclick="dicoLaMia('${r.id}')" title="Scrivi la tua su questo bagno" aria-label="Scrivi la tua">✍️</button>`:''}
       ${mia?`<button class="azione" onclick="modifica('${r.id}')" title="${propria?'Modifica':'Modifica come gestore'}" aria-label="Modifica">✏️</button>`:''}
@@ -3212,25 +3355,39 @@ function scheda(r){
     </footer>
   </article>`;
 }
-async function reagisci(id){
+async function reagisci(id, segno){
   if(!S.io) return apriIngresso();
+  segno = segno || 'su';
   const r=S.recensioni.find(x=>x.id===id); if(!r) return;
-  r.reaz=r.reaz||{}; const chi=r.reaz['💩']=r.reaz['💩']||[];
-  const i=chi.indexOf(S.io.id);
-  if(i>=0) chi.splice(i,1); else chi.push(S.io.id);
+  const prima = JSON.stringify(r.reaz||{});
+  r.reaz=r.reaz||{};
+  const chiave=SEGNI[segno], altra=SEGNI[segno==='su'?'giu':'su'];
+  if(segno==='su' && r.reaz[SEGNO_VECCHIO]){    /* travaso delle vecchie cacche */
+    r.reaz[SEGNI.su] = (r.reaz[SEGNI.su]||[]).concat(r.reaz[SEGNO_VECCHIO].filter(x=>!(r.reaz[SEGNI.su]||[]).includes(x)));
+    delete r.reaz[SEGNO_VECCHIO];
+  }
+  const mia=r.reaz[chiave]=r.reaz[chiave]||[];
+  const opp=r.reaz[altra]=r.reaz[altra]||[];
+  const i=mia.indexOf(S.io.id);
+  if(i>=0) mia.splice(i,1);                    /* secondo tocco: si annulla */
+  else {
+    mia.push(S.io.id);
+    const j=opp.indexOf(S.io.id);
+    if(j>=0) opp.splice(j,1);                  /* mai le due insieme */
+  }
   disegnaBacheca();
   /* la cacca si mette con una funzione del server: l'app non può scrivere
      dentro le recensioni degli altri */
   try{
-    const {error} = await cli.rpc('reagisci', {p_id:id});
+    const {error} = await cli.rpc('reagisci', {p_id:id, p_segno:chiave});
     if(error){
-      /* la funzione non c'è ancora: si scrive come si è sempre fatto */
-      if(/function|does not exist|404|schema cache/i.test(error.message||'')) await DB.aggiorna(r);
+      /* la funzione non c'è ancora o è la vecchia versione: si scrive diretto */
+      if(/function|does not exist|404|schema cache|argument/i.test(error.message||'')) await DB.aggiorna(r);
       else throw error;
     }
   }catch(e){
     console.warn('reazione:', e);
-    if(i>=0) chi.push(S.io.id); else chi.splice(chi.indexOf(S.io.id),1);
+    r.reaz = JSON.parse(prima);
     disegnaBacheca();
     toast('Non è riuscita, riprova');
   }
@@ -3371,8 +3528,8 @@ function mostraAnteprimaPosto(gruppo){
     </div>
     ${bagni.size>1 ? `<div class="ap-bagni">`+[...bagni.entries()].map(([k,v])=>
       `<button data-bagno="${esc(k)}">${esc(v.et||'Senza indicazione')} · ${v.n}</button>`).join('')+`</div>` : ''}
-    ${assente?`<div class="ap-nota">🚫 Non c'è più, l'ha segnalato ${esc(stato.daNome||'qualcuno')}. Tocca qui sotto se invece è tornato.</div>`:''}
-    <button class="ap-segnala" id="ap-segnala">${assente?'✅ È tornato, riattivalo':'🚫 Questo bagno non c\'è più'}</button>
+    ${assente?`<div class="ap-nota">🚫 Non c'è più, l'ha segnalato ${esc(stato.daNome||'qualcuno')}.<br>Per riaccenderlo serve una <b>recensione nuova fatta sul posto</b>: le parole valgono meno di una cagata.</div>`:''}
+    ${assente ? '' : `<button class="ap-segnala" id="ap-segnala">🚫 Questo bagno non c'è più</button>`}
     <div class="ap-azioni">
       <button class="ap-btn fantasma" id="ap-chiudi">Chiudi</button>
       <button class="ap-btn" id="ap-apri">${rec.length===1?'Leggi la recensione':'Leggi tutte e '+rec.length}</button>
@@ -4255,6 +4412,7 @@ document.addEventListener('click', async e=>{
     if(ok){
       S.recensioni.forEach(r=>{ if(r.luogoId===p.luogoId) r.luogo=p.nomeProposto; });
       await DB.rinominaLuogo(p.luogoId, p.nomeProposto);
+      try{ await DB.segnaNomePrima(p.luogoId, p.nomeAttuale); }catch(e){}
       p.stato='ok'; await DB.rispondi(p.id,'ok');
       toast('Rinominato: adesso è '+p.nomeProposto);
     } else {
