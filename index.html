@@ -1725,7 +1725,8 @@ const DB = {
     if(!cli) return [];
     const {data,error} = await cli.from('luoghi_stato').select('*');
     if(error){ console.warn('stati:', error.message); return []; }
-    return (data||[]).map(x=>({luogoId:x.luogo_id, presente:x.presente!==false, daNome:x.da_nome,
+    return (data||[]).map(x=>({luogoId:x.luogo_id, presente:x.presente!==false,
+                               daId:x.da_id||null, daNome:x.da_nome,
                                nomePrima:x.nome_prima||null, ts:Number(x.ts)}));
   },
   /* il nome precedente di un posto, per la riga "Prima: Bar Sport" */
@@ -3516,6 +3517,9 @@ function mostraAnteprimaPosto(gruppo){
   const bagni=new Map();
   rec.forEach(r=>{ const k=chiaveBagno(r); if(!bagni.has(k)) bagni.set(k,{et:settoreDi(r), n:0}); bagni.get(k).n++; });
   const assente=postoAssente(gruppo), stato=S.stati.get(gruppo)||{};
+  /* chi ha spento il posto può disdirsi subito: un errore non deve costare
+     l'attesa che qualcuno vada a cagare lì */
+  const mioErrore = assente && S.io && (stato.daId===S.io.id || gestore);
   const box=$('#anteprima-posto');
   box.innerHTML = `
     <div class="ap-riga">
@@ -3528,8 +3532,11 @@ function mostraAnteprimaPosto(gruppo){
     </div>
     ${bagni.size>1 ? `<div class="ap-bagni">`+[...bagni.entries()].map(([k,v])=>
       `<button data-bagno="${esc(k)}">${esc(v.et||'Senza indicazione')} · ${v.n}</button>`).join('')+`</div>` : ''}
-    ${assente?`<div class="ap-nota">🚫 Non c'è più, l'ha segnalato ${esc(stato.daNome||'qualcuno')}.<br>Per riaccenderlo serve una <b>recensione nuova fatta sul posto</b>: le parole valgono meno di una cagata.</div>`:''}
-    ${assente ? '' : `<button class="ap-segnala" id="ap-segnala">🚫 Questo bagno non c'è più</button>`}
+    ${assente?`<div class="ap-nota">🚫 Non c'è più, l'ha segnalato ${esc(stato.daNome||'qualcuno')}.${
+      mioErrore ? '' : '<br>Per riaccenderlo serve una <b>recensione nuova fatta sul posto</b>: le parole valgono meno di una cagata.'}</div>`:''}
+    ${assente
+      ? (mioErrore ? `<button class="ap-segnala" id="ap-annulla">↩️ Ho sbagliato, riaccendilo</button>` : '')
+      : `<button class="ap-segnala" id="ap-segnala">🚫 Questo bagno non c'è più</button>`}
     <div class="ap-azioni">
       <button class="ap-btn fantasma" id="ap-chiudi">Chiudi</button>
       <button class="ap-btn" id="ap-apri">${rec.length===1?'Leggi la recensione':'Leggi tutte e '+rec.length}</button>
@@ -3538,6 +3545,18 @@ function mostraAnteprimaPosto(gruppo){
 }
 function chiudiAnteprimaPosto(){ $('#anteprima-posto').hidden=true; postoInAnteprima=null; }
 document.addEventListener('click', async e=>{
+  if(e.target.closest('#ap-annulla')){
+    const g=postoInAnteprima; if(!g || !S.io) return;
+    const st=S.stati.get(g)||{};
+    if(st.daId!==S.io.id && !gestore) return;
+    try{
+      await DB.segnaStato(g, true, S.io.nome);
+      S.stati.set(g, {...st, luogoId:g, presente:true, daNome:S.io.nome, daId:S.io.id, ts:Date.now()});
+      mostraAnteprimaPosto(g); disegnaMappa(true); ridisegna();
+      toast('Riacceso: era un errore');
+    }catch(err){ console.warn(err); toast('Non ha funzionato, riprova'); }
+    return;
+  }
   if(e.target.closest('#ap-segnala')){
     if(!S.io) return apriIngresso();
     const g=postoInAnteprima; if(!g) return;
@@ -3549,7 +3568,7 @@ document.addEventListener('click', async e=>{
     if(ok!==true) return;
     try{
       await DB.segnaStato(g, assente, S.io.nome);
-      S.stati.set(g, {luogoId:g, presente:assente, daNome:S.io.nome, ts:Date.now()});
+      S.stati.set(g, {luogoId:g, presente:assente, daNome:S.io.nome, daId:S.io.id, ts:Date.now()});
       mostraAnteprimaPosto(g); disegnaMappa(true); ridisegna();
       toast(assente?'Riacceso':'Segnato come non più esistente');
     }catch(err){
@@ -4453,7 +4472,11 @@ $('#installa-no').addEventListener('click',()=>{
 });
 
 /* utile in console per capire cosa c'è nella bozza in questo momento */
-window.PM = { get stato(){ return S; }, get bozza(){ return S.bozza; }, schedaPosto, mostraVicini, nuovaBozza, disegnaMappa };
+window.PM = {
+  get stato(){ return S; }, get bozza(){ return S.bozza; },
+  get gestore(){ return gestore; }, set gestore(v){ gestore=!!v; aggiornaGestore(); },
+  schedaPosto, mostraVicini, nuovaBozza, disegnaMappa
+};
 
 /* ============ AVVIO ============ */
 (async function avvio(){
