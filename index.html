@@ -255,10 +255,13 @@ body.ingresso{overflow:hidden}
 /* bordo tratteggiato: il punto è calcolato lungo la rotta, non rilevato */
 .perno.stimato .bolla{border-style:dashed}
 .etichetta.neutra{background:rgba(78,50,32,.10);color:var(--cioccolato)}
-.piede{display:flex;align-items:center;gap:6px;padding:10px 12px;border-top:1px solid var(--fuga);background:#FBFDFC;flex-wrap:nowrap;overflow:hidden}
-.piede .azione{flex:none;min-width:0}
-.piede .fine{margin-left:auto}
-.azione{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:13px;font-weight:600;transition:transform .12s}
+.piede{display:flex;align-items:center;gap:6px;padding:10px 12px;border-top:1px solid var(--fuga);background:#FBFDFC;flex-wrap:nowrap}
+/* spazi uguali e nessuno che esce: se lo spazio manca, le pastiglie si
+   stringono invece di essere tagliate */
+.piede .azione{flex:0 1 auto;min-width:0;overflow:hidden;padding:0 clamp(7px,2.2vw,12px)}
+.piede .azione small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.piede .azione:first-child{flex:none}
+.azione{display:inline-flex;align-items:center;gap:5px;height:36px;white-space:nowrap;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:13px;font-weight:600;transition:transform .12s}
 .azione:active{transform:scale(.93)}
 .azione[aria-pressed="true"]{background:rgba(242,194,48,.22);border-color:rgba(242,194,48,.5)}
 .azione small{font-size:12px;color:var(--tenue);font-weight:700}
@@ -414,8 +417,9 @@ body.ingresso{overflow:hidden}
 .viaggio h4{font-family:var(--font-display);font-size:16px;color:var(--cioccolato);margin:0 0 2px}
 .viaggio .nota{margin-bottom:12px}
 .scelte-mezzo{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.scelte-mezzo button{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:62px;
-  border-radius:var(--r-m);background:#FBFDFC;border:1.5px solid var(--fuga);font-size:11.5px;font-weight:600}
+.scelte-mezzo button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  min-height:66px;padding:8px 4px;border-radius:var(--r-m);background:#FBFDFC;border:1.5px solid var(--fuga);
+  font-size:11.5px;font-weight:600;line-height:1}
 .scelte-mezzo button .em{font-size:19px}
 .scelte-mezzo button[aria-pressed="true"]{border-color:var(--cioccolato);background:rgba(78,50,32,.07)}
 .due-campi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -1151,7 +1155,252 @@ Tokyo|35.68|139.65|JP
 Toronto|43.65|-79.38|CA
 Tunisi|36.81|10.18|TN
 Vancouver|49.28|-123.12|CA
-Washington|38.91|-77.04|US`.split('\n').map(r=>{
+Washington|38.91|-77.04|US
+Aalborg|57.05|9.92|DK
+Aarhus|56.16|10.20|DK
+Abidjan|5.36|-4.01|CI
+Abuja|9.06|7.49|NG
+Acapulco|16.85|-99.82|MX
+Accra|5.60|-0.19|GH
+Adelaide|-34.93|138.60|AU
+Aqaba|29.53|35.01|JO
+Albuquerque|35.08|-106.65|US
+Alicante|38.35|-0.48|ES
+Almaty|43.24|76.89|KZ
+Anchorage|61.22|-149.90|US
+Ankara|39.93|32.86|TR
+Antalya|36.90|30.70|TR
+Antwerpen|51.22|4.40|BE
+Asunción|-25.26|-57.58|PY
+Auckland|-36.85|174.76|NZ
+Austin|30.27|-97.74|US
+Baku|40.41|49.87|AZ
+Baltimore|39.29|-76.61|US
+Bangalore|12.97|77.59|IN
+Banja Luka|44.77|17.19|BA
+Baotou|40.66|109.84|CN
+Bari Palese|41.14|16.76|IT
+Basseterre|17.30|-62.72|KN
+Beograd Nikola Tesla|44.82|20.29|RS
+Bengasi|32.12|20.07|LY
+Bergen|60.39|5.32|NO
+Bilbao Loiu|43.30|-2.91|ES
+Bissau|11.86|-15.60|GW
+Bodrum|37.03|27.43|TR
+Bordeaux|44.84|-0.58|FR
+Boston|42.36|-71.06|US
+Brasília|-15.79|-47.88|BR
+Bridgetown|13.10|-59.62|BB
+Brisbane|-27.47|153.03|AU
+Brno|49.20|16.61|CZ
+Bucaramanga|7.12|-73.13|CO
+Bujumbura|-3.38|29.36|BI
+Busan|35.18|129.08|KR
+Calgary|51.05|-114.07|CA
+Cancún|21.16|-86.85|MX
+Cardiff|51.48|-3.18|GB
+Cartagena|10.39|-75.51|CO
+Casablanca Mohammed V|33.37|-7.59|MA
+Catania Fontanarossa|37.47|15.07|IT
+Cebu|10.32|123.89|PH
+Charlotte|35.23|-80.84|US
+Chengdu|30.57|104.07|CN
+Chennai|13.08|80.27|IN
+Chiang Mai|18.79|98.98|TH
+Chișinău|47.01|28.86|MD
+Chongqing|29.56|106.55|CN
+Cincinnati|39.10|-84.51|US
+Cleveland|41.50|-81.69|US
+Cluj-Napoca|46.77|23.60|RO
+Colombo|6.93|79.86|LK
+Columbus|39.96|-83.00|US
+Constanța|44.18|28.63|RO
+Cork|51.90|-8.47|IE
+Curaçao|12.17|-68.99|CW
+Curitiba|-25.43|-49.27|BR
+Dammam|26.43|50.10|SA
+Dar es Salaam|-6.79|39.21|TZ
+Debrecen|47.53|21.63|HU
+Denpasar|-8.65|115.22|ID
+Detroit|42.33|-83.05|US
+Dhaka|23.81|90.41|BD
+Douala|4.05|9.77|CM
+Dresden|51.05|13.74|DE
+Durban|-29.86|31.02|ZA
+Eindhoven|51.44|5.48|NL
+Faro|37.02|-7.93|PT
+Fortaleza|-3.73|-38.53|BR
+Fukuoka|33.59|130.40|JP
+Funchal|32.66|-16.91|PT
+Galway|53.27|-9.06|IE
+Gaziantep|37.07|37.38|TR
+Gdańsk|54.35|18.65|PL
+Georgetown|6.80|-58.16|GY
+Graz|47.07|15.44|AT
+Guadalajara|20.66|-103.35|MX
+Guangzhou|23.13|113.26|CN
+Guatemala|14.63|-90.51|GT
+Guayaquil|-2.17|-79.92|EC
+Hangzhou|30.27|120.15|CN
+Hannover|52.38|9.73|DE
+Harare|-17.83|31.05|ZW
+Heraklion|35.34|25.13|GR
+Hobart|-42.88|147.33|AU
+Hurghada|27.26|33.81|EG
+Hyderabad|17.39|78.49|IN
+Ibiza|38.91|1.43|ES
+Indianapolis|39.77|-86.16|US
+Innsbruck|47.27|11.39|AT
+Isola d'Elba|42.76|10.24|IT
+İzmir|38.42|27.14|TR
+Jeddah|21.49|39.19|SA
+Jerusalem|31.77|35.21|IL
+Kaliningrad|54.71|20.51|RU
+Kansas City|39.10|-94.58|US
+Kaohsiung|22.63|120.30|TW
+Karachi|24.86|67.01|PK
+Kathmandu|27.72|85.32|NP
+Katowice|50.26|19.02|PL
+Kaunas|54.90|23.90|LT
+Kazan|55.79|49.11|RU
+Khartoum|15.50|32.56|SD
+Kigali|-1.94|30.06|RW
+Kingston|17.97|-76.79|JM
+Kinshasa|-4.44|15.27|CD
+Kos|36.89|27.29|GR
+Kuwait City|29.38|47.99|KW
+Kyoto|35.01|135.77|JP
+Lahore|31.55|74.34|PK
+Larnaca|34.92|33.62|CY
+Las Palmas|28.12|-15.44|ES
+Las Vegas|36.17|-115.14|US
+Leeds|53.80|-1.55|GB
+Leipzig|51.34|12.37|DE
+Liegi|50.63|5.57|BE
+Lille|50.63|3.06|FR
+Linz|48.31|14.29|AT
+Liverpool|53.41|-2.98|GB
+Ljubljana Brnik|46.22|14.46|SI
+Lomé|6.13|1.22|TG
+Luanda|-8.84|13.23|AO
+Lusaka|-15.39|28.32|ZM
+Luxor|25.69|32.64|EG
+Lviv|49.84|24.03|UA
+Maastricht|50.85|5.69|NL
+Macau|22.20|113.54|MO
+Maceió|-9.65|-35.71|BR
+Málaga Costa del Sol|36.67|-4.50|ES
+Malmö|55.60|13.00|SE
+Managua|12.11|-86.24|NI
+Mandalay|21.98|96.08|MM
+Maputo|-25.97|32.57|MZ
+Mar del Plata|-38.00|-57.56|AR
+Marrakech|31.63|-8.01|MA
+Maribor|46.55|15.65|SI
+Mendoza|-32.89|-68.84|AR
+Menorca|39.89|4.26|ES
+Milano Malpensa|45.63|8.72|IT
+Minneapolis|44.98|-93.27|US
+Minsk|53.90|27.57|BY
+Mombasa|-4.04|39.67|KE
+Monaco|43.74|7.42|MC
+Monterrey|25.69|-100.32|MX
+Montevideo|-34.90|-56.16|UY
+Mostar|43.34|17.81|BA
+Mykonos|37.45|25.33|GR
+Nagoya|35.18|136.91|JP
+Nantes|47.22|-1.55|FR
+Napoli Capodichino|40.89|14.29|IT
+Nashville|36.16|-86.78|US
+Newcastle|54.98|-1.61|GB
+Nouakchott|18.09|-15.98|MR
+Novosibirsk|55.01|82.94|RU
+Nürnberg|49.45|11.08|DE
+Odessa|46.48|30.73|UA
+Okinawa|26.21|127.68|JP
+Orlando|28.54|-81.38|US
+Ostrava|49.82|18.26|CZ
+Ottawa|45.42|-75.70|CA
+Palma|39.55|2.73|ES
+Paphos|34.78|32.42|CY
+Perth|-31.95|115.86|AU
+Philadelphia|39.95|-75.17|US
+Phnom Penh|11.56|104.92|KH
+Phoenix|33.45|-112.07|US
+Phuket|7.88|98.39|TH
+Pisa Galilei|43.68|10.39|IT
+Pittsburgh|40.44|-79.996|US
+Plovdiv|42.14|24.75|BG
+Podgorica|42.44|19.26|ME
+Port Louis|-20.16|57.50|MU
+Portland|45.52|-122.68|US
+Porto|41.15|-8.61|PT
+Porto Alegre|-30.03|-51.23|BR
+Poznań|52.41|16.93|PL
+Pristina|42.66|21.17|XK
+Puerto Vallarta|20.65|-105.22|MX
+Punta Cana|18.58|-68.40|DO
+Pune|18.52|73.86|IN
+Quito|-0.18|-78.47|EC
+Rabat|34.02|-6.84|MA
+Recife|-8.05|-34.88|BR
+Reykjavík|64.15|-21.94|IS
+Rennes|48.11|-1.68|FR
+Rodi|36.44|28.23|GR
+Roma Ciampino|41.80|12.59|IT
+Roma Fiumicino|41.80|12.25|IT
+Rosario|-32.95|-60.66|AR
+Saint-Denis|-20.88|55.45|RE
+Salisburgo|47.81|13.04|AT
+Salvador|-12.97|-38.50|BR
+Samarkand|39.65|66.96|UZ
+San Diego|32.72|-117.16|US
+San José|9.93|-84.08|CR
+San Juan|18.47|-66.11|PR
+San Salvador|13.69|-89.19|SV
+Sanaa|15.37|44.19|YE
+Santa Cruz de la Sierra|-17.78|-63.18|BO
+Santo Domingo|18.49|-69.93|DO
+Sapporo|43.06|141.35|JP
+Sarajevo|43.86|18.41|BA
+Sharm el-Sheikh|27.92|34.33|EG
+Shenzhen|22.54|114.06|CN
+Shiraz|29.59|52.58|IR
+Skopje|41.99|21.43|MK
+Sochi|43.60|39.73|RU
+St. Louis|38.63|-90.20|US
+Strasburgo|48.58|7.75|FR
+Suva|-18.14|178.44|FJ
+Tangeri|35.76|-5.83|MA
+Tashkent|41.30|69.24|UZ
+Tbilisi|41.72|44.79|GE
+Tehran|35.69|51.39|IR
+Tenerife|28.47|-16.25|ES
+Thimphu|27.47|89.64|BT
+Tianjin|39.13|117.20|CN
+Tijuana|32.51|-117.04|MX
+Torino Caselle|45.20|7.65|IT
+Tromsø|69.65|18.96|NO
+Trondheim|63.43|10.39|NO
+Tunisi Cartagine|36.85|10.23|TN
+Turku|60.45|22.27|FI
+Ulaanbaatar|47.89|106.91|MN
+Ushuaia|-54.80|-68.30|AR
+Valletta|35.90|14.51|MT
+Varna|43.20|27.91|BG
+Venezia Marco Polo|45.51|12.35|IT
+Verona Villafranca|45.40|10.89|IT
+Vientiane|17.97|102.63|LA
+Vilnius Oro Uostas|54.64|25.29|LT
+Windhoek|-22.56|17.08|NA
+Winnipeg|49.90|-97.14|CA
+Wrocław|51.11|17.03|PL
+Wuhan|30.59|114.30|CN
+Xi'an|34.34|108.94|CN
+Yangon|16.87|96.20|MM
+Yerevan|40.18|44.51|AM
+Zanzibar|-6.16|39.20|TZ
+Zante|37.79|20.90|GR`.split('\n').map(r=>{
   const [nome,lat,lng,paese]=r.split('|');
   return {nome, lat:+lat, lng:+lng, paese};
 });
@@ -1418,7 +1667,12 @@ const DB = {
      di toccare le righe altrui. */
   async rinominaLuogo(luogoId,nome){
     const {error} = await cli.rpc('rinomina_luogo', {p_luogo_id:luogoId, p_nome:nome});
-    if(error) throw error;
+    if(!error) return;
+    if(/function|does not exist|404|schema cache/i.test(error.message||'')){
+      await cli.from('recensioni').update({luogo:nome}).eq('luogo_id',luogoId);   /* prima della Parte 6 */
+      return;
+    }
+    throw error;
   },
 
   /* Azzeramento totale: solo per chi è nella tabella "gestori". */
@@ -2147,7 +2401,12 @@ $('#manca-compagnia').addEventListener('click', async ()=>{
 /* Compone nome e identificativo del posto dalle scelte fatte. */
 function componiTratta(){
   const comp=$('#compagnia').value.trim();
-  const da=$('#citta-da').value.trim(), a=$('#citta-a').value.trim();
+  /* il nome buono è quello dell'elenco: così "venezia" e "Venezia" restano
+     la stessa tratta e il titolo esce scritto bene */
+  const norm = t => { const c=cittaDi(t); return c ? c.nome : String(t||'').trim(); };
+  const da=norm($('#citta-da').value), a=norm($('#citta-a').value);
+  if(da) $('#citta-da').value=da;
+  if(a) $('#citta-a').value=a;
   S.bozza.compagnia=comp; S.bozza.da=da; S.bozza.a=a;
   if(comp){
     $('#luogo').value = nomeTratta(comp, da, a);
@@ -2188,7 +2447,16 @@ function aggiornaSuggerimentoEvento(){
   const i=$('#luogo');
   if(S.bozza.categoria==='evento'){
     i.placeholder = 'es. Sagra del Rospo 2026';
-    if(!S.bozza.bloccato){
+    /* la sagra non è il bagno che sta lì di solito: si sgancia dal
+       riconoscimento per vicinanza e si prende un posto suo */
+    if(S.bozza.bloccato){
+      S.bozza.bloccato=false; S.bozza.luogoId=null;
+      i.readOnly=false; i.value='';
+      $('#sp-azioni').innerHTML='';
+      $('#vicini').hidden=true;
+      ultimoRiconoscimento=null;
+    }
+    {
       $('#sp-corpo').className='sp-corpo visibile nuovo';
       $('#sp-corpo').innerHTML = `🎪 <b>Scrivi il nome dell'evento</b>
         <span class="dett">La sagra, il concerto, la fiera. I bagni chimici sono tanti e cambiano: quello che resta è l'evento.</span>`;
@@ -2244,6 +2512,7 @@ function aggiornaSuggerimenti(){
 
 function mostraVicini(pos){
   if(S.modificaId) return;
+  if(S.bozza.categoria==='evento' || S.bozza.categoria==='trasporti') return;   /* posti loro */
   const c=$('#vicini'), v=luoghiVicini(pos);
   if(!v.length){
     c.hidden=true; c.innerHTML='';
@@ -2583,14 +2852,27 @@ $('#salva').addEventListener('click', async ()=>{
    Chi ha registrato per primo definisce l'identificativo; il nome che vedi resta il tuo. */
 function risolviLuogo(nome, bozza){
   if(bozza.luogoId) return bozza.luogoId;
-  if(bozza.pos){
+
+  /* Un evento è un posto suo, anche se cade dentro casa di qualcuno: la sagra
+     in piazza non è il bagno del bar all'angolo. Si raggruppa per NOME, così
+     chi va alla stessa sagra finisce insieme anche arrivando da un'altra via. */
+  if(bozza.categoria==='evento'){
+    const k=chiaveLuogo(nome);
+    const stesso=S.recensioni.find(r=>r.id!==S.modificaId && r.categoria==='evento' && chiaveLuogo(r.luogo)===k);
+    return stesso ? (stesso.luogoId || (stesso.luogoId = nuovoId('e'))) : nuovoId('e');
+  }
+
+  /* Se il nome scritto è diverso da quello del posto vicino, è un posto nuovo:
+     l'utente sta dicendo che non è lo stesso bagno. */
+  if(bozza.pos && !bozza.bloccato){
     let vicino=null, dmin=RAGGIO_STESSO_BAGNO;
     S.recensioni.forEach(r=>{
       if(r.lat==null || r.id===S.modificaId) return;
       const d=distanza(bozza.pos,{lat:r.lat,lng:r.lng});
       if(d<dmin){ dmin=d; vicino=r; }
     });
-    if(vicino) return vicino.luogoId || (vicino.luogoId = nuovoId('l'));
+    if(vicino && chiaveLuogo(vicino.luogo)===chiaveLuogo(nome))
+      return vicino.luogoId || (vicino.luogoId = nuovoId('l'));
   }
   const k=chiaveLuogo(nome);
   const omonimo=S.recensioni.find(r=>r.id!==S.modificaId && chiaveLuogo(r.luogo)===k);
@@ -2842,7 +3124,7 @@ function scheda(r){
   const mia = propria || gestore;
   const cacca=(r.reaz&&r.reaz['💩'])||[];
   const miaR = S.io && cacca.includes(S.io.id);
-  return `<article class="scheda${postoAssente(gruppoLuogo(r))?' assente':''}">
+  return `<article class="scheda${postoAssente(gruppoLuogo(r))?' assente':''}" data-rec="${r.id}">
     <header class="targa">
       <span class="avatar" aria-hidden="true">${r.faccia||'💩'}</span>
       <div style="min-width:0">
@@ -2892,7 +3174,11 @@ async function reagisci(id){
      dentro le recensioni degli altri */
   try{
     const {error} = await cli.rpc('reagisci', {p_id:id});
-    if(error) throw error;
+    if(error){
+      /* la funzione non c'è ancora: si scrive come si è sempre fatto */
+      if(/function|does not exist|404|schema cache/i.test(error.message||'')) await DB.aggiorna(r);
+      else throw error;
+    }
   }catch(e){
     console.warn('reazione:', e);
     if(i>=0) chi.push(S.io.id); else chi.splice(chi.indexOf(S.io.id),1);
@@ -3015,7 +3301,7 @@ function bagniDelPosto(p){
    telefono non compariva affatto; questa è roba nostra e si vede sempre. */
 let postoInAnteprima=null;
 function mostraAnteprimaPosto(gruppo){
-  const rec=S.recensioni.filter(r=>gruppoLuogo(r)===gruppo && r.lat!=null).sort((a,b)=>b.ts-a.ts);
+  const rec=S.recensioni.filter(r=>gruppoLuogo(r)===gruppo).sort((a,b)=>b.ts-a.ts);
   if(!rec.length) return;
   postoInAnteprima=gruppo;
   const medio=rec.reduce((a,r)=>a+media(r.voti),0)/rec.length;
@@ -3632,6 +3918,23 @@ document.addEventListener('visibilitychange', ()=>{
 window.addEventListener('beforeunload', e=>{
   if(!salvataggioInCorso) return;
   e.preventDefault(); e.returnValue='';
+});
+
+/* Cinque tocchi su una scheda: se sei gestore, la apri in modifica.
+   Serve quando il pulsante Gestisci non c'è o non si vede. */
+let toccateScheda=0, ultimaScheda=null, tempoScheda=0;
+document.addEventListener('click', e=>{
+  if(!gestore) return;
+  const sch = e.target.closest('#lista-bacheca .scheda');
+  if(!sch || e.target.closest('button, a')) return;
+  const id = sch.dataset.rec;
+  const ora = Date.now();
+  toccateScheda = (id===ultimaScheda && ora-tempoScheda<1600) ? toccateScheda+1 : 1;
+  ultimaScheda = id; tempoScheda = ora;
+  if(toccateScheda>=5){
+    toccateScheda=0;
+    if(id){ toast('Modalità gestore: apro la recensione'); modifica(id); }
+  }
 });
 
 function aggiornaGestore(){

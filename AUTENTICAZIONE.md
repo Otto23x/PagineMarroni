@@ -94,6 +94,20 @@ insert into gestori (uid, nota) values ('INCOLLA_QUI_IL_TUO_IDENTIFICATIVO', 'io
 
 Riapri l'app: comparirà il riquadro giallo **Modalità gestore attiva** e vedrai Modifica ed Elimina su tutte le recensioni. Il vecchio codice `marrone` non esiste più — adesso il gestore è una riga nel database, che nessuno può indovinare leggendo il sorgente.
 
+## Sistemare una recensione finita nel posto sbagliato
+
+Se una recensione è stata agganciata al posto sbagliato — succedeva con gli eventi registrati dentro casa, prima della correzione — si stacca con una riga. Prendi l'identificativo dalla recensione (Table Editor, colonna `id`):
+
+```sql
+-- un evento che deve avere un posto tutto suo
+update recensioni set luogo_id = 'e' || substr(md5(random()::text),1,12)
+where id = 'ID_DELLA_RECENSIONE';
+```
+
+Se più recensioni sono dello stesso evento e devono stare insieme, dai a tutte lo stesso `luogo_id`.
+
+---
+
 ## Azzerare tutto prima del lancio vero
 
 Dopo le prove vorrai ripartire da zero. Due modi.
