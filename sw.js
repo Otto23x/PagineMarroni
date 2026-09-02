@@ -4,6 +4,7 @@ const CACHE = 'pagine-marroni-1.0';  // cambia questo numero a ogni nuova versio
 const GUSCIO = [
   './', './index.html', './manifest.json',
   './icon-192.png', './icon-512.png', './apple-touch-icon.png', './favicon.png',
+  './locandina.jpg',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
   'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js'
 ];
@@ -47,7 +48,7 @@ self.addEventListener('fetch', e => {
 
   // manifest e icone: sempre dalla rete quando c'è, altrimenti il telefono
   // continua a mostrare nome e logo di una versione precedente
-  if (/manifest\.json|icon-|favicon|apple-touch/.test(url.pathname)) {
+  if (/manifest\.json|icon-|favicon|apple-touch|locandina/.test(url.pathname)) {
     e.respondWith(
       fetch(req).then(r => {
         const copia = r.clone();

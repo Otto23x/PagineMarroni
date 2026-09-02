@@ -30,6 +30,8 @@ Senza questo, il link nell'email non funziona.
 ```sql
 -- categoria del posto (casa, lavoro, trasporti…)
 alter table recensioni add column if not exists categoria text;
+-- quale bagno, dentro lo stesso posto (piano terra, uomini, in fondo a destra…)
+alter table recensioni add column if not exists settore text;
 
 -- chi può fare il gestore: modificare ed eliminare le recensioni di tutti
 create table if not exists gestori (

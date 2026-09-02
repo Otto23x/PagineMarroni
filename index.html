@@ -6,6 +6,11 @@
 <title>Pagine Marroni</title>
 <meta name="description" content="Registra, recensisci e mappa ogni bagno del mondo insieme ai tuoi amici.">
 <meta name="theme-color" content="#0FA3A3">
+<meta property="og:title" content="Pagine Marroni">
+<meta property="og:description" content="Elenco Nazionale ed Internazionale dei Servizi Igienici. Scritto e recensito da noi.">
+<meta property="og:image" content="locandina.jpg">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Pagine Marroni">
 <link rel="manifest" href="manifest.json?v=3">
@@ -104,7 +109,10 @@ main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:16px 16px calc(150
 .velo[hidden]{display:none}
 body.ingresso .app{visibility:hidden;pointer-events:none}
 body.ingresso{overflow:hidden}
-.benvenuto{max-width:420px;width:100%;padding:26px 22px;text-align:center}
+.locandina{display:block;width:calc(100% + 44px);margin:-26px -22px 22px;border-radius:var(--r-l) var(--r-l) 0 0;
+  aspect-ratio:896/1198;object-fit:cover;background:#F5CE3E}
+@media (max-height:720px){.locandina{aspect-ratio:896/620;object-position:top}}
+.benvenuto{max-width:420px;width:100%;padding:26px 22px;text-align:center;overflow:hidden}
 .benvenuto .logo-grande{font-size:60px;line-height:1;display:block;margin-bottom:4px}
 .benvenuto h1{font-size:clamp(30px,8.5vw,38px);color:var(--cioccolato);margin-bottom:6px}
 .benvenuto .paylo{font-size:15px;color:var(--tenue);margin-bottom:20px;line-height:1.45}
@@ -143,11 +151,20 @@ body.ingresso{overflow:hidden}
 .avviso-mappa{position:absolute;left:12px;right:12px;bottom:12px;z-index:3;background:rgba(255,255,255,.95);border-radius:var(--r-m);padding:10px 14px;font-size:12.5px;color:var(--cioccolato-2);box-shadow:var(--ombra)}
 .avviso-mappa[hidden]{display:none}
 .perno{display:grid;place-items:center;filter:drop-shadow(0 4px 6px rgba(42,28,18,.4))}
-.perno .bolla{width:38px;height:38px;border-radius:50% 50% 50% 6px;transform:rotate(45deg);background:var(--porcellana);border:3px solid var(--cioccolato);display:grid;place-items:center}
+.perno .bolla{position:relative;width:38px;height:38px;border-radius:50% 50% 50% 6px;transform:rotate(45deg);background:var(--porcellana);border:3px solid var(--cioccolato);display:grid;place-items:center}
 .perno .bolla span{transform:rotate(-45deg);font-size:17px;line-height:1}
 .leaflet-popup-content-wrapper{border-radius:var(--r-m)}
 .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.5;width:212px !important}
 .pop-titolo{font-family:var(--font-display);font-weight:800;font-size:16px;color:var(--cioccolato);margin-bottom:2px}
+.pop-ultima{margin-top:6px;font-size:12px;color:var(--tenue);line-height:1.4}
+.pop-bagni{display:flex;flex-direction:column;gap:5px;margin-top:8px}
+.pop-bagni button{display:flex;justify-content:space-between;gap:8px;padding:8px 11px;border-radius:12px;
+  background:var(--ceramica);border:var(--bordo);font-size:12.5px;font-weight:600;color:var(--cioccolato);text-align:left}
+.pop-bagni button span{opacity:.6}
+.pop-btn{width:100%;margin-top:10px;min-height:38px;border-radius:999px;background:var(--cioccolato);color:#fff;font-size:12.5px;font-weight:700}
+.bolla .conta{position:absolute;top:-7px;right:-7px;transform:rotate(-45deg);min-width:18px;height:18px;padding:0 4px;border-radius:999px;
+  background:var(--acqua);color:#fff;font-size:11px;font-weight:800;font-style:normal;display:grid;place-items:center;
+  border:2px solid var(--porcellana)}
 .pop-meta{font-size:12px;color:var(--tenue);margin-bottom:8px}
 .pop img{width:100%;border-radius:10px;margin-bottom:8px;display:block}
 
@@ -188,6 +205,8 @@ body.ingresso{overflow:hidden}
 .par .cacche i.on{opacity:1}
 .etichette{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:12px}
 .etichetta{font-size:11.5px;font-weight:600;padding:6px 8px;border-radius:999px;background:rgba(15,163,163,.12);color:var(--acqua-scuro);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.settore-tag{font-family:var(--font-testo);font-size:12px;font-weight:700;color:var(--acqua-scuro);
+  background:rgba(15,163,163,.12);border-radius:999px;padding:3px 9px;vertical-align:middle;margin-left:4px;white-space:nowrap}
 .etichetta.neutra{background:rgba(78,50,32,.10);color:var(--cioccolato)}
 .piede{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--fuga);background:#FBFDFC;flex-wrap:wrap}
 .azione{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:13px;font-weight:600;transition:transform .12s}
@@ -307,9 +326,38 @@ body.ingresso{overflow:hidden}
 .pastiglia[hidden]{display:none}
 .tab{position:relative}
 .campo input[readonly]{background:#F1F5F3;color:var(--cioccolato);border-style:dashed;cursor:default}
-.nota-luogo{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;padding:9px 12px;border-radius:14px;background:rgba(15,163,163,.10);font-size:12.5px;line-height:1.4;color:var(--acqua-scuro)}
-.nota-luogo[hidden]{display:none}
-.nota-luogo button{margin-left:auto;height:32px;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:12px;font-weight:700;color:var(--cioccolato);white-space:nowrap}
+.passi{list-style:none;counter-reset:none;padding:0;margin:0}
+.passo{background:var(--porcellana);border:var(--bordo);border-radius:var(--r-l);box-shadow:var(--ombra);padding:20px 18px;margin-bottom:14px;position:relative}
+.testa-passo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.testa-passo h3{font-size:17px;margin:0}
+.testa-passo .numero{flex:none;width:26px;height:26px;border-radius:50%;background:var(--cioccolato);color:#fff;
+  display:grid;place-items:center;font-size:13px;font-weight:800;font-family:var(--font-display)}
+.passo.fatto .numero{background:var(--acqua)}
+.passo.fatto .numero::after{content:'✓';font-size:14px}
+.passo.fatto .numero{font-size:0}
+.facolt{font-size:11.5px;font-weight:600;color:var(--tenue);background:var(--ceramica);border-radius:999px;padding:3px 9px;vertical-align:middle;margin-left:6px}
+
+.scheda-posto{margin-top:14px}
+.settore{margin-top:14px;padding-top:14px;border-top:1px solid var(--fuga)}
+.settore label{display:block;font-size:13px;font-weight:700;color:var(--cioccolato);margin-bottom:8px}
+.cip-settori{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.cip-settori:empty{display:none}
+.cip-settori button{min-height:34px;padding:0 12px;border-radius:999px;background:var(--ceramica);border:var(--bordo);
+  font-size:12.5px;font-weight:600;color:var(--cioccolato)}
+.cip-settori button[aria-pressed="true"]{background:var(--acqua);border-color:var(--acqua);color:#fff}
+.cip-settori .conteggio{opacity:.65;font-weight:400}
+#settore-txt{width:100%;min-height:46px;padding:12px 14px;border-radius:var(--r-l);border:1.5px solid var(--fuga);background:#FBFDFC}
+#settore-txt:focus{outline:none;border-color:var(--acqua)}
+.sp-corpo{display:none}
+.sp-corpo.visibile{display:block;padding:13px 15px;border-radius:var(--r-m);background:rgba(15,163,163,.10);
+  border:1.5px solid rgba(15,163,163,.28);font-size:13.5px;line-height:1.5;color:var(--acqua-scuro);margin-bottom:12px}
+.sp-corpo .nome-posto{display:block;font-family:var(--font-display);font-size:19px;color:var(--cioccolato);margin:2px 0 4px}
+.sp-corpo .dett{display:block;font-size:12.5px;color:var(--tenue)}
+.sp-corpo.nuovo{background:rgba(242,194,48,.16);border-color:rgba(242,194,48,.5);color:#7a5c14}
+.sp-azioni{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.sp-azioni:empty{display:none}
+.sp-azioni button{flex:1;min-width:140px;min-height:38px;padding:0 12px;border-radius:999px;background:var(--ceramica);
+  border:var(--bordo);font-size:12.5px;font-weight:700;color:var(--cioccolato)}
 .vicini{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
 .vicini .cip{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border-radius:999px;background:rgba(15,163,163,.12);color:var(--acqua-scuro);font-size:13px;font-weight:600;border:1px solid rgba(15,163,163,.3);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .vicini .et-vicini{font-size:12px;color:var(--tenue);width:100%;margin-bottom:-2px}
@@ -380,67 +428,78 @@ body.ingresso{overflow:hidden}
         <button class="btn piccolo fantasma" id="annulla-modifica" hidden>Annulla modifica</button>
       </div>
 
-      <div class="blocco">
-        <h3>Il racconto</h3>
-        <div class="campo" style="margin-bottom:12px">
-          <label for="luogo">Nome del posto</label>
-          <input type="text" id="luogo" name="nome-posto" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" list="posti-noti" autocomplete="off" data-lpignore="true" data-form-type="other">
-          <datalist id="posti-noti"></datalist>
-          <div class="nota-luogo" id="nota-luogo" hidden></div>
-        </div>
-        <div class="campo" style="margin-bottom:12px">
-          <label for="titolo-rec">Titolo del racconto <span style="font-weight:400;color:var(--tenue)">(facoltativo)</span></label>
-          <input type="text" id="titolo-rec" name="titolo-cagata" maxlength="50" placeholder="es. Ceramica fredda, cuore caldo" autocomplete="off" data-lpignore="true" data-form-type="other">
-        </div>
-        <div class="campo" style="margin-bottom:12px">
-          <label for="testo-rec">Com'è andata</label>
-          <textarea id="testo-rec" name="racconto-cagata" maxlength="600" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
-          <div class="contatore" id="contatore">0 / 600</div>
-        </div>
-        <div class="campo" style="margin-bottom:0">
-          <label for="quando">Quando è successo</label>
-          <input type="datetime-local" id="quando" name="quando-cagata" autocomplete="off" data-lpignore="true" data-form-type="other">
-          <p class="nota" style="margin-top:6px">Lascia l'ora di adesso, oppure torna indietro per registrarne una vecchia: se sposti il giorno, l'ora va a mezzogiorno.</p>
-        </div>
-      </div>
+      <ol class="passi">
+        <li class="passo" data-passo="1">
+          <div class="testa-passo"><span class="numero">1</span><h3>Dove sei</h3></div>
+          <div class="posizione">
+            <span class="punto" id="punto-gps"></span>
+            <span class="stato" id="stato-gps"><b>Posizione non richiesta</b>Serve a riconoscere il bagno e a metterlo sulla mappa.</span>
+            <button class="btn piccolo" id="btn-gps">Rileva</button>
+          </div>
+          <button class="btn piccolo fantasma" id="btn-scegli" style="margin-top:10px;width:100%">🗺️ Cerca o scegli sulla mappa</button>
 
-      <div class="blocco">
-        <h3>Dove</h3>
-        <div class="posizione">
-          <span class="punto" id="punto-gps"></span>
-          <span class="stato" id="stato-gps"><b>Posizione non richiesta</b>Rileva dove sei, oppure scegli il punto qui sotto.</span>
-          <button class="btn piccolo" id="btn-gps">Rileva</button>
-        </div>
-        <button class="btn piccolo fantasma" id="btn-scegli" style="margin-top:12px;width:100%">🗺️ Cerca o scegli sulla mappa</button>
-        <div class="vicini" id="vicini" hidden></div>
-        <h3 style="margin:18px 0 4px">Che tipo di posto è</h3>
-        <p class="nota" style="margin-bottom:12px">Serve per le statistiche: scegline uno.</p>
-        <div class="scelte" id="scelte-categoria" role="group" aria-label="Tipo di posto"></div>
-      </div>
+          <div class="scheda-posto" id="scheda-posto">
+            <div class="sp-corpo" id="sp-corpo"></div>
+            <div class="campo" id="campo-nome-posto">
+              <label for="luogo">Nome del posto</label>
+              <input type="text" id="luogo" name="nome-posto" maxlength="60" placeholder="es. Autogrill Somaglia Ovest" list="posti-noti" autocomplete="off" data-lpignore="true" data-form-type="other">
+              <datalist id="posti-noti"></datalist>
+            </div>
+            <div class="sp-azioni" id="sp-azioni"></div>
+            <div class="settore" id="settore">
+              <label for="settore-txt">Quale bagno, di preciso <span class="facolt">se ce n'è più d'uno</span></label>
+              <div class="cip-settori" id="cip-settori"></div>
+              <input type="text" id="settore-txt" name="quale-bagno" maxlength="28" placeholder="es. Primo piano, Uomini, in fondo a destra"
+                     autocomplete="off" data-lpignore="true" data-form-type="other">
+            </div>
+          </div>
+          <div class="vicini" id="vicini" hidden></div>
+        </li>
 
-      <div class="blocco">
-        <h3>La foto</h3>
-        <input type="file" id="file-foto" accept="image/*" capture="environment" class="sr">
-        <button class="zona-foto" id="zona-foto">
-          <span class="em" aria-hidden="true">📸</span>
-          <span>Fotografa il bagno<br><small>Facoltativa. Niente contenuti espliciti.</small></span>
-        </button>
-        <div class="anteprima" id="anteprima" hidden>
-          <img id="img-anteprima" alt="Anteprima della foto scelta">
-          <button id="togli-foto">Togli</button>
-        </div>
-      </div>
+        <li class="passo" data-passo="2">
+          <div class="testa-passo"><span class="numero">2</span><h3>Che posto è</h3></div>
+          <p class="nota" style="margin-bottom:12px">Una sola scelta, serve per le statistiche.</p>
+          <div class="scelte" id="scelte-categoria" role="group" aria-label="Tipo di posto"></div>
+        </li>
 
-      <div class="blocco">
-        <h3>Voti, in cacche</h3>
-        <div id="scale-voti"></div>
-      </div>
+        <li class="passo" data-passo="3">
+          <div class="testa-passo"><span class="numero">3</span><h3>Il voto, in cacche</h3></div>
+          <div id="scale-voti"></div>
+        </li>
 
-      <div class="blocco">
-        <h3 style="margin-bottom:4px">Cos'è successo</h3>
-        <p class="nota" style="margin-bottom:12px">Se è filato tutto liscio tocca <b>Tutto ok</b>. Altrimenti segna quello che è andato storto: puoi sceglierne più di una.</p>
-        <div class="tag-lista" id="lista-tag" role="group" aria-label="Cos'è successo"></div>
-      </div>
+        <li class="passo" data-passo="4">
+          <div class="testa-passo"><span class="numero">4</span><h3>Cos'è successo</h3></div>
+          <p class="nota" style="margin-bottom:12px">Se è filato tutto liscio tocca <b>Tutto ok</b>. Altrimenti segna quello che è andato storto: puoi sceglierne più di una.</p>
+          <div class="tag-lista" id="lista-tag" role="group" aria-label="Cos'è successo"></div>
+        </li>
+
+        <li class="passo" data-passo="5">
+          <div class="testa-passo"><span class="numero">5</span><h3>Il racconto <span class="facolt">facoltativo</span></h3></div>
+          <div class="campo" style="margin-bottom:12px">
+            <label for="titolo-rec">Titolo</label>
+            <input type="text" id="titolo-rec" name="titolo-cagata" maxlength="50" placeholder="es. Ceramica fredda, cuore caldo" autocomplete="off" data-lpignore="true" data-form-type="other">
+          </div>
+          <div class="campo" style="margin-bottom:12px">
+            <label for="testo-rec">Com'è andata</label>
+            <textarea id="testo-rec" name="racconto-cagata" maxlength="600" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
+            <div class="contatore" id="contatore">0 / 600</div>
+          </div>
+          <input type="file" id="file-foto" accept="image/*" capture="environment" class="sr">
+          <button class="zona-foto" id="zona-foto">
+            <span class="em" aria-hidden="true">📸</span>
+            <span>Fotografa il bagno<br><small>Niente contenuti espliciti.</small></span>
+          </button>
+          <div class="anteprima" id="anteprima" hidden>
+            <img id="img-anteprima" alt="Anteprima della foto scelta">
+            <button id="togli-foto">Togli</button>
+          </div>
+          <div class="campo" style="margin:14px 0 0">
+            <label for="quando">Quando è successo</label>
+            <input type="datetime-local" id="quando" name="quando-cagata" autocomplete="off" data-lpignore="true" data-form-type="other">
+            <p class="nota" style="margin-top:6px">Lascia l'ora di adesso, oppure torna indietro per registrarne una vecchia: se sposti il giorno, l'ora va a mezzogiorno.</p>
+          </div>
+        </li>
+      </ol>
 
       <div style="display:flex;gap:10px">
         <button class="btn rossa" id="elimina-rec" hidden>Elimina</button>
@@ -551,9 +610,8 @@ body.ingresso{overflow:hidden}
 
 <div class="velo" id="velo" hidden>
   <div class="scheda benvenuto">
-    <span class="logo-grande" aria-hidden="true">💩</span>
-    <h1>Pagine Marroni</h1>
-    <p class="paylo">Le Pagine Gialle elencavano i negozi.<br>Queste elencano i bagni, e li recensite voi.</p>
+    <img src="locandina.jpg?v=1" alt="Pagine Marroni — Elenco Nazionale ed Internazionale dei Servizi Igienici" class="locandina">
+    <h1 class="sr">Pagine Marroni</h1>
 
     <div class="linguette" role="tablist">
       <button class="ling attiva" id="ling-accedi" role="tab" aria-selected="true">Accedi</button>
@@ -651,8 +709,8 @@ const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨'
 
 const PARAMETRI = [
   {id:'pulizia',   nome:'Pulizia',   sub:'Tazza, pavimento, lavandino'},
-  {id:'comfort',   nome:'Comfort',   sub:'Seduta, spazio, temperatura'},
-  {id:'privacy',   nome:'Privacy',   sub:'Serratura, pareti, silenzio'},
+  {id:'comfort',   nome:'Comodità',     sub:'Seduta, spazio, temperatura'},
+  {id:'privacy',   nome:'Riservatezza',  sub:'Serratura, pareti, silenzio'},
   {id:'profumo',   nome:'Ambiente',  sub:'Odore, aria, quanto ci resteresti'},
   {id:'dotazione', nome:'Dotazione', sub:'Carta, sapone, specchio'}
 ];
@@ -750,13 +808,13 @@ function daRiga(x){
   return {id:x.id, nome:x.nome, faccia:x.faccia, autoreId:x.autore_id, ts:Number(x.ts),
     creatoTs: x.creato ? Date.parse(x.creato) : Number(x.ts),
     luogo:x.luogo, luogoId:x.luogo_id, titolo:x.titolo, testo:x.testo, voti:x.voti||{},
-    tag:x.tag||[], categoria:x.categoria||null, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
+    tag:x.tag||[], categoria:x.categoria||null, settore:x.settore||'', lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
     haFoto:!!x.foto_url, fotoUrl:x.foto_url, reaz:x.reaz||{}};
 }
 function aRiga(r){
   return {id:r.id, nome:r.nome, faccia:r.faccia, autore_id:r.autoreId||null, ts:r.ts,
     luogo:r.luogo, luogo_id:r.luogoId||null, titolo:r.titolo, testo:r.testo, voti:r.voti,
-    tag:r.tag, categoria:r.categoria||null, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
+    tag:r.tag, categoria:r.categoria||null, settore:r.settore||null, lat:r.lat, lng:r.lng, citta:r.citta||null, paese:r.paese||null,
     foto_url:r.fotoUrl||null, reaz:r.reaz||{}};
 }
 
@@ -861,13 +919,38 @@ function ripuliscAutocompletamento(){
 }
 function salvaBozza(){
   ripuliscAutocompletamento();
+  if(document.getElementById('scheda-posto')) segnaPassi();
   if(S.modificaId) return;
   try{ localStorage.setItem(K_BOZZA, JSON.stringify({
     b:S.bozza, luogo:$('#luogo').value, titolo:$('#titolo-rec').value,
-    testo:$('#testo-rec').value, quando:$('#quando').value
+    testo:$('#testo-rec').value, quando:$('#quando').value, settore:$('#settore-txt').value
   })); }catch(e){}
 }
 function scartaBozza(){ try{ localStorage.removeItem(K_BOZZA); }catch(e){} }
+
+/* Riprende la bozza lasciata a metà: se chiudi l'app mentre scrivi, la ritrovi. */
+function recuperaBozza(){
+  if(S.modificaId) return;
+  let d=null; try{ d=JSON.parse(localStorage.getItem(K_BOZZA)||'null'); }catch(e){}
+  if(!d || !d.b) return;
+  const b=d.b;
+  S.bozza = {...S.bozza, voti:b.voti||{}, tag:b.tag||[], categoria:b.categoria||null,
+             luogoId:b.luogoId||null, pos:b.pos||null, citta:b.citta||null, paese:b.paese||null,
+             fotoUrl:b.fotoUrl||null};
+  $('#luogo').value = d.luogo||'';
+  $('#titolo-rec').value = d.titolo||'';
+  $('#testo-rec').value = d.testo||'';
+  if(d.quando) $('#quando').value = d.quando;
+  if(d.settore!==undefined) $('#settore-txt').value = d.settore;
+  $('#contatore').textContent = (d.testo||'').length+' / 600';
+  costruisciModulo();
+  if(S.bozza.pos){
+    $('#punto-gps').className='punto ok';
+    $('#stato-gps').innerHTML=`<b>Posizione ripresa</b>${S.bozza.pos.lat.toFixed(4)}, ${S.bozza.pos.lng.toFixed(4)}`;
+    mostraVicini(S.bozza.pos);
+  }
+  segnaPassi();
+}
 
 /* Modalità gestore: non un codice nel sorgente, ma un elenco nel database.
    Aggiungi il tuo identificativo alla tabella "gestori" da Supabase. */
@@ -915,6 +998,24 @@ function chiaveLuogo(t){
 /* due recensioni appartengono allo stesso bagno se condividono l'identificativo
    di luogo (assegnato per vicinanza) o, in mancanza, il nome normalizzato */
 function gruppoLuogo(r){ return r.luogoId || ('n:'+chiaveLuogo(r.luogo)); }
+/* Un posto può avere più bagni: piano terra, primo piano, uomini, donne.
+   Il POSTO resta uno (nome, battesimo, pin sulla mappa); il BAGNO è la
+   suddivisione interna, e ha statistiche e recensioni sue. */
+const settoreDi = r => (r.settore||'').trim();
+function chiaveBagno(r){ return gruppoLuogo(r)+'#'+chiaveLuogo(settoreDi(r)); }
+function etichettaBagno(r){
+  const s=settoreDi(r);
+  return nomeCanonico(gruppoLuogo(r)) + (s ? ' · '+s : '');
+}
+function settoriDi(gruppo){
+  const m=new Map();
+  S.recensioni.filter(r=>gruppoLuogo(r)===gruppo).forEach(r=>{
+    const s=settoreDi(r);
+    m.set(s, (m.get(s)||0)+1);
+  });
+  return m;
+}
+const SETTORI_TIPICI = ['Piano terra','Primo piano','Secondo piano','Interrato','Uomini','Donne','Disabili','Esterno'];
 /* Il nome appartiene al posto, non alla recensione: lo dà chi ci arriva per primo. */
 function primaDelPosto(gruppo){
   return S.recensioni.filter(r=>gruppoLuogo(r)===gruppo && r.luogo)
@@ -1239,7 +1340,8 @@ function vaiA(nome){
   if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
 }
 $$('.tab[data-vista]').forEach(t=>t.addEventListener('click',()=>{
-  if(t.dataset.vista==='registra' && S.vista!=='registra' && !S.modificaId){ nuovaBozza(); chiediPosizione(); }
+  if(t.dataset.vista==='registra' && S.vista!=='registra' && !S.modificaId){ nuovaBozza(); recuperaBozza(); chiediPosizione(); }
+  else if(t.dataset.vista==='registra' && !S.modificaId) chiediPosizione();   /* rileggi sempre: potresti esserti spostato */
   if(t.dataset.vista==='profilo') S.profilo=null;
   vaiA(t.dataset.vista);
 }));
@@ -1262,62 +1364,165 @@ function nuovaBozza(){
   $('#titolo-rec').value=''; $('#testo-rec').value=''; $('#luogo').value='';
   $('#contatore').textContent='0 / 600';
   $('#anteprima').hidden=true; $('#zona-foto').hidden=false;
-  $('#luogo').readOnly=false; $('#nota-luogo').hidden=true;
+  $('#luogo').value=''; $('#luogo').readOnly=false;
+  $('#settore-txt').value='';
+  ultimoRiconoscimento=null;
   impostaQuando(Date.now());
   $('#punto-gps').className='punto';
   $('#stato-gps').innerHTML='<b>Posizione non richiesta</b>Rileva dove sei, oppure scegli il punto qui sotto.';
   costruisciModulo();
+  schedaPosto(S.bozza.pos ? {tipo:'nuovo'} : {tipo:'senza'});
+  segnaPassi();
 }
-function bloccaLuogo(nome, luogoId, spiegazione, etichettaSblocco, etichettaProposta){
-  const i=$('#luogo'), n=$('#nota-luogo');
-  i.value=nome; i.readOnly=true;
-  S.bozza.luogoId=luogoId; S.bozza.bloccato=true;
-  n.hidden=false;
-  n.innerHTML = `<span>${spiegazione}</span>` +
-    (etichettaProposta ? `<button type="button" id="proponi-nome">${etichettaProposta}</button>` : '') +
-    (etichettaSblocco ? `<button type="button" id="sblocca-luogo">${etichettaSblocco}</button>` : '');
-}
-function sbloccaLuogo(vuota){
-  const i=$('#luogo');
-  i.readOnly=false;
-  if(vuota){ i.value=''; S.bozza.luogoId=null; }
-  S.bozza.bloccato=false;
-  $('#nota-luogo').hidden=true;
-  i.focus();
-  salvaBozza();
-}
-document.addEventListener('click', e=>{ if(e.target.closest('#sblocca-luogo')) sbloccaLuogo(!S.modificaId); });
+/* ---- La scheda del posto ------------------------------------------------
+   Tre stati, sempre uno solo visibile:
+   · senza posizione  → campo libero, il bagno non si può riconoscere
+   · posto conosciuto → nome bloccato, con chi l'ha battezzato e quanto dista
+   · posto nuovo      → campo libero, avvisando che il nome resterà per tutti  */
+let ultimoRiconoscimento=null;
 
-function aggiornaSuggerimenti(){
-  const nomi=Array.from(new Set(S.recensioni.map(r=>r.luogo).filter(Boolean))).sort();
-  document.getElementById('posti-noti').innerHTML = nomi.map(n=>`<option value="${esc(n)}">`).join('');
+function schedaPosto(stato){
+  const corpo=$('#sp-corpo'), azioni=$('#sp-azioni'), campo=$('#campo-nome-posto'), i=$('#luogo');
+  azioni.innerHTML='';
+
+  if(stato.tipo==='conosciuto'){
+    const p=stato.prima;
+    const quante=S.recensioni.filter(r=>gruppoLuogo(r)===stato.gruppo).length;
+    i.value=stato.nome; i.readOnly=true;
+    S.bozza.luogoId=stato.luogoId; S.bozza.bloccato=true;
+    campo.hidden=true;
+    corpo.className='sp-corpo visibile';
+    corpo.innerHTML = `📍 <b>Questo bagno è già in elenco</b>
+      <span class="nome-posto">${esc(stato.nome)}</span>
+      <span class="dett">Battezzato da ${esc(p?p.nome:'qualcuno')} · ${quante} ${quante===1?'cagata registrata':'cagate registrate'}${stato.metri!=null?` · a ${stato.metri} m da te`:''}</span>`;
+    const mioPosto = S.io && p && p.autoreId===S.io.id;
+    azioni.innerHTML = `<button type="button" id="sblocca-luogo">Non è questo posto</button>` +
+      (mioPosto ? '' : `<button type="button" id="proponi-nome">Proponi un altro nome</button>`);
+    disegnaSettori(stato.gruppo);
+    return;
+  }
+
+  campo.hidden=false;
+  i.readOnly=false;
+  S.bozza.bloccato=false;
+
+  if(stato.tipo==='nuovo'){
+    S.bozza.luogoId=null;
+    corpo.className='sp-corpo visibile nuovo';
+    corpo.innerHTML = `✨ <b>Qui non è mai stato nessuno</b>
+      <span class="dett">Il nome che scegli resterà per tutti quelli che verranno dopo: scrivilo per bene.</span>`;
+    if(stato.tornaIndietro) azioni.innerHTML = `<button type="button" id="ripristina-luogo">Era il posto di prima</button>`;
+    disegnaSettori(null);
+    return;
+  }
+
+  if(stato.tipo==='modifica'){
+    corpo.className='sp-corpo visibile';
+    corpo.innerHTML = stato.testo;
+    if(stato.bloccato){ i.readOnly=true; }
+    if(stato.proponi) azioni.innerHTML = `<button type="button" id="proponi-nome">Proponi un altro nome</button>`;
+    return;
+  }
+
+  S.bozza.luogoId=null;
+  corpo.className='sp-corpo visibile';
+  corpo.innerHTML = `🧭 <b>Senza posizione non posso riconoscere il bagno</b>
+    <span class="dett">Puoi registrarla lo stesso, ma non finirà sulla mappa e non si unirà alle altre fatte qui.</span>`;
 }
+
+/* le pastiglie mostrano i bagni già registrati in questo posto, con quante
+   cagate ciascuno; toccarne una lo compila, ritoccarla lo svuota */
+function disegnaSettori(gruppo){
+  const c=$('#cip-settori'); if(!c) return;
+  const usati = gruppo ? settoriDi(gruppo) : new Map();
+  const scelto = $('#settore-txt').value.trim().toLowerCase();
+  const voci = [];
+  usati.forEach((n,s)=>{ if(s) voci.push([s, n]); });
+  voci.sort((a,b)=>b[1]-a[1]);
+  const noti = voci.map(([s])=>s.toLowerCase());
+  SETTORI_TIPICI.forEach(s=>{ if(!noti.includes(s.toLowerCase()) && voci.length<6) voci.push([s, 0]); });
+  c.innerHTML = voci.slice(0,8).map(([s,n])=>
+    `<button type="button" data-settore="${esc(s)}" aria-pressed="${s.toLowerCase()===scelto}">${esc(s)}${n?` <span class="conteggio">${n}</span>`:''}</button>`).join('');
+}
+$('#cip-settori').addEventListener('click', e=>{
+  const b=e.target.closest('button[data-settore]'); if(!b) return;
+  const i=$('#settore-txt');
+  i.value = (i.value.trim().toLowerCase()===b.dataset.settore.toLowerCase()) ? '' : b.dataset.settore;
+  disegnaSettori(S.bozza.luogoId || (ultimoRiconoscimento && ultimoRiconoscimento.gruppo));
+  salvaBozza();
+});
+$('#settore-txt').addEventListener('input', ()=>{
+  disegnaSettori(S.bozza.luogoId || (ultimoRiconoscimento && ultimoRiconoscimento.gruppo));
+  salvaBozza();
+});
+
+function sbloccaLuogo(vuota){
+  if(vuota) $('#luogo').value='';
+  schedaPosto({tipo:'nuovo', tornaIndietro:!!ultimoRiconoscimento});
+  $('#luogo').focus();
+  salvaBozza(); segnaPassi();
+}
+function ripristinaLuogo(){
+  if(!ultimoRiconoscimento) return;
+  schedaPosto(ultimoRiconoscimento);
+  salvaBozza(); segnaPassi();
+}
+document.addEventListener('click', e=>{
+  if(e.target.closest('#sblocca-luogo')) sbloccaLuogo(true);
+  if(e.target.closest('#ripristina-luogo')) ripristinaLuogo();
+});
+
+/* i passi si spuntano man mano che li completi */
+function segnaPassi(){
+  const fatto={
+    1: !!$('#luogo').value.trim(),
+    2: !!S.bozza.categoria,
+    3: Object.values(S.bozza.voti||{}).filter(v=>v>0).length>=2,
+    4: (S.bozza.tag||[]).length>0,
+    5: !!($('#testo-rec').value.trim() || $('#titolo-rec').value.trim() || S.bozza.foto || S.bozza.fotoUrl)
+  };
+  $$('.passo').forEach(p=>p.classList.toggle('fatto', !!fatto[p.dataset.passo]));
+}
+
+function metriTra(a,b){ return Math.round(distanza(a,b)*1000); }
+
+/* i nomi già usati, suggeriti mentre scrivi */
+function aggiornaSuggerimenti(){
+  const d=document.getElementById('posti-noti'); if(!d) return;
+  const nomi=[...new Set(S.recensioni.map(r=>r.luogo).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+  d.innerHTML = nomi.map(x=>`<option value="${esc(x)}"></option>`).join('');
+}
+
 function mostraVicini(pos){
   if(S.modificaId) return;
   const c=$('#vicini'), v=luoghiVicini(pos);
   if(!v.length){
     c.hidden=true; c.innerHTML='';
-    if(S.bozza.bloccato) sbloccaLuogo(true);
+    ultimoRiconoscimento=null;
+    schedaPosto({tipo:'nuovo'});
+    segnaPassi();
     return;
   }
-  /* il posto più vicino vince: nome già assegnato, campo bloccato */
-  const x=v[0], p=primaDelPosto(x.gruppo);
-  const mioPosto = S.io && p && p.autoreId===S.io.id;
-  bloccaLuogo(x.nome, x.luogoId,
-    `📍 Posto già in elenco, battezzato da <b>${esc(p?p.nome:'qualcuno')}</b>. Il titolo qui sotto è tuo.`,
-    'Non è questo posto',
-    mioPosto ? '' : 'Proponi un altro nome');
-  /* se ce n'è più d'uno nel raggio, si può scegliere */
+  const x=v[0];
+  const rif=S.recensioni.find(r=>gruppoLuogo(r)===x.gruppo && r.lat!=null);
+  ultimoRiconoscimento={tipo:'conosciuto', nome:x.nome, luogoId:x.luogoId, gruppo:x.gruppo,
+                        prima:primaDelPosto(x.gruppo), metri: rif ? metriTra(pos,rif) : null};
+  schedaPosto(ultimoRiconoscimento);
   if(v.length>1){
     c.hidden=false;
     c.innerHTML='<span class="et-vicini">Oppure era uno di questi:</span>'+
       v.slice(1).map(y=>`<button type="button" class="cip" data-gruppo="${esc(y.gruppo)}" data-nome="${esc(y.nome)}" data-lid="${esc(y.luogoId||'')}">📍 ${esc(y.nome)}</button>`).join('');
   } else { c.hidden=true; c.innerHTML=''; }
+  segnaPassi();
 }
 $('#vicini').addEventListener('click', e=>{
   const b=e.target.closest('.cip'); if(!b) return;
-  bloccaLuogo(b.dataset.nome, b.dataset.lid||null, `📍 Hai scelto <b>${esc(b.dataset.nome)}</b>.`, 'Non è questo posto');
-  salvaBozza();
+  const gruppo=b.dataset.gruppo;
+  ultimoRiconoscimento={tipo:'conosciuto', nome:b.dataset.nome, luogoId:b.dataset.lid||null,
+                        gruppo, prima:primaDelPosto(gruppo), metri:null};
+  schedaPosto(ultimoRiconoscimento);
+  $('#vicini').hidden=true;
+  salvaBozza(); segnaPassi();
 });
 function costruisciModulo(){
   $('#scale-voti').innerHTML = PARAMETRI.map(p=>`<div class="riga-voto">
@@ -1339,15 +1544,23 @@ async function modifica(id){
   $('#salva').textContent='Salva le modifiche';
   $('#elimina-rec').hidden=false; $('#annulla-modifica').hidden=false;
   $('#titolo-rec').value=r.titolo||''; $('#testo-rec').value=r.testo||'';
-  $('#luogo').value=r.luogo||''; $('#luogo').readOnly=false; $('#nota-luogo').hidden=true;
+  $('#luogo').value=r.luogo||''; $('#luogo').readOnly=false;
+  $('#settore-txt').value=settoreDi(r);
+  disegnaSettori(gruppoLuogo(r));
+  ultimoRiconoscimento=null;
+  const p=primaDelPosto(gruppoLuogo(r));
   if(!possoRinominare(r)){
-    const p=primaDelPosto(gruppoLuogo(r));
-    bloccaLuogo(r.luogo||'', r.luogoId||null,
-      `📍 Il nome del posto l'ha scelto <b>${esc(p?p.nome:'chi è arrivato prima')}</b>. Tu cambi il titolo e il resto.`,
-      '', 'Proponi un altro nome');
+    S.bozza.luogoId=r.luogoId||null;
+    schedaPosto({tipo:'modifica', bloccato:true, proponi:true,
+      testo:`📍 <b>Il nome l'ha scelto ${esc(p?p.nome:'chi è arrivato prima')}</b>
+        <span class="nome-posto">${esc(r.luogo||'')}</span>
+        <span class="dett">Tu puoi cambiare voti, etichette, racconto e foto.</span>`});
   } else if(r.luogo){
-    $('#nota-luogo').hidden=false;
-    $('#nota-luogo').innerHTML = '<span>✏️ Sei tu ad aver battezzato questo posto: se cambi il nome, cambia per tutte le recensioni fatte qui.</span>';
+    schedaPosto({tipo:'modifica', bloccato:false, proponi:false,
+      testo:`✏️ <b>Hai battezzato tu questo posto</b>
+        <span class="dett">Se cambi il nome, cambia in tutte le recensioni fatte qui.</span>`});
+  } else {
+    schedaPosto({tipo:'senza'});
   }
   $('#contatore').textContent=(r.testo||'').length+' / 600';
   impostaQuando(r.ts);
@@ -1374,7 +1587,7 @@ $('#scelte-categoria').addEventListener('click', e=>{
   const b=e.target.closest('.scelta'); if(!b) return;
   S.bozza.categoria = S.bozza.categoria===b.dataset.cat ? null : b.dataset.cat;
   $$('#scelte-categoria .scelta').forEach(x=>x.setAttribute('aria-pressed', x.dataset.cat===S.bozza.categoria));
-  salvaBozza();
+  salvaBozza(); segnaPassi();
 });
 $('#lista-tag').addEventListener('click', e=>{
   const b=e.target.closest('button'); if(!b) return;
@@ -1401,8 +1614,12 @@ function chiediPosizione(){
     salvaBozza();
     const n = await nomeDelPosto(S.bozza.pos);
     if(n){
+      /* città e paese servono alle statistiche; il NOME del bagno no:
+         "Via Roma 12" non è il nome di un bagno, quello lo scrive l'utente. */
       S.bozza.citta=n.citta; S.bozza.paese=n.paese;
-      if(!$('#luogo').value && n.etichetta) $('#luogo').value=titoloMaiuscolo(n.etichetta);
+      if(n.etichetta && !S.bozza.bloccato){
+        $('#luogo').placeholder = 'Che bagno è, a ' + n.etichetta.split(',')[0] + '?';
+      }
       salvaBozza();
     }
   }, err=>{
@@ -1453,11 +1670,20 @@ $('#salva').addEventListener('click', async ()=>{
     toast(messaggio);
     const el=$(sel); if(el) el.scrollIntoView({behavior:'smooth', block:'center'});
   };
-  if(Object.values(S.bozza.voti).filter(v=>v>0).length<2){
-    vaiA_blocco('#scale-voti', 'Dai almeno due voti, non essere timido'); return;
+  if(!S.bozza.pos){
+    vaiA_blocco('#punto-gps', 'Serve la posizione: tocca Rileva, oppure scegli il punto sulla mappa');
+    return;
+  }
+  if(!$('#luogo').value.trim()){
+    vaiA_blocco('#scheda-posto', 'Dai un nome al posto: è il titolo della recensione');
+    setTimeout(()=>$('#luogo').focus(), 350);
+    return;
   }
   if(!S.bozza.categoria){
-    vaiA_blocco('#scelte-categoria', 'Scegli che tipo di posto è'); return;
+    vaiA_blocco('#scelte-categoria', 'Scegli che posto è'); return;
+  }
+  if(Object.values(S.bozza.voti).filter(v=>v>0).length<2){
+    vaiA_blocco('#scale-voti', 'Dai almeno due voti, non essere timido'); return;
   }
   if(!S.bozza.tag.length){
     vaiA_blocco('#lista-tag', "Dimmi com'è andata: se è filato liscio, tocca Tutto ok"); return;
@@ -1485,7 +1711,7 @@ $('#salva').addEventListener('click', async ()=>{
       const r = S.recensioni.find(x=>x.id===S.modificaId);
       Object.assign(r, {
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
-        ts:quandoTs, voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria,
+        ts:quandoTs, voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, settore:$('#settore-txt').value.trim(),
         lat:S.bozza.pos?S.bozza.pos.lat:r.lat, lng:S.bozza.pos?S.bozza.pos.lng:r.lng,
         citta:S.bozza.citta||r.citta, paese:S.bozza.paese||r.paese
       });
@@ -1498,12 +1724,12 @@ $('#salva').addEventListener('click', async ()=>{
       }
       scartaBozza();
       toast(rinomina ? 'Posto rinominato per tutti' : 'Recensione aggiornata');
-      nuovaBozza(); vaiA('bacheca');
+      nuovaBozza(); recuperaBozza(); vaiA('bacheca');
     } else {
       const id = nuovoId('c');
       const r = {id, nome:S.io.nome, faccia:S.io.faccia, autoreId:S.io.id, ts:quandoTs, creatoTs:Date.now(),
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
-        voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria,
+        voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, settore:$('#settore-txt').value.trim(),
         lat:S.bozza.pos?S.bozza.pos.lat:null, lng:S.bozza.pos?S.bozza.pos.lng:null,
         citta:S.bozza.citta, paese:S.bozza.paese, haFoto:!!S.bozza.foto, fotoUrl:null, reaz:{}};
       if(S.bozza.foto) S.foto.set(id, S.bozza.foto);
@@ -1618,7 +1844,7 @@ document.addEventListener('keydown', e=>{
 function passaFiltri(r, salta){
   const f=S.filtri;
   return (salta==='utente'    || !f.utente    || chiaveDi(r)===f.utente)
-      && (salta==='luogo'     || !f.luogo     || gruppoLuogo(r)===f.luogo)
+      && (salta==='luogo'     || !f.luogo     || chiaveBagno(r)===f.luogo || gruppoLuogo(r)===f.luogo)
       && (salta==='categoria' || !f.categoria || r.categoria===f.categoria)
       && (salta==='citta'     || !f.citta     || r.citta===f.citta)
       && (salta==='paese'     || !f.paese     || r.paese===f.paese)
@@ -1641,7 +1867,7 @@ function disegnaFiltriBacheca(){
   opz($('#f-utente'),'Tutti',Array.from(persone.entries()),S.filtri.utente);
 
   const posti=new Map();
-  candidati('luogo').forEach(r=>{ if(r.luogo) posti.set(gruppoLuogo(r), nomeCanonico(gruppoLuogo(r))); });
+  candidati('luogo').forEach(r=>{ if(r.luogo) posti.set(chiaveBagno(r), etichettaBagno(r)); });
   opz($('#f-luogo'),'Ogni posto',Array.from(posti.entries()).sort((a,b)=>a[1].localeCompare(b[1])),S.filtri.luogo);
 
   const cats=candidati('categoria');
@@ -1663,7 +1889,7 @@ function disegnaRiassunto(elenco){
   if(!filtriAttivi() || !elenco.length){ box.hidden=true; return; }
   const voto = elenco.reduce((a,r)=>a+media(r.voti),0)/elenco.length;
   const persone = new Set(elenco.map(chiaveDi)).size;
-  const posti = new Set(elenco.map(gruppoLuogo)).size;
+  const posti = new Set(elenco.map(chiaveBagno)).size;
   const ultima = Math.max(...elenco.map(r=>r.ts));
   box.hidden=false;
   box.innerHTML =
@@ -1721,7 +1947,7 @@ function scheda(r){
         <img data-rid="${r.id}" alt="Foto del bagno recensito da ${esc(r.nome)}" loading="lazy">
         <span class="lente">Tocca per ingrandire</span></button>`:''}
     <div class="corpo">
-      <h3>${esc(r.luogo||'Posto misterioso')}</h3>
+      <h3>${esc(r.luogo||'Posto misterioso')}${settoreDi(r)?` <span class="settore-tag">${esc(settoreDi(r))}</span>`:''}</h3>
       ${r.titolo?`<p style="font-size:14px;font-weight:600;color:var(--cioccolato-2);margin-bottom:6px">${esc(r.titolo)}</p>`:''}
       ${r.testo?`<p class="testo">${esc(r.testo)}</p>`:''}
       <div class="parametri">
@@ -1790,22 +2016,64 @@ function mappaSenzaTessere(){
   const a=$('#avviso-mappa'); a.hidden=false;
   a.textContent='Le mappe non si caricano da qui, ma i pin restano al loro posto.';
 }
+/* Un pin per POSTO, non per recensione: due cagate nello stesso bagno erano
+   due perni sovrapposti, e il secondo era irraggiungibile. Il fumetto riassume
+   il posto e porta alle sue recensioni. */
+function postiSullaMappa(){
+  const m=new Map();
+  S.recensioni.filter(r=>r.lat!=null).forEach(r=>{
+    const g=gruppoLuogo(r);
+    if(!m.has(g)) m.set(g,{gruppo:g, lat:r.lat, lng:r.lng, rec:[]});
+    m.get(g).rec.push(r);
+  });
+  m.forEach(p=>p.rec.sort((a,b)=>b.ts-a.ts));
+  return m;
+}
+/* se in quel posto ci sono più bagni distinti, si scelgono dal fumetto */
+function bagniDelPosto(p){
+  const per=new Map();
+  p.rec.forEach(r=>{ const k=chiaveBagno(r); if(!per.has(k)) per.set(k,{et:settoreDi(r), n:0}); per.get(k).n++; });
+  if(per.size<2) return '';
+  return `<div class="pop-bagni">` + [...per.entries()].map(([k,v])=>
+    `<button onclick="apriBagno('${esc(k)}')">${esc(v.et||'Senza indicazione')} <span>${v.n}</span></button>`).join('') + `</div>`;
+}
+function contenutoPopup(p){
+  const n=p.rec.length;
+  const medio=p.rec.reduce((a,r)=>a+media(r.voti),0)/n;
+  const ultima=p.rec[0];
+  const persone=new Set(p.rec.map(chiaveDi)).size;
+  return `<div class="pop">
+    <div class="pop-titolo">${esc(nomeCanonico(p.gruppo))}</div>
+    <div class="pop-meta">${n} ${n===1?'cagata':'cagate'} · ${persone} ${persone===1?'persona':'persone'}${ultima.citta?` · ${esc(ultima.citta)}`:''}</div>
+    <div>${cacche(medio)} <b style="font-size:13px">${medio.toFixed(1)}</b></div>
+    <div class="pop-ultima">Ultima: ${esc(ultima.faccia||'💩')} ${esc(ultima.nome)}, ${quando(ultima.ts)}</div>
+    ${bagniDelPosto(p)}
+    <button class="pop-btn" onclick="apriBagno('${esc(p.gruppo)}')">Leggi ${n===1?'la recensione':'tutte e '+n+' le recensioni'}</button>
+  </div>`;
+}
 function disegnaMappa(){
   if(!S.strato) return;
   S.strato.clearLayers(); S.perni.clear();
-  const el=S.recensioni.filter(r=>r.lat!=null);
-  el.forEach(r=>{
-    const m=L.marker([r.lat,r.lng],{
-      icon:L.divIcon({className:'perno',html:`<div class="bolla"><span>${r.faccia||'💩'}</span></div>`,iconSize:[38,38],iconAnchor:[19,36],popupAnchor:[0,-34]}),
-      title:(r.luogo||'Cagata'), riseOnHover:true, keyboard:true});
-    m.bindPopup(()=>contenutoPopup(r),{minWidth:212, autoPan:true, closeButton:true});
+  const posti=postiSullaMappa();
+  posti.forEach(p=>{
+    const n=p.rec.length, ultima=p.rec[0];
+    const m=L.marker([p.lat,p.lng],{
+      icon:L.divIcon({className:'perno',
+        html:`<div class="bolla"><span>${ultima.faccia||'💩'}</span>${n>1?`<i class="conta">${n}</i>`:''}</div>`,
+        iconSize:[38,38], iconAnchor:[19,36], popupAnchor:[0,-34]}),
+      title:nomeCanonico(p.gruppo), riseOnHover:true, keyboard:true});
+    m.bindPopup(()=>contenutoPopup(p), {minWidth:216, autoPan:true, closeButton:true});
     m.on('click', ()=>m.openPopup());
-    m.on('popupopen', async ()=>{ if(!r.haFoto) return; const d=await sorgenteFoto(r); const i=document.getElementById('pf-'+r.id); if(i&&d){ i.src=d; i.style.display='block'; } });
-    m.addTo(S.strato); S.perni.set(r.id,m);
+    m.addTo(S.strato);
+    S.perni.set(p.gruppo, m);
   });
-  const paesi=new Set(el.map(r=>r.paese).filter(Boolean)).size;
-  $('#conta-perni').textContent = el.length ? `${el.length} pin${paesi?` · ${paesi} ${paesi===1?'paese':'paesi'}`:''}` : 'Nessun pin, per ora';
+  const tutte=S.recensioni.filter(r=>r.lat!=null);
+  const paesi=new Set(tutte.map(r=>r.paese).filter(Boolean)).size;
+  $('#conta-perni').textContent = posti.size
+    ? `${posti.size} ${posti.size===1?'posto':'posti'} · ${tutte.length} ${tutte.length===1?'cagata':'cagate'}${paesi?` · ${paesi} ${paesi===1?'paese':'paesi'}`:''}`
+    : 'Nessun pin, per ora';
 }
+
 /* Inquadra tutti i pin esistenti. Senza animazione: all'apertura deve essere
    già giusta, non arrivarci con uno zoom avanti e indietro. */
 function inquadraTutti(){
@@ -1866,7 +2134,7 @@ function volaA(id){
     if(!S.mappa) return;
     S.mappa.invalidateSize({animate:false});
     S.mappa.flyTo([r.lat,r.lng], 16, {duration:.9});
-    const m=S.perni.get(id);
+    const m=S.perni.get(gruppoLuogo(r));
     if(m) setTimeout(()=>m.openPopup(), 950);
   }, 260);
 }
@@ -2359,11 +2627,11 @@ $('#usa-punto').addEventListener('click', async ()=>{
   $('#stato-gps').innerHTML=`<b>Punto scelto a mano</b>${puntoScelto.lat.toFixed(4)}, ${puntoScelto.lng.toFixed(4)}`;
   chiudiSelettore();
   mostraVicini(S.bozza.pos);
-  salvaBozza();
+  salvaBozza(); segnaPassi();
   const n = await nomeDelPosto(S.bozza.pos);
   if(n){
     S.bozza.citta=n.citta; S.bozza.paese=n.paese;
-    if(!$('#luogo').value && n.etichetta && !S.bozza.bloccato) $('#luogo').value=titoloMaiuscolo(n.etichetta);
+    /* La via non è il nome del bagno: il nome lo mette l'utente. */
     salvaBozza();
   }
 });
@@ -2416,7 +2684,12 @@ function apriProposta(luogoId){
 function chiudiProposta(){ $('#proposta').hidden=true; luogoDaProporre=null; }
 $('#prop-no').addEventListener('click', chiudiProposta);
 $('#proposta').addEventListener('click', e=>{ if(e.target.id==='proposta') chiudiProposta(); });
-document.addEventListener('click', e=>{ if(e.target.closest('#proponi-nome')) apriProposta(S.bozza && S.bozza.luogoId); });
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#proponi-nome')) return;
+  const g = (S.bozza && S.bozza.luogoId) || (ultimoRiconoscimento && ultimoRiconoscimento.gruppo)
+            || (S.modificaId && gruppoLuogo(S.recensioni.find(r=>r.id===S.modificaId)||{}));
+  apriProposta(g);
+});
 
 $('#prop-si').addEventListener('click', async ()=>{
   if(!luogoDaProporre) return;
@@ -2426,15 +2699,21 @@ $('#prop-si').addEventListener('click', async ()=>{
   const p = {id:nuovoId('p'), luogoId:luogoDaProporre.luogoId, nomeAttuale:luogoDaProporre.nomeAttuale,
     nomeProposto:nome, motivo:$('#prop-motivo').value.trim(), daId:S.io.id, daNome:S.io.nome,
     aId:luogoDaProporre.aId, ts:Date.now(), stato:'attesa'};
+  const destinatario = luogoDaProporre.battezzatore;   /* prima di chiudere: chiudere azzera la variabile */
   const btn=$('#prop-si'); btn.disabled=true;
   try{
     await DB.proponi(p);
     S.proposte.unshift(p);
-    chiudiProposta();
-    toast('Proposta inviata a '+luogoDaProporre.battezzatore);
-    disegnaProposte();
-  }catch(e){ console.warn(e); toast('Non sono riuscito a inviarla, riprova'); }
-  finally{ btn.disabled=false; }
+  }catch(e){
+    console.warn('proposta:', e);
+    toast('Non sono riuscito a inviarla, riprova');
+    btn.disabled=false;
+    return;
+  }
+  btn.disabled=false;
+  chiudiProposta();
+  toast('Proposta inviata a '+destinatario);
+  try{ disegnaProposte(); }catch(e){ console.warn(e); }
 });
 
 function proposteInArrivo(){
@@ -2507,6 +2786,9 @@ $('#installa-si').addEventListener('click', async ()=>{
   else toast('Menu del browser → Aggiungi a schermata Home');
 });
 $('#installa-no').addEventListener('click',()=>{ bannerChiuso=true; $('#banner-installa').hidden=true; });
+
+/* utile in console per capire cosa c'è nella bozza in questo momento */
+window.PM = { get stato(){ return S; }, get bozza(){ return S.bozza; }, schedaPosto, mostraVicini, nuovaBozza };
 
 /* ============ AVVIO ============ */
 (async function avvio(){

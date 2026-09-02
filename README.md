@@ -12,7 +12,7 @@ App a pagina unica, installabile sul telefono, funziona anche senza rete.
 
 | Sezione | Cosa fa |
 |---|---|
-| 💩 **Registra** | Nome del posto, racconto, data, posizione, foto, voti in cacche, etichette. **È sempre la schermata di apertura**, a ogni avvio. |
+| 💩 **Registra** | Cinque passi numerati: dove sei, che posto è, il voto, cos'è successo, il racconto. **È sempre la schermata di apertura**, a ogni avvio. |
 | 📰 **Bacheca** | Tutte le recensioni del gruppo. Filtri per persona, città, paese e voto. Le tue le modifichi o le elimini. |
 | 🗺️ **Mappa** | I pin di tutti. Tocca un pin per leggere la recensione. |
 | 🏆 **Classifica** | Chi ha registrato di più e i bagni col voto più alto. Tocca un nome per le sue statistiche, tocca un bagno per le sue recensioni. |
@@ -131,7 +131,21 @@ I posti del mondo sono infiniti, quindi elencarli come etichette non funziona: d
 
 Il nome appartiene al **posto**, non alla singola recensione. Chi registra per primo in un punto lo battezza; chi ci va dopo lo trova già scritto e bloccato, e scrive solo il proprio titolo e la propria recensione.
 
-Due recensioni sono nello stesso posto se le coordinate distano meno di **60 metri**. Se il GPS sbaglia o è un bagno diverso nello stesso edificio, c'è il pulsante **Non è questo posto** che sblocca il campo e crea un posto nuovo.
+Due recensioni sono nello stesso posto se le coordinate distano meno di **60 metri**. Appena l'app rileva la posizione, il primo passo mostra una scheda che dice sempre in che situazione sei:
+
+- **Questo bagno è già in elenco** — nome, chi l'ha battezzato, quante cagate ci sono e a quanti metri sei. Il nome è bloccato, con i pulsanti *Non è questo posto* e *Proponi un altro nome*.
+- **Qui non è mai stato nessuno** — campo libero, con l'avviso che il nome resterà per tutti.
+- **Senza posizione non posso riconoscere il bagno** — si registra lo stesso, ma senza pin e senza unione con le altre.
+
+*Non è questo posto* crea un posto nuovo e lascia il pulsante *Era il posto di prima* per tornare indietro se hai sbagliato.
+
+### Più bagni nello stesso posto
+
+Un centro commerciale ha il bagno del piano terra e quello del primo piano, un locale ha uomini e donne: sono lo stesso **posto** ma bagni diversi, e vanno giudicati separatamente.
+
+Sotto il nome c'è il campo **Quale bagno, di preciso**, facoltativo. Se in quel posto qualcuno ha già registrato, compaiono le pastiglie dei bagni già noti con quante cagate ciascuno — un tocco e sei nel gruppo giusto. Altrimenti ci sono i suggerimenti tipici (piano terra, uomini, donne, disabili…) oppure scrivi quello che vuoi.
+
+Sulla mappa il **pin resta uno per posto**: toccandolo, se dentro ci sono più bagni, il fumetto li elenca con i rispettivi conteggi e ognuno apre le sue recensioni. In bacheca il filtro per posto distingue le voci con il nome del bagno accanto, e sulle schede compare la pastiglia turchese.
 
 Per cambiare il nome di un posto serve esserne il battezzatore (o essere in modalità gestore): si modifica la propria recensione, si cambia il nome e **cambia per tutte le recensioni fatte lì**.
 
