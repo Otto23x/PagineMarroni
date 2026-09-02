@@ -166,8 +166,9 @@ body.ingresso{overflow:hidden}
 .ap-voto{flex:none;text-align:center;background:var(--cioccolato);color:#fff;border-radius:14px;padding:7px 11px}
 .ap-voto b{display:block;font-family:var(--font-display);font-size:19px;line-height:1}
 .ap-voto span{font-size:10px;opacity:.75}
-.ap-chiudi{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;color:var(--tenue);font-size:13px}
-.ap-btn{width:100%;margin-top:12px;min-height:42px;border-radius:999px;background:var(--acqua);color:#fff;font-size:13.5px;font-weight:700}
+.ap-azioni{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.ap-btn{min-height:44px;border-radius:999px;background:var(--acqua);color:#fff;font-size:13.5px;font-weight:700;padding:0 10px}
+.ap-btn.fantasma{background:var(--ceramica);color:var(--cioccolato);border:var(--bordo)}
 .ap-bagni{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .ap-bagni button{min-height:34px;padding:0 12px;border-radius:999px;background:var(--ceramica);border:var(--bordo);
   font-size:12.5px;font-weight:600;color:var(--cioccolato)}
@@ -191,7 +192,11 @@ body.ingresso{overflow:hidden}
 .btn-filtri .quanti{min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--acqua);color:#fff;
   font-size:11.5px;font-weight:800;display:grid;place-items:center}
 .btn-filtri[aria-expanded="true"] .quanti{background:var(--porcellana);color:var(--cioccolato)}
-.pannello-filtri{animation:apri .2s ease-out}
+.pannello-filtri{background:var(--porcellana);border:var(--bordo);border-radius:var(--r-l);
+  box-shadow:var(--ombra);padding:14px;margin-bottom:14px;animation:apri .2s ease-out}
+.pannello-filtri .barra-filtri{margin-bottom:10px}
+.pannello-filtri select{background:#FBFDFC}
+.pannello-filtri .pulisci{margin-bottom:0}
 .pannello-filtri[hidden]{display:none}
 @keyframes apri{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .barra-filtri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
@@ -233,9 +238,10 @@ body.ingresso{overflow:hidden}
 .par .cacche i.on{opacity:1}
 .etichette{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:12px}
 .etichetta{font-size:11.5px;font-weight:600;padding:6px 8px;border-radius:999px;background:rgba(15,163,163,.12);color:var(--acqua-scuro);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.azione.statica{background:rgba(242,194,48,.20);color:#7a5c14;pointer-events:none}
-.settore-tag{font-family:var(--font-testo);font-size:12px;font-weight:700;color:var(--acqua-scuro);
-  background:rgba(15,163,163,.12);border-radius:999px;padding:3px 9px;vertical-align:middle;margin-left:4px;white-space:nowrap}
+.riga-pastiglie{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0}
+.pastiglia-info{font-size:12px;font-weight:700;color:var(--acqua-scuro);background:rgba(15,163,163,.12);
+  border-radius:999px;padding:4px 10px;white-space:nowrap}
+.pastiglia-info.tempo{color:#7a5c14;background:rgba(242,194,48,.22)}
 .etichetta.neutra{background:rgba(78,50,32,.10);color:var(--cioccolato)}
 .piede{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--fuga);background:#FBFDFC;flex-wrap:wrap}
 .azione{display:inline-flex;align-items:center;gap:5px;height:36px;padding:0 12px;border-radius:999px;background:var(--porcellana);border:var(--bordo);font-size:13px;font-weight:600;transition:transform .12s}
@@ -560,11 +566,14 @@ body.ingresso{overflow:hidden}
       </div>
       <div class="barra-comandi">
         <select id="ordina" aria-label="Ordina le recensioni">
-          <option value="registrata">Ultime registrate</option>
-          <option value="accaduta">Ultime accadute</option>
+          <option value="registrata">Ultime recensioni</option>
+          <option value="registrata-su">Prime recensioni</option>
+          <option value="accaduta">Cagate più recenti</option>
+          <option value="accaduta-su">Cagate più vecchie</option>
           <option value="voto-alto">Voto più alto</option>
           <option value="voto-basso">Voto più basso</option>
-          <option value="posto">Nome del posto</option>
+          <option value="posto">Posto dalla A alla Z</option>
+          <option value="posto-giu">Posto dalla Z alla A</option>
         </select>
         <button class="btn-filtri" id="apri-filtri" aria-expanded="false">Filtri<span class="quanti" id="quanti-filtri" hidden></span></button>
       </div>
@@ -1448,7 +1457,7 @@ function ridisegna(){
   if(S.vista==='bacheca') disegnaBacheca();
   if(S.vista==='classifica') disegnaClassifica();
   if(S.vista==='profilo'){ disegnaProfilo(); disegnaProposte(); }
-  disegnaMappa();
+  disegnaMappa(S.vista==='mappa');
 }
 
 /* ============ REGISTRA ============ */
@@ -1959,10 +1968,13 @@ function filtrate(){
   const el = S.recensioni.filter(r=>passaFiltri(r, null));
   const quando = r => r.creatoTs || r.ts;
   switch(S.ordina){
+    case 'registrata-su': el.sort((a,b)=>quando(a)-quando(b)); break;
     case 'accaduta':   el.sort((a,b)=>b.ts-a.ts); break;
+    case 'accaduta-su':el.sort((a,b)=>a.ts-b.ts); break;
     case 'voto-alto':  el.sort((a,b)=>media(b.voti)-media(a.voti) || b.ts-a.ts); break;
     case 'voto-basso': el.sort((a,b)=>media(a.voti)-media(b.voti) || b.ts-a.ts); break;
     case 'posto':      el.sort((a,b)=>etichettaBagno(a).localeCompare(etichettaBagno(b)) || b.ts-a.ts); break;
+    case 'posto-giu':  el.sort((a,b)=>etichettaBagno(b).localeCompare(etichettaBagno(a)) || b.ts-a.ts); break;
     default:           el.sort((a,b)=>quando(b)-quando(a));   /* ultime registrate */
   }
   return el;
@@ -2087,7 +2099,11 @@ function scheda(r){
         <img data-rid="${r.id}" alt="Foto del bagno recensito da ${esc(r.nome)}" loading="lazy">
         <span class="lente">Tocca per ingrandire</span></button>`:''}
     <div class="corpo">
-      <h3>${esc(r.luogo||'Posto misterioso')}${settoreDi(r)?` <span class="settore-tag">${esc(settoreDi(r))}</span>`:''}</h3>
+      <h3>${esc(r.luogo||'Posto misterioso')}</h3>
+      ${(aPosteriori(r)||settoreDi(r))?`<div class="riga-pastiglie">
+        ${aPosteriori(r)?`<span class="pastiglia-info tempo" title="Scritta più di un giorno dopo">🕰️ A posteriori</span>`:''}
+        ${settoreDi(r)?`<span class="pastiglia-info">${esc(settoreDi(r))}</span>`:''}
+      </div>`:''}
       ${r.titolo?`<p style="font-size:14px;font-weight:600;color:var(--cioccolato-2);margin-bottom:6px">${esc(r.titolo)}</p>`:''}
       ${r.testo?`<p class="testo">${esc(r.testo)}</p>`:''}
       <div class="parametri">
@@ -2102,7 +2118,6 @@ function scheda(r){
     <footer class="piede">
       <button class="azione" aria-pressed="${!!miaR}" onclick="reagisci('${r.id}')">💩${cacca.length?` <small>${cacca.length}</small>`:''}</button>
       ${r.lat!=null?`<button class="azione" onclick="volaA('${r.id}')">🗺️ <small>Mappa</small></button>`:''}
-      ${aPosteriori(r)?`<span class="azione statica" title="Scritta più di un giorno dopo">🕰️ <small>A posteriori</small></span>`:''}
       ${mia?`<button class="azione fine" onclick="modifica('${r.id}')">✏️ <small>${propria?'Modifica':'Gestisci'}</small></button>`:''}
     </footer>
   </article>`;
@@ -2193,7 +2208,6 @@ function mostraAnteprimaPosto(gruppo){
   rec.forEach(r=>{ const k=chiaveBagno(r); if(!bagni.has(k)) bagni.set(k,{et:settoreDi(r), n:0}); bagni.get(k).n++; });
   const box=$('#anteprima-posto');
   box.innerHTML = `
-    <button class="ap-chiudi" id="ap-chiudi" aria-label="Chiudi">✕</button>
     <div class="ap-riga">
       <div class="ap-nome">
         <b>${esc(nomeCanonico(gruppo))}</b>
@@ -2204,7 +2218,10 @@ function mostraAnteprimaPosto(gruppo){
     </div>
     ${bagni.size>1 ? `<div class="ap-bagni">`+[...bagni.entries()].map(([k,v])=>
       `<button data-bagno="${esc(k)}">${esc(v.et||'Senza indicazione')} · ${v.n}</button>`).join('')+`</div>` : ''}
-    <button class="ap-btn" id="ap-apri">Leggi ${rec.length===1?'la recensione':'tutte e '+rec.length+' le recensioni'}</button>`;
+    <div class="ap-azioni">
+      <button class="ap-btn fantasma" id="ap-chiudi">Chiudi</button>
+      <button class="ap-btn" id="ap-apri">${rec.length===1?'Leggi la recensione':'Leggi tutte e '+rec.length}</button>
+    </div>`;
   box.hidden=false;
 }
 function chiudiAnteprimaPosto(){ $('#anteprima-posto').hidden=true; postoInAnteprima=null; }
@@ -2231,8 +2248,14 @@ function contenutoPopup(p){
     <button class="pop-btn" onclick="apriBagno('${esc(p.gruppo)}')">Leggi ${n===1?'la recensione':'tutte e '+n+' le recensioni'}</button>
   </div>`;
 }
-function disegnaMappa(){
+let mappaDaRifare=false;
+function disegnaMappa(forza){
   if(!S.strato) return;
+  /* Ridisegnare i perni mentre la mappa è nascosta li lasciava attaccati a una
+     posizione vecchia: comparivano solo dopo uno spostamento. Se la mappa non
+     è a schermo si rimanda, e si rifà appena la si apre. */
+  if(!forza && S.vista!=='mappa'){ mappaDaRifare=true; return; }
+  mappaDaRifare=false;
   S.strato.clearLayers(); S.perni.clear();
   const posti=postiSullaMappa();
   posti.forEach(p=>{
@@ -2272,13 +2295,14 @@ function inquadraTutti(){
 let utenteHaMosso=false;
 function sistemaMappa(salta){
   if(!S.mappa) return;
+  if(mappaDaRifare) disegnaMappa(true);
   S.mappa.invalidateSize({animate:false});
   if(!salta && !utenteHaMosso) inquadraTutti();
 }
 function apriMappa(){
   avviaMappaSeServe();
   if(!S.mappa) return;
-  disegnaMappa();
+  disegnaMappa(true);
   const salta = saltaInquadratura;
   saltaInquadratura = false;
   utenteHaMosso = false;
@@ -2611,7 +2635,11 @@ $('#btn-notifiche').addEventListener('click', async ()=>{
   const barra=$('#tira-giu'), testo=$('#testo-tira');
   const soglia=90;
   window.addEventListener('touchstart', e=>{
-    y0 = (window.scrollY<=0 && !document.body.classList.contains('ingresso')) ? e.touches[0].clientY : null;
+    /* sulla mappa il dito serve a spostarla, non ad aggiornare: se il tocco
+       nasce dentro la mappa o da una finestra aperta, il tira-giù sta fermo */
+    const dentroMappa = e.target.closest('#mappa, .guscio-mappa, .leaflet-container, .pannello-pieno, .finestra');
+    y0 = (window.scrollY<=0 && !dentroMappa && S.vista!=='mappa'
+          && !document.body.classList.contains('ingresso')) ? e.touches[0].clientY : null;
   }, {passive:true});
   window.addEventListener('touchmove', e=>{
     if(y0===null) return;
@@ -3000,7 +3028,7 @@ $('#installa-si').addEventListener('click', async ()=>{
 $('#installa-no').addEventListener('click',()=>{ bannerChiuso=true; $('#banner-installa').hidden=true; });
 
 /* utile in console per capire cosa c'è nella bozza in questo momento */
-window.PM = { get stato(){ return S; }, get bozza(){ return S.bozza; }, schedaPosto, mostraVicini, nuovaBozza };
+window.PM = { get stato(){ return S; }, get bozza(){ return S.bozza; }, schedaPosto, mostraVicini, nuovaBozza, disegnaMappa };
 
 /* ============ AVVIO ============ */
 (async function avvio(){
