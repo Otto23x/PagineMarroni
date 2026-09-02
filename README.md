@@ -139,6 +139,10 @@ Due recensioni sono nello stesso posto se le coordinate distano meno di **60 met
 
 *Non è questo posto* crea un posto nuovo e lascia il pulsante *Era il posto di prima* per tornare indietro se hai sbagliato.
 
+### Recensioni a posteriori
+
+La data si può spostare indietro ma non in avanti: una cagata che deve ancora succedere non si registra. Se l'evento è di almeno un giorno prima del momento in cui la scrivi, in bacheca compare l'etichetta **🕰️ Recensione a posteriori**: è scritta a memoria, e chi legge lo sa.
+
 ### Più bagni nello stesso posto
 
 Un centro commerciale ha il bagno del piano terra e quello del primo piano, un locale ha uomini e donne: sono lo stesso **posto** ma bagni diversi, e vanno giudicati separatamente.
