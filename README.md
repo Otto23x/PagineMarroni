@@ -1,6 +1,6 @@
 # Pagine Marroni 💩
 
-**Versione 1.0**
+**Versione 1.7**
 
 La mappa mondiale delle cagate. Tu e i tuoi amici registrate dove siete stati, con foto, voti in cacche e recensione: tutto finisce in bacheca e come pin su una mappa del mondo condivisa.
 
@@ -85,8 +85,8 @@ I telefoni si aggiornano da soli: pagina, icone e manifest arrivano sempre dalla
 
 Quando pubblichi una versione nuova, allinea due numeri:
 
-- `const VERSIONE = '1.0';` in `index.html` — è quello che si legge in fondo alla schermata Io
-- `const CACHE = 'pagine-marroni-1.0';` in `sw.js` — rinnova la copia di riserva per l'uso offline
+- `const VERSIONE = '1.7';` in `index.html` — è quello che si legge in fondo alla schermata Io
+- `const CACHE = 'pagine-marroni-1.7';` in `sw.js` — rinnova la copia di riserva per l'uso offline
 
 ---
 

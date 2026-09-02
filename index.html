@@ -154,6 +154,23 @@ body.ingresso{overflow:hidden}
 .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.5;width:212px !important}
 .pop-titolo{font-family:var(--font-display);font-weight:800;font-size:16px;color:var(--cioccolato);margin-bottom:2px}
 .pop-ultima{margin-top:6px;font-size:12px;color:var(--tenue);line-height:1.4}
+.anteprima-posto{position:absolute;left:10px;right:10px;bottom:10px;z-index:500;
+  background:var(--porcellana);border:var(--bordo);border-radius:var(--r-l);box-shadow:0 16px 34px -14px rgba(42,28,18,.7);
+  padding:14px 16px;animation:sali .22s cubic-bezier(.22,1,.36,1)}
+.anteprima-posto[hidden]{display:none}
+@keyframes sali{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+.ap-riga{display:flex;align-items:flex-start;gap:12px}
+.ap-nome{flex:1;min-width:0}
+.ap-nome b{display:block;font-family:var(--font-display);font-size:17px;color:var(--cioccolato);line-height:1.2}
+.ap-nome span{display:block;font-size:12px;color:var(--tenue);margin-top:3px}
+.ap-voto{flex:none;text-align:center;background:var(--cioccolato);color:#fff;border-radius:14px;padding:7px 11px}
+.ap-voto b{display:block;font-family:var(--font-display);font-size:19px;line-height:1}
+.ap-voto span{font-size:10px;opacity:.75}
+.ap-chiudi{position:absolute;top:6px;right:6px;width:30px;height:30px;border-radius:50%;color:var(--tenue);font-size:13px}
+.ap-btn{width:100%;margin-top:12px;min-height:42px;border-radius:999px;background:var(--acqua);color:#fff;font-size:13.5px;font-weight:700}
+.ap-bagni{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.ap-bagni button{min-height:34px;padding:0 12px;border-radius:999px;background:var(--ceramica);border:var(--bordo);
+  font-size:12.5px;font-weight:600;color:var(--cioccolato)}
 .pop-bagni{display:flex;flex-direction:column;gap:5px;margin-top:8px}
 .pop-bagni button{display:flex;justify-content:space-between;gap:8px;padding:8px 11px;border-radius:12px;
   background:var(--ceramica);border:var(--bordo);font-size:12.5px;font-weight:600;color:var(--cioccolato);text-align:left}
@@ -166,6 +183,17 @@ body.ingresso{overflow:hidden}
 .pop img{width:100%;border-radius:10px;margin-bottom:8px;display:block}
 
 /* ---------- filtri ---------- */
+.barra-comandi{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}
+.barra-comandi select{min-height:44px}
+.btn-filtri{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border-radius:999px;
+  background:var(--porcellana);border:var(--bordo);box-shadow:var(--ombra);font-size:13.5px;font-weight:700;color:var(--cioccolato)}
+.btn-filtri[aria-expanded="true"]{background:var(--cioccolato);color:#fff;border-color:var(--cioccolato)}
+.btn-filtri .quanti{min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:var(--acqua);color:#fff;
+  font-size:11.5px;font-weight:800;display:grid;place-items:center}
+.btn-filtri[aria-expanded="true"] .quanti{background:var(--porcellana);color:var(--cioccolato)}
+.pannello-filtri{animation:apri .2s ease-out}
+.pannello-filtri[hidden]{display:none}
+@keyframes apri{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .barra-filtri{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 @media (min-width:760px){.barra-filtri{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .pulisci{width:100%;margin-bottom:12px;min-height:42px;border-radius:999px;background:var(--cioccolato);color:#fff;font-size:13px;font-weight:700;box-shadow:0 6px 14px -8px rgba(78,50,32,.9);padding:0 8px}
@@ -205,8 +233,7 @@ body.ingresso{overflow:hidden}
 .par .cacche i.on{opacity:1}
 .etichette{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:6px;margin-top:12px}
 .etichetta{font-size:11.5px;font-weight:600;padding:6px 8px;border-radius:999px;background:rgba(15,163,163,.12);color:var(--acqua-scuro);text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.posteriori{display:inline-block;margin-top:6px;font-size:11.5px;font-weight:700;color:#7a5c14;
-  background:rgba(242,194,48,.22);border-radius:999px;padding:4px 10px}
+.azione.statica{background:rgba(242,194,48,.20);color:#7a5c14;pointer-events:none}
 .settore-tag{font-family:var(--font-testo);font-size:12px;font-weight:700;color:var(--acqua-scuro);
   background:rgba(15,163,163,.12);border-radius:999px;padding:3px 9px;vertical-align:middle;margin-left:4px;white-space:nowrap}
 .etichetta.neutra{background:rgba(78,50,32,.10);color:var(--cioccolato)}
@@ -531,21 +558,32 @@ body.ingresso{overflow:hidden}
       <div class="titolo-sezione">
         <div><h2>Bacheca</h2><p id="conta-bacheca">Le ultime del gruppo</p></div>
       </div>
-      <div class="barra-filtri">
-        <select id="f-utente" aria-label="Filtra per persona"><option value="">Tutti</option></select>
-        <select id="f-luogo" aria-label="Filtra per posto"><option value="">Ogni posto</option></select>
-        <select id="f-categoria" aria-label="Filtra per tipo di posto"><option value="">Ogni tipo</option></select>
-        <select id="f-citta" aria-label="Filtra per città"><option value="">Ogni città</option></select>
-        <select id="f-paese" aria-label="Filtra per paese"><option value="">Ogni paese</option></select>
-        <select id="f-voto" aria-label="Filtra per voto">
-          <option value="">Ogni voto</option>
-          <option value="4.5">💩 Da 4,5 in su</option>
-          <option value="4">💩 Da 4 in su</option>
-          <option value="3">💩 Da 3 in su</option>
-          <option value="basso">💩 Sotto il 3</option>
+      <div class="barra-comandi">
+        <select id="ordina" aria-label="Ordina le recensioni">
+          <option value="registrata">Ultime registrate</option>
+          <option value="accaduta">Ultime accadute</option>
+          <option value="voto-alto">Voto più alto</option>
+          <option value="voto-basso">Voto più basso</option>
+          <option value="posto">Nome del posto</option>
         </select>
+        <button class="btn-filtri" id="apri-filtri" aria-expanded="false">Filtri<span class="quanti" id="quanti-filtri" hidden></span></button>
       </div>
-      <button class="pulisci" id="pulisci-filtri">Pulisci filtri</button>
+      <div class="pannello-filtri" id="pannello-filtri" hidden>
+        <div class="barra-filtri">
+          <select id="f-utente" aria-label="Filtra per persona"><option value="">Tutti</option></select>
+          <select id="f-luogo" aria-label="Filtra per posto"><option value="">Ogni posto</option></select>
+          <select id="f-categoria" aria-label="Filtra per tipo di posto"><option value="">Ogni tipo</option></select>
+          <select id="f-citta" aria-label="Filtra per città"><option value="">Ogni città</option></select>
+          <select id="f-paese" aria-label="Filtra per paese"><option value="">Ogni paese</option></select>
+          <select id="f-voto" aria-label="Filtra per voto">
+            <option value="">Ogni voto</option>
+            <option value="4">💩 Da 4 in su</option>
+            <option value="3">💩 Da 3 in su</option>
+            <option value="basso">💩 Sotto il 3</option>
+          </select>
+        </div>
+        <button class="pulisci" id="pulisci-filtri">Pulisci filtri</button>
+      </div>
       <div class="riassunto" id="riassunto" hidden></div>
       <button class="nuove" id="nuove" hidden>↑ Ci sono novità, tocca per vedere</button>
       <div class="bacheca" id="lista-bacheca"></div>
@@ -555,11 +593,15 @@ body.ingresso{overflow:hidden}
     <section class="vista" id="vista-mappa" role="tabpanel" aria-label="Mappa" hidden>
       <div class="titolo-sezione">
         <div><h2>Dove abbiamo cagato</h2><p id="conta-perni">Nessun pin, per ora</p></div>
-        <button class="btn piccolo fantasma" id="btn-io-qui">📍 Dove sono</button>
+        <div style="display:flex;gap:8px;flex:none">
+          <button class="btn piccolo fantasma" id="btn-tutti">🌍 Tutti</button>
+          <button class="btn piccolo fantasma" id="btn-io-qui">📍 Dove sono</button>
+        </div>
       </div>
       <div class="guscio-mappa">
         <div id="mappa"></div>
         <div class="avviso-mappa" id="avviso-mappa" hidden></div>
+        <div class="anteprima-posto" id="anteprima-posto" hidden></div>
       </div>
     </section>
 
@@ -625,7 +667,7 @@ body.ingresso{overflow:hidden}
             <span>🔑 Modalità gestore attiva: vedi Gestisci ed Elimina su tutte le recensioni</span>
           </div>
           <button class="btn piccolo rossa" id="azzera-db" hidden style="width:100%;margin-top:8px">🧨 Svuota tutto e riparti da zero</button>
-          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.0</b> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
+          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.7</b> <span id="costruita"></span> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
         </div>
       </div>
     </section>
@@ -741,7 +783,8 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.0';
+const VERSIONE = '1.7';
+const COSTRUITA = '2026-09-02';   /* aggiornata a ogni pubblicazione: serve a capire chi ha quale versione */
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -998,6 +1041,7 @@ let gestore = false;
 /* ============ STATO ============ */
 const S = {io:null, recensioni:[], proposte:[], vista:'registra', foto:new Map(), modificaId:null,
            bozza:null, profilo:null, mappa:null, strato:null, perni:new Map(),
+           ordina:'registrata',
            filtri:{utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''}};
 
 const $  = s => document.querySelector(s);
@@ -1385,6 +1429,7 @@ function vaiA(nome){
   S.vista = nome;
   $$('.vista').forEach(v=>{ const on = v.id==='vista-'+nome; v.classList.toggle('attiva',on); v.hidden=!on; });
   $$('.tab[data-vista]').forEach(t=>t.setAttribute('aria-selected', t.dataset.vista===nome));
+  if(nome!=='mappa') chiudiAnteprimaPosto();
   if(nome==='mappa') apriMappa();
   if(nome==='bacheca'){ disegnaBacheca(); segnaLette(); }
   if(nome==='classifica') disegnaClassifica();
@@ -1910,7 +1955,18 @@ function passaFiltri(r, salta){
       && (salta==='paese'     || !f.paese     || r.paese===f.paese)
       && (salta==='voto'      || !f.voto      || (f.voto==='basso' ? media(r.voti)<3 : media(r.voti)>=parseFloat(f.voto)));
 }
-function filtrate(){ return S.recensioni.filter(r=>passaFiltri(r, null)); }
+function filtrate(){
+  const el = S.recensioni.filter(r=>passaFiltri(r, null));
+  const quando = r => r.creatoTs || r.ts;
+  switch(S.ordina){
+    case 'accaduta':   el.sort((a,b)=>b.ts-a.ts); break;
+    case 'voto-alto':  el.sort((a,b)=>media(b.voti)-media(a.voti) || b.ts-a.ts); break;
+    case 'voto-basso': el.sort((a,b)=>media(a.voti)-media(b.voti) || b.ts-a.ts); break;
+    case 'posto':      el.sort((a,b)=>etichettaBagno(a).localeCompare(etichettaBagno(b)) || b.ts-a.ts); break;
+    default:           el.sort((a,b)=>quando(b)-quando(a));   /* ultime registrate */
+  }
+  return el;
+}
 function filtriAttivi(){ return Object.values(S.filtri).some(x=>x); }
 function candidati(salta){ return S.recensioni.filter(r=>passaFiltri(r, salta)); }
 
@@ -1950,6 +2006,15 @@ function disegnaFiltriBacheca(){
 
   $('#f-voto').value = S.filtri.voto;
   $('#pulisci-filtri').disabled = !filtriAttivi();
+  const q=Object.values(S.filtri).filter(Boolean).length;
+  const eq=$('#quanti-filtri');
+  eq.hidden = q===0; eq.textContent = q;
+  if(q && $('#pannello-filtri').hidden===true && $('#apri-filtri').getAttribute('aria-expanded')!=='true'){
+    /* se arrivi da un pin con un filtro già impostato, il pannello si apre da solo */
+    $('#apri-filtri').setAttribute('aria-expanded','true');
+    $('#pannello-filtri').hidden=false;
+  }
+  $('#ordina').value = S.ordina;
 }
 /* quando filtri, le statistiche di quel taglio: quanto si è cagato lì, con che voto */
 function disegnaRiassunto(elenco){
@@ -1975,6 +2040,13 @@ function disegnaRiassunto(elenco){
     S.filtri[id.slice(2)] = e.target.value;
     disegnaBacheca();
   });
+});
+$('#ordina').addEventListener('change', e=>{ S.ordina=e.target.value; disegnaBacheca(); });
+$('#apri-filtri').addEventListener('click', ()=>{
+  const b=$('#apri-filtri'), p=$('#pannello-filtri');
+  const aperto = b.getAttribute('aria-expanded')==='true';
+  b.setAttribute('aria-expanded', !aperto);
+  p.hidden = aperto;
 });
 $('#pulisci-filtri').addEventListener('click', ()=>{
   S.filtri={utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''};
@@ -2016,7 +2088,6 @@ function scheda(r){
         <span class="lente">Tocca per ingrandire</span></button>`:''}
     <div class="corpo">
       <h3>${esc(r.luogo||'Posto misterioso')}${settoreDi(r)?` <span class="settore-tag">${esc(settoreDi(r))}</span>`:''}</h3>
-      ${aPosteriori(r)?`<span class="posteriori" title="Registrata più di un giorno dopo">🕰️ Recensione a posteriori</span>`:''}
       ${r.titolo?`<p style="font-size:14px;font-weight:600;color:var(--cioccolato-2);margin-bottom:6px">${esc(r.titolo)}</p>`:''}
       ${r.testo?`<p class="testo">${esc(r.testo)}</p>`:''}
       <div class="parametri">
@@ -2031,6 +2102,7 @@ function scheda(r){
     <footer class="piede">
       <button class="azione" aria-pressed="${!!miaR}" onclick="reagisci('${r.id}')">💩${cacca.length?` <small>${cacca.length}</small>`:''}</button>
       ${r.lat!=null?`<button class="azione" onclick="volaA('${r.id}')">🗺️ <small>Mappa</small></button>`:''}
+      ${aPosteriori(r)?`<span class="azione statica" title="Scritta più di un giorno dopo">🕰️ <small>A posteriori</small></span>`:''}
       ${mia?`<button class="azione fine" onclick="modifica('${r.id}')">✏️ <small>${propria?'Modifica':'Gestisci'}</small></button>`:''}
     </footer>
   </article>`;
@@ -2106,6 +2178,45 @@ function bagniDelPosto(p){
   return `<div class="pop-bagni">` + [...per.entries()].map(([k,v])=>
     `<button onclick="apriBagno('${esc(k)}')">${esc(v.et||'Senza indicazione')} <span>${v.n}</span></button>`).join('') + `</div>`;
 }
+/* Anteprima del posto: una scheda dell'app che sale dal basso della mappa.
+   Il fumetto di Leaflet dipendeva dal suo foglio di stile e su qualche
+   telefono non compariva affatto; questa è roba nostra e si vede sempre. */
+let postoInAnteprima=null;
+function mostraAnteprimaPosto(gruppo){
+  const rec=S.recensioni.filter(r=>gruppoLuogo(r)===gruppo && r.lat!=null).sort((a,b)=>b.ts-a.ts);
+  if(!rec.length) return;
+  postoInAnteprima=gruppo;
+  const medio=rec.reduce((a,r)=>a+media(r.voti),0)/rec.length;
+  const persone=new Set(rec.map(chiaveDi)).size;
+  const ultima=rec[0];
+  const bagni=new Map();
+  rec.forEach(r=>{ const k=chiaveBagno(r); if(!bagni.has(k)) bagni.set(k,{et:settoreDi(r), n:0}); bagni.get(k).n++; });
+  const box=$('#anteprima-posto');
+  box.innerHTML = `
+    <button class="ap-chiudi" id="ap-chiudi" aria-label="Chiudi">✕</button>
+    <div class="ap-riga">
+      <div class="ap-nome">
+        <b>${esc(nomeCanonico(gruppo))}</b>
+        <span>${rec.length} ${rec.length===1?'cagata':'cagate'} · ${persone} ${persone===1?'persona':'persone'}${ultima.citta?` · ${esc(ultima.citta)}`:''}</span>
+        <span>${cacche(medio)} ultima ${quando(ultima.ts)}, di ${esc(ultima.nome)}</span>
+      </div>
+      <div class="ap-voto"><b>${medio.toFixed(1)}</b><span>su 5</span></div>
+    </div>
+    ${bagni.size>1 ? `<div class="ap-bagni">`+[...bagni.entries()].map(([k,v])=>
+      `<button data-bagno="${esc(k)}">${esc(v.et||'Senza indicazione')} · ${v.n}</button>`).join('')+`</div>` : ''}
+    <button class="ap-btn" id="ap-apri">Leggi ${rec.length===1?'la recensione':'tutte e '+rec.length+' le recensioni'}</button>`;
+  box.hidden=false;
+}
+function chiudiAnteprimaPosto(){ $('#anteprima-posto').hidden=true; postoInAnteprima=null; }
+document.addEventListener('click', e=>{
+  if(e.target.closest('#ap-chiudi')) return chiudiAnteprimaPosto();
+  const b=e.target.closest('[data-bagno]');
+  if(b){ chiudiAnteprimaPosto(); apriBagno(b.dataset.bagno); return; }
+  if(e.target.closest('#ap-apri') && postoInAnteprima){
+    const g=postoInAnteprima; chiudiAnteprimaPosto(); apriBagno(g);
+  }
+});
+
 function contenutoPopup(p){
   const n=p.rec.length;
   const medio=p.rec.reduce((a,r)=>a+media(r.voti),0)/n;
@@ -2131,8 +2242,7 @@ function disegnaMappa(){
         html:`<div class="bolla"><span>${ultima.faccia||'💩'}</span>${n>1?`<i class="conta">${n}</i>`:''}</div>`,
         iconSize:[38,38], iconAnchor:[19,36], popupAnchor:[0,-34]}),
       title:nomeCanonico(p.gruppo), riseOnHover:true, keyboard:true});
-    m.bindPopup(()=>contenutoPopup(p), {minWidth:216, autoPan:true, closeButton:true});
-    m.on('click', ()=>m.openPopup());
+    m.on('click', ()=>mostraAnteprimaPosto(p.gruppo));
     m.addTo(S.strato);
     S.perni.set(p.gruppo, m);
   });
@@ -2186,6 +2296,15 @@ function contenutoPopup(r){
     ${r.testo?`<div style="margin-top:6px;font-size:12.5px;line-height:1.45">${esc(r.testo.slice(0,140))}${r.testo.length>140?'…':''}</div>`:''}
   </div>`;
 }
+$('#btn-tutti').addEventListener('click',()=>{
+  utenteHaMosso=false;
+  if(!S.mappa){ toast('La mappa non è pronta'); return; }
+  S.mappa.invalidateSize({animate:false});
+  const punti=S.recensioni.filter(r=>r.lat!=null);
+  if(!punti.length){ toast('Non c\'è ancora nessun pin'); return; }
+  inquadraTutti();
+  toast(`${punti.length} ${punti.length===1?'cagata':'cagate'} sulla mappa`);
+});
 $('#btn-io-qui').addEventListener('click',()=>{
   if(!navigator.geolocation||!S.mappa){ toast('Posizione non disponibile'); return; }
   toast('Ti sto cercando…');
@@ -2203,8 +2322,7 @@ function volaA(id){
     if(!S.mappa) return;
     S.mappa.invalidateSize({animate:false});
     S.mappa.flyTo([r.lat,r.lng], 16, {duration:.9});
-    const m=S.perni.get(gruppoLuogo(r));
-    if(m) setTimeout(()=>m.openPopup(), 950);
+    setTimeout(()=>mostraAnteprimaPosto(gruppoLuogo(r)), 950);
   }, 260);
 }
 
@@ -2309,6 +2427,8 @@ function disegnaProfilo(){
   /* nel profilo di un altro non deve comparire niente che riguardi il tuo */
   $('#btn-esci').hidden = !!suoi || !S.io;
   aggiornaBottoneNotifiche();
+  const c=document.getElementById('costruita');
+  if(c) c.textContent = '('+COSTRUITA+')';
   const u=document.getElementById('mio-uid');
   if(u && S.io) u.innerHTML = `Profilo: ${esc(S.io.email||'')} · identificativo <code style="font-size:11px">${esc(S.io.id)}</code>`;
   aggiornaGestore();
