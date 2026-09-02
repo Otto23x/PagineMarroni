@@ -1384,7 +1384,7 @@ async function dopoAccesso(appenaCreato){
   await sincronizza(false, true);
   ridisegna(); vaiA('registra');
   toast(appenaCreato ? `Benvenuto ${S.io.nome}` : `Bentornato ${S.io.nome}`);
-  if(appenaCreato) chiediPosizione();
+  if(appenaCreato) chiediPosizione(true);
 }
 
 /* chi usava l'app prima dell'accesso con email: le sue recensioni passano al nuovo profilo */
@@ -1487,8 +1487,8 @@ function vaiA(nome){
   if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
 }
 $$('.tab[data-vista]').forEach(t=>t.addEventListener('click',()=>{
-  if(t.dataset.vista==='registra' && S.vista!=='registra' && !S.modificaId){ nuovaBozza(); recuperaBozza(); chiediPosizione(); }
-  else if(t.dataset.vista==='registra' && !S.modificaId) chiediPosizione();   /* rileggi sempre: potresti esserti spostato */
+  if(t.dataset.vista==='registra' && S.vista!=='registra' && !S.modificaId){ nuovaBozza(); recuperaBozza(); chiediPosizione(true); }
+  else if(t.dataset.vista==='registra' && !S.modificaId) chiediPosizione(true);   /* rileggi sempre: potresti esserti spostato */
   if(t.dataset.vista==='profilo') S.profilo=null;
   vaiA(t.dataset.vista);
 }));
@@ -1745,9 +1745,24 @@ $('#testo-rec').addEventListener('input', e=>{ $('#contatore').textContent=e.tar
 ['#luogo','#titolo-rec'].forEach(sel=>$(sel).addEventListener('input', salvaBozza));
 
 $('#btn-gps').addEventListener('click', chiediPosizione);
-function chiediPosizione(){
+/* automatica=true quando è l'app a chiederla aprendo Registra.
+   Se il browser non ha ancora un permesso salvato, chiedere da soli farebbe
+   spuntare il riquadro di sistema a ogni apertura: meglio aspettare il tocco. */
+async function chiediPosizione(automatica){
   const punto=$('#punto-gps'), stato=$('#stato-gps');
   if(!navigator.geolocation){ punto.className='punto ko'; stato.innerHTML='<b>Non disponibile</b>Scrivi il nome del posto qui sotto.'; return; }
+  if(automatica && navigator.permissions){
+    try{
+      const p = await navigator.permissions.query({name:'geolocation'});
+      if(p.state!=='granted'){
+        punto.className='punto';
+        stato.innerHTML = p.state==='denied'
+          ? '<b>Posizione bloccata</b>Sbloccala dal lucchetto accanto all\'indirizzo, o scegli il punto sulla mappa.'
+          : '<b>Posizione non richiesta</b>Tocca <b>Automatico</b>: se il browser chiede il permesso, scegli <b>Consenti sempre</b>.';
+        return;
+      }
+    }catch(e){}
+  }
   punto.className='punto'; stato.innerHTML='<b>Ti sto cercando…</b>Un attimo di raccoglimento.';
   navigator.geolocation.getCurrentPosition(async p=>{
     S.bozza.pos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy)};
