@@ -2346,7 +2346,7 @@ function ridisegna(){
 function nuovaBozza(){
   S.modificaId = null;
   S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null,
-             indirizzo:null, mezzo:null, compagnia:null, da:null, a:null};
+             indirizzo:null, locale:null, mezzo:null, compagnia:null, da:null, a:null};
   $('#viaggio').hidden=true;
   $('#compagnia').value=''; $('#citta-da').value=''; $('#citta-a').value='';
   $('#titolo-registra').textContent='Registra la cagata';
@@ -2409,11 +2409,12 @@ function schedaPosto(stato){
     /* Due strade: il nome del locale, oppure l'indirizzo rilevato dal telefono.
        Il secondo è comodo per i bagni che un nome non ce l'hanno. */
     const c=categoriaDi(S.bozza.categoria);
+    /* Se il telefono ha riconosciuto un'attività la si propone come nome;
+       altrimenti, dove il nome è libero, si propone l'indirizzo. */
+    const proposto = S.bozza.locale || ((c.id==='altro'||c.id==='pubblico'||!S.bozza.categoria) ? S.bozza.indirizzo : null);
     azioni.innerHTML =
-      /* solo dove il nome è libero: su casa e all'aperto lo compila l'app,
-         sugli altri il nome del locale va scritto per esteso */
-      ((S.bozza.indirizzo && (!S.bozza.categoria || c.id==='altro' || c.id==='pubblico'))
-        ? `<button type="button" id="usa-indirizzo">📍 Usa “${esc(S.bozza.indirizzo)}”</button>` : '') +
+      (proposto && c.auto!=='casa' && c.auto!=='aperto'
+        ? `<button type="button" id="usa-indirizzo">📍 Usa “${esc(proposto)}”</button>` : '') +
       (stato.tornaIndietro ? `<button type="button" id="ripristina-luogo">Era il posto di prima</button>` : '');
     disegnaSettori(null);
     return;
@@ -2652,10 +2653,12 @@ document.addEventListener('click', e=>{
   if(e.target.closest('#ripristina-luogo')) ripristinaLuogo();
   if(e.target.closest('#usa-indirizzo')){
     const i=$('#luogo');
-    i.value = S.bozza.indirizzo || '';
+    const c=categoriaDi(S.bozza.categoria);
+    i.value = S.bozza.locale || ((c.id==='altro'||c.id==='pubblico'||!S.bozza.categoria) ? (S.bozza.indirizzo||'') : '');
     i.readOnly = false;
     salvaBozza(); segnaPassi();
-    toast('Nome preso dall\'indirizzo: puoi ancora cambiarlo');
+    anteprimaComposta();
+    toast('Puoi ancora cambiarlo prima di salvare');
   }
 });
 
@@ -2885,10 +2888,10 @@ async function chiediPosizione(automatica){
       /* città e paese servono alle statistiche; il NOME del bagno no:
          "Via Roma 12" non è il nome di un bagno, quello lo scrive l'utente. */
       S.bozza.citta=n.citta; S.bozza.paese=n.paese;
-      const dove=[n.indirizzo, n.etichetta&&n.etichetta.split(',')[0], n.citta].filter(Boolean)[0];
+      S.bozza.indirizzo = n.indirizzo ? titoloMaiuscolo(n.indirizzo) : null;
+      S.bozza.locale    = n.locale    ? titoloMaiuscolo(n.locale)    : null;
+      const dove=[ [S.bozza.locale, S.bozza.indirizzo].filter(Boolean).join(' · '), n.citta ].filter(Boolean)[0];
       if(dove) $('#stato-gps').innerHTML=`<b>Sei qui</b>${esc(dove)}`;
-      /* l'indirizzo si tiene da parte: se il posto è nuovo si offre come nome */
-      S.bozza.indirizzo = dove ? titoloMaiuscolo(dove) : null;
       if(!S.bozza.bloccato && S.bozza.categoria!=='trasporti' && !$('#luogo').value.trim())
         schedaPosto({tipo:'nuovo'});
       aggiornaNomePosto();
@@ -2931,14 +2934,17 @@ async function nomeDelPosto(p){
     const via=a.road||a.pedestrian||a.footway||a.residential||a.neighbourhood||'';
     const locale=a.amenity||a.shop||a.building||a.house_name||'';
     const citta=a.city||a.town||a.village||a.municipality||a.county||'';
+    /* Due cose diverse, tenute separate:
+       · indirizzo = via e numero, serve a distinguere gli omonimi
+       · locale    = il nome dell'attività, se il telefono l'ha riconosciuta
+       Prima li mescolavo, e "Electrolux Professional" finiva per essere anche
+       l'indirizzo: il nome composto sarebbe uscito ripetuto due volte. */
     const indirizzo=[via, civico].filter(Boolean).join(' ');
-    /* Se c'è il numero civico vince l'indirizzo: "Via Roma 12" è più preciso
-       del nome di un locale che potrebbe essere quello accanto. Senza numero,
-       il nome del posto è più utile della sola via. */
-    const posto = civico ? indirizzo : (locale || indirizzo || via);
+    const nomeLocale = locale || j.name || '';
     return {citta:citta||null, paese:a.country||null,
-            etichetta:[posto, citta].filter(Boolean).join(', ')||j.name||'',
-            indirizzo: indirizzo||null};
+            etichetta:[nomeLocale||indirizzo, citta].filter(Boolean).join(', '),
+            indirizzo: indirizzo||null,
+            locale: nomeLocale||null};
   }catch(e){ return null; }
 }
 
