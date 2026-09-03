@@ -926,19 +926,26 @@ const PARAMETRI = [
 /* Ogni categoria sa che nome serve:
    · auto  → lo compone l'app dall'indirizzo (casa, all'aperto) o dalla tratta
    · invito → la domanda da fare all'utente, con le parole di quella categoria */
+/* Ogni categoria sa che nome serve:
+   · auto   → lo compone l'app (casa, all'aperto) o la tratta (trasporto)
+   · componi→ scrivi il nome, l'app ci aggiunge via e numero per distinguerlo
+              da tutti gli omonimi del mondo
+   · invito → la domanda da fare, con le parole di quella categoria
+   L'evento fa eccezione: si raggruppa per nome, e due persone in due angoli
+   della stessa sagra devono finire nello stesso posto. */
 const CATEGORIE = [
   {id:'casa',      em:'🏠', nome:'Casa',              auto:'casa'},
-  {id:'lavoro',    em:'🏢', nome:'Azienda',           invito:"Come si chiama l'azienda in cui ti trovi?"},
-  {id:'ristoro',   em:'🍽️', nome:'Ristorante e bar',  invito:'Come si chiama il ristorante o il bar?'},
-  {id:'vacanza',   em:'🏨', nome:'Hotel e B&B',       invito:"Come si chiama l'hotel o il B&B?"},
-  {id:'negozi',    em:'🛒', nome:'Negozio',           invito:'Come si chiama il negozio?'},
-  {id:'locali',    em:'🪩', nome:'Locale notturno',   invito:'Come si chiama il locale?'},
-  {id:'pubblico',  em:'🏛️', nome:'Servizio pubblico', invito:'Che posto è? Comune, ospedale, biblioteca…', componi:true},
-  {id:'sport',     em:'⚽', nome:'Sport',             invito:'Come si chiama la struttura sportiva?'},
+  {id:'lavoro',    em:'🏢', nome:'Azienda',           invito:"Come si chiama l'azienda in cui ti trovi?", componi:true},
+  {id:'ristoro',   em:'🍽️', nome:'Ristorante e bar',  invito:'Come si chiama il ristorante o il bar?',    componi:true},
+  {id:'vacanza',   em:'🏨', nome:'Hotel e B&B',       invito:"Come si chiama l'hotel o il B&B?",          componi:true},
+  {id:'negozi',    em:'🛒', nome:'Negozio',           invito:'Come si chiama il negozio?',                componi:true},
+  {id:'locali',    em:'🪩', nome:'Locale notturno',   invito:'Come si chiama il locale?',                 componi:true},
+  {id:'pubblico',  em:'🏛️', nome:'Servizio pubblico', invito:'Che posto è? Comune, ospedale, biblioteca…',componi:true},
+  {id:'sport',     em:'⚽', nome:'Sport',             invito:'Come si chiama la struttura sportiva?',     componi:true},
   {id:'trasporti', em:'🚆', nome:'Trasporto',         auto:'tratta'},
   {id:'evento',    em:'🎪', nome:'Evento',            invito:"Come si chiama l'evento?"},
   {id:'aperto',    em:'🌳', nome:"All'aperto",        auto:'aperto'},
-  {id:'altro',     em:'❓', nome:'Altro',             invito:'In che luogo ti trovi?'}
+  {id:'altro',     em:'❓', nome:'Altro',             invito:'In che luogo ti trovi?',                    componi:true}
 ];
 const categoriaDi = id => CATEGORIE.find(c=>c.id===id) || {};
 
@@ -2567,8 +2574,8 @@ function aggiornaNomePosto(){
   anteprimaComposta();
   salvaBozza(); segnaPassi();
 }
-/* Servizio pubblico: alla biblioteca ci aggiungo io l'indirizzo, altrimenti
-   tutte le biblioteche del mondo si chiamerebbero uguale. */
+/* Alla trattoria ci aggiungo io via e numero, altrimenti tutte le Trattorie
+   al Faro del mondo si chiamerebbero uguale. */
 function nomeComposto(base){
   const c=categoriaDi(S.bozza.categoria);
   const b=String(base||'').trim();
@@ -2878,15 +2885,39 @@ async function chiediPosizione(automatica){
 async function nomeDelPosto(p){
   try{
     const c=new AbortController(); setTimeout(()=>c.abort(),6000);
-    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${p.lat}&lon=${p.lng}&zoom=16&accept-language=it`,{signal:c.signal});
-    const j=await r.json(), a=j.address||{};
-    const civico=a.house_number||'';
-    const via=a.road||a.pedestrian||a.footway||'';
-    const locale=a.amenity||a.shop||a.building||'';
+    /* zoom=18 è il livello "edificio": sotto questo dettaglio il numero civico
+       non viene restituito affatto. Con 16 si otteneva solo il nome della via. */
+    const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${p.lat}&lon=${p.lng}&zoom=18&addressdetails=1&accept-language=it`,{signal:c.signal});
+    let j=await r.json();
+    /* Se ha risposto con un tratto di strada (addresstype road/highway) il
+       numero civico non c'è: si richiede al massimo dettaglio, che aggancia
+       l'edificio invece della carreggiata. */
+    if(j && !(j.address||{}).house_number && /road|highway|street/i.test(j.addresstype||j.type||'')){
+      try{
+        const c2=new AbortController(); setTimeout(()=>c2.abort(),5000);
+        const r2=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${p.lat}&lon=${p.lng}&zoom=19&addressdetails=1&layer=address&accept-language=it`,{signal:c2.signal});
+        const j2=await r2.json();
+        if(j2 && (j2.address||{}).house_number) j=j2;
+      }catch(e){}
+    }
+    const a=j.address||{};
+    /* Il GPS non cade mai esattamente sul portone: spesso Nominatim risponde
+       con la VIA (un tratto stradale) invece che con la CASA, e in quel caso
+       house_number non c'è. Il numero però è quasi sempre in testa a
+       display_name: se il resto combacia con la via, lo recuperiamo da lì. */
+    let civico = a.house_number || a.housenumber || '';
+    if(!civico && j.display_name){
+      const primo = String(j.display_name).split(',')[0].trim();
+      if(/^\d+[a-zA-Z]?$/.test(primo)) civico = primo;
+    }
+    const via=a.road||a.pedestrian||a.footway||a.residential||a.neighbourhood||'';
+    const locale=a.amenity||a.shop||a.building||a.house_name||'';
     const citta=a.city||a.town||a.village||a.municipality||a.county||'';
-    /* "Corso Buenos Aires 12" invece del solo nome della via */
     const indirizzo=[via, civico].filter(Boolean).join(' ');
-    const posto=locale || indirizzo || via;
+    /* Se c'è il numero civico vince l'indirizzo: "Via Roma 12" è più preciso
+       del nome di un locale che potrebbe essere quello accanto. Senza numero,
+       il nome del posto è più utile della sola via. */
+    const posto = civico ? indirizzo : (locale || indirizzo || via);
     return {citta:citta||null, paese:a.country||null,
             etichetta:[posto, citta].filter(Boolean).join(', ')||j.name||'',
             indirizzo: indirizzo||null};
