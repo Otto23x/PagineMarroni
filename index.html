@@ -929,7 +929,7 @@ const VERSIONE = '1.0.0';
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
 
 const PARAMETRI = [
-  {id:'pulizia',   nome:'Ambiente',     sub:'Pulizia, odore'},
+  {id:'pulizia',   nome:'Ambiente',     sub:'Pulizia, odore, estetica'},
   {id:'comfort',   nome:'Comodità',     sub:'Seduta, spazio, temperatura'},
   {id:'privacy',   nome:'Riservatezza',  sub:'Serratura, pareti, silenzio'},
   {id:'dotazione', nome:'Dotazione', sub:'Carta, sapone, specchio'}
@@ -2909,19 +2909,27 @@ async function nomeDelPosto(p){
     /* zoom=18 è il livello "edificio": sotto questo dettaglio il numero civico
        non viene restituito affatto. Con 16 si otteneva solo il nome della via. */
     const r=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${p.lat}&lon=${p.lng}&zoom=18&addressdetails=1&accept-language=it`,{signal:c.signal});
-    let j=await r.json();
-    /* Se ha risposto con un tratto di strada (addresstype road/highway) il
-       numero civico non c'è: si richiede al massimo dettaglio, che aggancia
-       l'edificio invece della carreggiata. */
-    if(j && !(j.address||{}).house_number && /road|highway|street/i.test(j.addresstype||j.type||'')){
+    const j=await r.json();
+    const a=Object.assign({}, j.address||{});
+    /* La prima risposta dà spesso il nome dell'attività ma senza via né numero
+       (succede con aziende, hotel, negozi: l'oggetto in mappa è il capannone,
+       non il civico). In quel caso si fa una seconda domanda mirata agli
+       indirizzi e si prende da lì la via, tenendo il nome della prima. */
+    if(!a.house_number || !a.road){
       try{
         const c2=new AbortController(); setTimeout(()=>c2.abort(),5000);
         const r2=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${p.lat}&lon=${p.lng}&zoom=19&addressdetails=1&layer=address&accept-language=it`,{signal:c2.signal});
         const j2=await r2.json();
-        if(j2 && (j2.address||{}).house_number) j=j2;
+        const a2=(j2&&j2.address)||{};
+        if(a2.road && !a.road) a.road = a2.road;
+        if(a2.house_number && !a.house_number) a.house_number = a2.house_number;
+        if(!a.city && a2.city) a.city = a2.city;
+        if(!a.house_number && j2 && j2.display_name){
+          const primo=String(j2.display_name).split(',')[0].trim();
+          if(/^\d+[a-zA-Z]?$/.test(primo)) a.house_number = primo;
+        }
       }catch(e){}
     }
-    const a=j.address||{};
     /* Il GPS non cade mai esattamente sul portone: spesso Nominatim risponde
        con la VIA (un tratto stradale) invece che con la CASA, e in quel caso
        house_number non c'è. Il numero però è quasi sempre in testa a
