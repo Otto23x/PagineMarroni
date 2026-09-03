@@ -2918,6 +2918,7 @@ async function chiediPosizione(automatica){
   }
   punto.className='punto'; stato.innerHTML='<b>Ti sto cercando…</b>Un attimo di raccoglimento.';
   navigator.geolocation.getCurrentPosition(async p=>{
+    ultimaPosizione={lat:p.coords.latitude, lng:p.coords.longitude};
     S.bozza.pos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy)};
     punto.className='punto ok';
     stato.innerHTML=`<b>Posizione presa</b>${S.bozza.pos.acc<=25?'Precisa':'Approssimativa'}, sto riconoscendo il posto…`;
@@ -4306,7 +4307,7 @@ document.addEventListener('click', async e=>{
 /* ============ SCEGLIERE IL LUOGO A MANO ============ */
 /* Per registrare una cagata di ieri, o di un posto dove non sei adesso:
    si cerca per nome o indirizzo, oppure si tocca il punto sulla mappa. */
-let mappaScelta=null, pernoScelto=null, puntoScelto=null;
+let mappaScelta=null, pernoScelto=null, puntoScelto=null, ultimaPosizione=null;
 
 function apriSelettore(){
   apriPannello('selettore');
@@ -4318,8 +4319,7 @@ function apriSelettore(){
   setTimeout(()=>{
     if(typeof L==='undefined'){ toast('La mappa non si è caricata'); return; }
     if(!mappaScelta){
-      mappaScelta = L.map('mappa-scelta',{zoomControl:true, minZoom:2, maxZoom:19})
-        .setView(puntoScelto ? [puntoScelto.lat,puntoScelto.lng] : [45.46,9.19], puntoScelto?16:11);
+      mappaScelta = L.map('mappa-scelta',{zoomControl:true, minZoom:2, maxZoom:19}).setView([42.5,12.5],5);
       L.tileLayer(FONTI[fonte].url,{maxZoom:19, attribution:FONTI[fonte].attr}).addTo(mappaScelta);
       mappaScelta.on('click', e=>segnaPunto(e.latlng.lat, e.latlng.lng, false));
       /* i posti già registrati, per ritrovarli al volo */
@@ -4329,7 +4329,23 @@ function apriSelettore(){
       });
     }
     mappaScelta.invalidateSize();
-    if(puntoScelto){ segnaPunto(puntoScelto.lat, puntoScelto.lng, true); mappaScelta.setView([puntoScelto.lat,puntoScelto.lng],16); }
+    /* Da dove si parte, in ordine di utilità:
+       1. il punto già scelto per questa cagata
+       2. l'ultima posizione nota del telefono
+       3. l'inquadratura di tutti i pin, come nella schermata Mappa
+       4. l'Italia intera — mai una città a caso */
+    if(puntoScelto){
+      segnaPunto(puntoScelto.lat, puntoScelto.lng, true);
+      mappaScelta.setView([puntoScelto.lat,puntoScelto.lng],16,{animate:false});
+    } else if(ultimaPosizione){
+      mappaScelta.setView([ultimaPosizione.lat,ultimaPosizione.lng],15,{animate:false});
+    } else {
+      const punti=tuttiIPunti();
+      if(punti.length>1) mappaScelta.fitBounds(L.latLngBounds(punti),{padding:[40,40],maxZoom:13,animate:false});
+      else if(punti.length===1) mappaScelta.setView(punti[0],13,{animate:false});
+      else mappaScelta.setView([42.5,12.5],5,{animate:false});
+    }
+    setTimeout(()=>mappaScelta.invalidateSize(), 250);
   }, 120);
 }
 function chiudiSelettore(){ chiudiPannello('selettore'); }
