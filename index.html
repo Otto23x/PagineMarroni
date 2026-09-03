@@ -189,6 +189,10 @@ body.ingresso{overflow:hidden}
 /* ---------- filtri ---------- */
 .barra-comandi{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}
 .barra-comandi select{min-height:44px}
+.btn-info{flex:none;width:34px;height:34px;border-radius:50%;background:var(--porcellana);border:var(--bordo);
+  font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--cioccolato);box-shadow:var(--ombra)}
+.corpo-info{flex:1;overflow-y:auto;padding:16px 16px calc(24px + var(--safe-b));-webkit-overflow-scrolling:touch}
+.corpo-info h3:first-child{margin-top:4px !important}
 .btn-filtri{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border-radius:999px;
   background:var(--porcellana);border:var(--bordo);box-shadow:var(--ombra);font-size:13.5px;font-weight:700;color:var(--cioccolato)}
 .btn-filtri[aria-expanded="true"]{background:var(--cioccolato);color:#fff;border-color:var(--cioccolato)}
@@ -525,6 +529,7 @@ body.ingresso{overflow:hidden}
 <div class="app">
   <header class="intestazione">
     <div class="marchio"><span aria-hidden="true">💩</span>Pagine Marroni</div>
+    <button class="btn-info" id="apri-info" aria-label="Cos'è Pagine Marroni e come funziona" title="Cos'è e come funziona">?</button>
     <div class="chip-utente" id="chip-utente">
       <span class="avatar" id="avatar-mio" aria-hidden="true">💩</span>
       <b id="nome-mio">ospite</b>
@@ -720,48 +725,7 @@ body.ingresso{overflow:hidden}
       <button class="btn fantasma" id="btn-esci" style="width:100%;margin-top:22px">🚪 Esci dal profilo</button>
       <div id="zona-guida">
         <p class="nota" id="mio-uid" style="margin-top:18px"></p>
-        <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Cosa facciamo</h3>
-        <div class="scheda chi-siamo">
-          <div class="testata-app">
-            <span class="logo" aria-hidden="true">💩</span>
-            <div>
-              <b>Pagine Marroni</b>
-              <span>Il bagno migliore qui vicino, secondo noi</span>
-            </div>
-          </div>
-          <p>Le Pagine Gialle elencavano i negozi. Queste elencano i bagni: ogni volta che ne usi uno lo registri, lo voti e lo racconti. Così, quando uno di noi si trova in giro e gli scappa, apre la mappa e sa già <b>qual è il bagno migliore nei paraggi</b> — e soprattutto quale evitare.</p>
-          <ul>
-            <li><b>Un archivio comune.</b> Ogni bagno viene battezzato da chi lo trova per primo e resta con quel nome per tutti.</li>
-            <li><b>Voti che servono.</b> Ambiente, comodità, riservatezza e dotazione: quattro numeri per sapere se vale la pena entrare.</li>
-            <li><b>Una mappa vera.</b> Ogni posto ha il suo pin: guardi dove sei, vedi cosa c'è intorno e con che voto, e scegli dove andare.</li>
-            <li><b>Una gara amichevole.</b> Distintivi, classifica e statistiche, perché senza punteggio nessuno gioca.</li>
-          </ul>
-          <img src="locandina.jpg?v=1" alt="Pagine Marroni — Elenco Nazionale ed Internazionale dei Servizi Igienici" class="locandina">
-        </div>
-
-        <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
-        <div class="scheda guida">
-          <ol>
-            <li>Dal tasto centrale scrivi il racconto, fai rilevare la posizione, aggiungi una foto e dai i voti in cacche.</li>
-            <li>Per una cagata di ieri o di un posto dove non sei adesso: cambia la data in "Quando è successo" e usa <b>Cerca o scegli sulla mappa</b>.</li>
-            <li>Appena salvi, la recensione compare a tutti: in bacheca e come pin sulla mappa.</li>
-            <li>In bacheca filtri per persona, posto, tipo di posto, città, paese o voto: in cima compaiono le statistiche di quel taglio.</li>
-            <li>Tocca la miniatura per vedere la foto in grande, tocca un pin per leggere la recensione.</li>
-            <li>Il nome di un posto lo dà chi ci arriva per primo: se registri dove è già stato qualcuno, lo trovi già scritto e uguale per tutti. Tu scrivi il titolo.</li>
-            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla. Se ne possono mandare tre al giorno.</li>
-            <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete.</li>
-            <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
-            <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
-            <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
-            <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
-            <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>.</li>
-            <li>Un bagno che non esiste più — locale chiuso, sagra finita, tratta soppressa — si segnala dal suo pin sulla mappa con <b>🚫 Questo bagno non c'è più</b>: le recensioni restano ma diventano grigie e il pin si spegne. Per riaccenderlo non basta un tocco: serve che qualcuno ci vada e <b>scriva una recensione nuova</b>, non a posteriori.</li>
-            <li>Su una recensione di un altro c'è <b>Dico la mia</b>: apre il modulo già agganciato a quel bagno, senza bisogno del GPS. Voti e racconto restano tuoi.</li>
-            <li>Se un bagno non esiste più — i chimici di una sagra, un cantiere finito — apri il suo pin sulla mappa e tocca <b>Questo bagno non c'è più</b>. Le recensioni non si cancellano: restano in grigio con l'etichetta 🚫 e il pin spento. Chiunque può riaccenderlo con <b>È tornato</b>.</li>
-            <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
-            <li>Nome e faccia si cambiano da "Io" → Cambia: lo storico ti segue.</li>
-          </ol>
-          <div id="riga-gestore" hidden style="margin-top:14px;padding:10px 12px;border-radius:14px;background:rgba(242,194,48,.18);display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600">
+        <div id="riga-gestore" hidden style="margin-top:14px;padding:10px 12px;border-radius:14px;background:rgba(242,194,48,.18);display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:600">
             <span>🔑 Modalità gestore attiva: vedi Gestisci ed Elimina su tutte le recensioni</span>
           </div>
           <button class="btn piccolo rossa" id="azzera-db" hidden style="width:100%;margin-top:8px">🧨 Svuota tutto e riparti da zero</button>
@@ -842,6 +806,56 @@ body.ingresso{overflow:hidden}
       <button class="btn scuro" id="dlg-si">Ok</button>
     </div>
   </div>
+</div>
+
+<div class="pannello-pieno" id="info" hidden>
+  <div class="testa-sel">
+    <b>Cos'è Pagine Marroni</b>
+    <button id="chiudi-info" aria-label="Chiudi">✕</button>
+  </div>
+  <div class="corpo-info">
+<h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Cosa facciamo</h3>
+        <div class="scheda chi-siamo">
+          <div class="testata-app">
+            <span class="logo" aria-hidden="true">💩</span>
+            <div>
+              <b>Pagine Marroni</b>
+              <span>Il bagno migliore qui vicino, secondo noi</span>
+            </div>
+          </div>
+          <p>Le Pagine Gialle elencavano i negozi. Queste elencano i bagni: ogni volta che ne usi uno lo registri, lo voti e lo racconti. Così, quando uno di noi si trova in giro e gli scappa, apre la mappa e sa già <b>qual è il bagno migliore nei paraggi</b> — e soprattutto quale evitare.</p>
+          <ul>
+            <li><b>Un archivio comune.</b> Ogni bagno viene battezzato da chi lo trova per primo e resta con quel nome per tutti.</li>
+            <li><b>Voti che servono.</b> Ambiente, comodità, riservatezza e dotazione: quattro numeri per sapere se vale la pena entrare.</li>
+            <li><b>Una mappa vera.</b> Ogni posto ha il suo pin: guardi dove sei, vedi cosa c'è intorno e con che voto, e scegli dove andare.</li>
+            <li><b>Una gara amichevole.</b> Distintivi, classifica e statistiche, perché senza punteggio nessuno gioca.</li>
+          </ul>
+          <img src="locandina.jpg?v=1" alt="Pagine Marroni — Elenco Nazionale ed Internazionale dei Servizi Igienici" class="locandina">
+        </div>
+
+        <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
+        <div class="scheda guida">
+          <ol>
+            <li>Dal tasto centrale scrivi il racconto, fai rilevare la posizione, aggiungi una foto e dai i voti in cacche.</li>
+            <li>Per una cagata di ieri o di un posto dove non sei adesso: cambia la data in "Quando è successo" e usa <b>Cerca o scegli sulla mappa</b>.</li>
+            <li>Appena salvi, la recensione compare a tutti: in bacheca e come pin sulla mappa.</li>
+            <li>In bacheca filtri per persona, posto, tipo di posto, città, paese o voto: in cima compaiono le statistiche di quel taglio.</li>
+            <li>Tocca la miniatura per vedere la foto in grande, tocca un pin per leggere la recensione.</li>
+            <li>Il nome di un posto lo dà chi ci arriva per primo: se registri dove è già stato qualcuno, lo trovi già scritto e uguale per tutti. Tu scrivi il titolo.</li>
+            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla. Se ne possono mandare tre al giorno.</li>
+            <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete.</li>
+            <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
+            <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
+            <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
+            <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
+            <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>.</li>
+            <li>Un bagno che non esiste più — locale chiuso, sagra finita, tratta soppressa — si segnala dal suo pin sulla mappa con <b>🚫 Questo bagno non c'è più</b>: le recensioni restano ma diventano grigie e il pin si spegne. Per riaccenderlo non basta un tocco: serve che qualcuno ci vada e <b>scriva una recensione nuova</b>, non a posteriori.</li>
+            <li>Su una recensione di un altro c'è <b>Dico la mia</b>: apre il modulo già agganciato a quel bagno, senza bisogno del GPS. Voti e racconto restano tuoi.</li>
+            <li>Se un bagno non esiste più — i chimici di una sagra, un cantiere finito — apri il suo pin sulla mappa e tocca <b>Questo bagno non c'è più</b>. Le recensioni non si cancellano: restano in grigio con l'etichetta 🚫 e il pin spento. Chiunque può riaccenderlo con <b>È tornato</b>.</li>
+            <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
+            <li>Nome e faccia si cambiano da "Io" → Cambia: lo storico ti segue.</li>
+          </ol>
+            </div>
 </div>
 
 <div class="pannello-pieno" id="selettore" hidden>
@@ -4266,6 +4280,8 @@ function apriSelettore(){
 function chiudiSelettore(){ $('#selettore').hidden=true; document.body.style.overflow=''; }
 $('#btn-scegli').addEventListener('click', apriSelettore);
 $('#chiudi-sel').addEventListener('click', chiudiSelettore);
+$('#apri-info').addEventListener('click', ()=>{ $('#info').hidden=false; document.body.style.overflow='hidden'; });
+$('#chiudi-info').addEventListener('click', ()=>{ $('#info').hidden=true; document.body.style.overflow=''; });
 
 function segnaPunto(lat,lng,zitto){
   puntoScelto={lat,lng};
