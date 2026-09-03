@@ -189,8 +189,9 @@ body.ingresso{overflow:hidden}
 /* ---------- filtri ---------- */
 .barra-comandi{display:grid;grid-template-columns:1fr auto;gap:8px;margin-bottom:12px}
 .barra-comandi select{min-height:44px}
-.btn-info{flex:none;width:34px;height:34px;border-radius:50%;background:var(--porcellana);border:var(--bordo);
-  font-family:var(--font-display);font-size:17px;font-weight:800;color:var(--cioccolato);box-shadow:var(--ombra)}
+.btn-info{flex:none;width:36px;height:36px;border-radius:50%;background:var(--porcellana);border:var(--bordo);
+  font-family:var(--font-display);font-size:18px;font-weight:800;line-height:1;color:var(--cioccolato);
+  box-shadow:var(--ombra);font-style:italic}
 .corpo-info{flex:1;overflow-y:auto;padding:16px 16px calc(24px + var(--safe-b));-webkit-overflow-scrolling:touch}
 .corpo-info h3:first-child{margin-top:4px !important}
 .btn-filtri{display:flex;align-items:center;gap:7px;min-height:44px;padding:0 16px;border-radius:999px;
@@ -529,11 +530,11 @@ body.ingresso{overflow:hidden}
 <div class="app">
   <header class="intestazione">
     <div class="marchio"><span aria-hidden="true">💩</span>Pagine Marroni</div>
-    <button class="btn-info" id="apri-info" aria-label="Cos'è Pagine Marroni e come funziona" title="Cos'è e come funziona">?</button>
     <div class="chip-utente" id="chip-utente">
       <span class="avatar" id="avatar-mio" aria-hidden="true">💩</span>
       <b id="nome-mio">ospite</b>
     </div>
+    <button class="btn-info" id="apri-info" aria-label="Cos'è Pagine Marroni e come funziona" title="Cos'è e come funziona">i</button>
   </header>
 
   <main id="contenuto">
@@ -729,7 +730,7 @@ body.ingresso{overflow:hidden}
             <span>🔑 Modalità gestore attiva: vedi Gestisci ed Elimina su tutte le recensioni</span>
           </div>
           <button class="btn piccolo rossa" id="azzera-db" hidden style="width:100%;margin-top:8px">🧨 Svuota tutto e riparti da zero</button>
-          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.0.0</b> <span id="costruita"></span> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
+          <p class="nota" style="margin-top:14px;padding-top:12px;border-top:1px solid var(--fuga)">Pagine Marroni <b id="versione">1.0.0</b> · le recensioni sono pubbliche per tutti quelli che aprono l'app.</p>
         </div>
       </div>
     </section>
@@ -923,7 +924,6 @@ body.ingresso{overflow:hidden}
 'use strict';
 
 const VERSIONE = '1.0.0';
-const COSTRUITA = '2026-09-02';   /* aggiornata a ogni pubblicazione: serve a capire chi ha quale versione */
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -2321,7 +2321,11 @@ function vaiA(nome){
   if(nome==='bacheca'){ disegnaBacheca(); segnaLette(); }
   if(nome==='classifica') disegnaClassifica();
   if(nome==='profilo'){ disegnaProfilo(); disegnaProposte(); }
+  /* ogni schermata si apre dall'alto, comprese le liste che scorrono per conto loro */
   window.scrollTo(0,0);
+  ['#lista-bacheca','#tabellone','#vista-profilo','.corpo-info'].forEach(sel=>{
+    const el=document.querySelector(sel); if(el) el.scrollTop=0;
+  });
   if(document.scrollingElement) document.scrollingElement.scrollTop = 0;
 }
 $$('.tab[data-vista]').forEach(t=>t.addEventListener('click',()=>{
@@ -3904,8 +3908,6 @@ function disegnaProfilo(){
   /* nel profilo di un altro non deve comparire niente che riguardi il tuo */
   $('#btn-esci').hidden = !!suoi || !S.io;
   aggiornaBottoneNotifiche();
-  const c=document.getElementById('costruita');
-  if(c) c.textContent = '('+COSTRUITA+')';
   const u=document.getElementById('mio-uid');
   if(u && S.io) u.innerHTML = `Profilo: ${esc(S.io.email||'')} · identificativo <code style="font-size:11px">${esc(S.io.id)}</code>`;
   aggiornaGestore();
@@ -4280,7 +4282,11 @@ function apriSelettore(){
 function chiudiSelettore(){ $('#selettore').hidden=true; document.body.style.overflow=''; }
 $('#btn-scegli').addEventListener('click', apriSelettore);
 $('#chiudi-sel').addEventListener('click', chiudiSelettore);
-$('#apri-info').addEventListener('click', ()=>{ $('#info').hidden=false; document.body.style.overflow='hidden'; });
+$('#apri-info').addEventListener('click', ()=>{
+  $('#info').hidden=false;
+  document.body.style.overflow='hidden';
+  const c=document.querySelector('.corpo-info'); if(c) c.scrollTop=0;   /* si apre dall'inizio */
+});
 $('#chiudi-info').addEventListener('click', ()=>{ $('#info').hidden=true; document.body.style.overflow=''; });
 
 function segnaPunto(lat,lng,zitto){
