@@ -2311,12 +2311,42 @@ function chiudiIngresso(){
 }
 $('#chiudi-ingresso').addEventListener('click', chiudiIngresso);
 
+/* ============ PANNELLI A TUTTO SCHERMO ============ */
+/* Lo scorrimento della pagina si blocca solo finché c'è un pannello aperto.
+   Si ricalcola sempre dallo stato reale, così non può restare bloccato per
+   un ramo dimenticato — che è quello che rendeva la bacheca immobile. */
+function aggiornaScorrimento(){
+  const aperto = ['#info','#selettore','#lightbox'].some(sel=>{ const el=$(sel); return el && !el.hidden; });
+  document.body.style.overflow = aperto ? 'hidden' : '';
+}
+/* Il tasto Indietro di Android chiude il pannello invece di uscire dall'app. */
+function apriPannello(id){
+  const el=$('#'+id); if(!el) return;
+  el.hidden=false;
+  const c=el.querySelector('.corpo-info'); if(c) c.scrollTop=0;
+  try{ history.pushState({pannello:id}, ''); }catch(e){}
+  aggiornaScorrimento();
+}
+function chiudiPannello(id, daCronologia){
+  const el=$('#'+id); if(!el || el.hidden) return;
+  el.hidden=true;
+  aggiornaScorrimento();
+  if(!daCronologia && history.state && history.state.pannello===id){
+    try{ history.back(); }catch(e){}
+  }
+}
+window.addEventListener('popstate', ()=>{
+  ['info','selettore','lightbox'].forEach(id=>chiudiPannello(id, true));
+  aggiornaScorrimento();
+});
+
 /* ============ NAVIGAZIONE ============ */
 function vaiA(nome){
   S.vista = nome;
   $$('.vista').forEach(v=>{ const on = v.id==='vista-'+nome; v.classList.toggle('attiva',on); v.hidden=!on; });
   $$('.tab[data-vista]').forEach(t=>t.setAttribute('aria-selected', t.dataset.vista===nome));
   if(nome!=='mappa') chiudiAnteprimaPosto();
+  aggiornaScorrimento();
   if(nome==='mappa') apriMappa();
   if(nome==='bacheca'){ disegnaBacheca(); segnaLette(); }
   if(nome==='classifica') disegnaClassifica();
@@ -2348,6 +2378,14 @@ function nuovaBozza(){
   S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null,
              indirizzo:null, locale:null, mezzo:null, compagnia:null, da:null, a:null};
   $('#viaggio').hidden=true;
+  /* i pulsanti della posizione si nascondono solo sul trasporto: una bozza
+     nuova li deve sempre rimettere, altrimenti dopo un viaggio sparivano */
+  $('#due-bottoni').hidden=false;
+  $('#posizione-riga').hidden=false;
+  $('#vicini').hidden=true; $('#vicini').innerHTML='';
+  $('#sp-azioni').innerHTML=''; $('#sp-corpo').className='sp-corpo';
+  const ap=document.getElementById('anteprima-nome'); if(ap) ap.hidden=true;
+  S.bozza.nomeAuto=false;
   $('#compagnia').value=''; $('#citta-da').value=''; $('#citta-a').value='';
   $('#titolo-registra').textContent='Registra la cagata';
   $('#sotto-registra').textContent='Ci metti meno di quanto ci hai messo dentro';
@@ -3175,9 +3213,9 @@ async function apriFoto(id){
   const d=await sorgenteFoto(r); if(!d){ toast('Foto non disponibile'); return; }
   $('#foto-grande').src=d;
   $('#did-foto').textContent=[r.luogo, r.nome].filter(Boolean).join(' · ');
-  $('#lightbox').hidden=false; document.body.style.overflow='hidden';
+  apriPannello('lightbox');
 }
-function chiudiFoto(){ $('#lightbox').hidden=true; $('#foto-grande').removeAttribute('src'); document.body.style.overflow=''; }
+function chiudiFoto(){ chiudiPannello('lightbox'); $('#foto-grande').removeAttribute('src'); }
 $('#chiudi-foto').addEventListener('click', chiudiFoto);
 $('#lightbox').addEventListener('click', e=>{ if(e.target.id==='lightbox') chiudiFoto(); });
 document.addEventListener('keydown', e=>{
@@ -4269,8 +4307,7 @@ document.addEventListener('click', async e=>{
 let mappaScelta=null, pernoScelto=null, puntoScelto=null;
 
 function apriSelettore(){
-  $('#selettore').hidden=false;
-  document.body.style.overflow='hidden';
+  apriPannello('selettore');
   puntoScelto = S.bozza && S.bozza.pos ? {lat:S.bozza.pos.lat, lng:S.bozza.pos.lng} : null;
   $('#usa-punto').disabled = !puntoScelto;
   $('#coord-sel').textContent = puntoScelto
@@ -4293,15 +4330,11 @@ function apriSelettore(){
     if(puntoScelto){ segnaPunto(puntoScelto.lat, puntoScelto.lng, true); mappaScelta.setView([puntoScelto.lat,puntoScelto.lng],16); }
   }, 120);
 }
-function chiudiSelettore(){ $('#selettore').hidden=true; document.body.style.overflow=''; }
+function chiudiSelettore(){ chiudiPannello('selettore'); }
 $('#btn-scegli').addEventListener('click', apriSelettore);
 $('#chiudi-sel').addEventListener('click', chiudiSelettore);
-$('#apri-info').addEventListener('click', ()=>{
-  $('#info').hidden=false;
-  document.body.style.overflow='hidden';
-  const c=document.querySelector('.corpo-info'); if(c) c.scrollTop=0;   /* si apre dall'inizio */
-});
-$('#chiudi-info').addEventListener('click', ()=>{ $('#info').hidden=true; document.body.style.overflow=''; });
+$('#apri-info').addEventListener('click', e=>{ e.preventDefault(); e.stopPropagation(); apriPannello('info'); });
+$('#chiudi-info').addEventListener('click', ()=>chiudiPannello('info'));
 
 function segnaPunto(lat,lng,zitto){
   puntoScelto={lat,lng};
