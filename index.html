@@ -857,8 +857,8 @@ body.ingresso{overflow:hidden}
         <div class="scheda crediti">
           <h4>Chi l'ha fatta</h4>
           <p>Tutto è partito da una frase di <b>Fabiano</b>: «potremmo fare una cosa per registrare le cagate».</p>
-          <p>Da lì <b>Alberto</b> ha costruito l'app: idee, disegno, algoritmi, prove, riprove e una pazienza notevole — con <b>Claude</b> alla tastiera.</p>
-          <p><b>Fabiano</b> e <b>Mattia</b> hanno provato, rotto e segnalato: metà dei difetti sono saltati fuori grazie a loro.</p>
+          <p>Da lì <b>Alberto</b> ha costruito l'app: idee, disegno, algoritmi, prove, riprove, correzioni e una pazienza notevole — con <b>Claude</b> alla tastiera.</p>
+          <p><b>Fabiano</b> e <b>Mattia</b> hanno smanettato a caso finché qualcosa non si rompeva: è così che si trovano i difetti veri.</p>
         </div>
 
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
@@ -1800,6 +1800,10 @@ const DB = {
     if(error){ console.warn('proposte:', error.message); return []; }
     return (data||[]).map(x=>({id:x.id, luogoId:x.luogo_id, nomeAttuale:x.nome_attuale, nomeProposto:x.nome_proposto,
       motivo:x.motivo, daId:x.da_id, daNome:x.da_nome, aId:x.a_id, ts:Number(x.ts), stato:x.stato||'attesa'}));
+  },
+  async eliminaProposta(id){
+    const {error} = await cli.from('proposte').delete().eq('id', id);
+    if(error) throw error;
   },
   async proponi(p){
     const {error} = await cli.from('proposte').insert({id:p.id, luogo_id:p.luogoId, nome_attuale:p.nomeAttuale,
@@ -4598,7 +4602,8 @@ $('#prop-si').addEventListener('click', async ()=>{
 
 function proposteInArrivo(){
   if(!S.io) return [];
-  return S.proposte.filter(p=>p.stato==='attesa' && p.aId===S.io.id && p.daId!==S.io.id);
+  return S.proposte.filter(p=>p.stato==='attesa' && p.daId!==S.io.id &&
+    (p.aId===S.io.id || (gestore && !p.aId)));   /* le nuove compagnie le vaglia il gestore */
 }
 /* Le proposte già risolte si possono togliere dalla vista con la ✕:
    restano nel database, ma non ti stanno davanti per sempre. */
@@ -4629,8 +4634,8 @@ function disegnaProposte(){
   if(arrivo.length){
     h += `<h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Ti hanno proposto un nome</h3>`;
     h += arrivo.map(p=>`<div class="proposta">
-      <h4>${esc(p.daNome)} propone una rinomina</h4>
-      <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
+      <h4>${esc(p.daNome)} ${p.luogoId==='compagnia'?'propone una compagnia nuova':'propone una rinomina'}</h4>
+      <p class="cambio">${p.luogoId==='compagnia'?`<b>${esc(p.nomeProposto)}</b>`:`<b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b>`}</p>
       ${p.motivo?`<p class="perche">"${esc(p.motivo)}"</p>`:''}
       <div class="azioni-p">
         <button class="btn fantasma" data-rifiuta="${p.id}">Lascia com'è</button>
@@ -4641,7 +4646,7 @@ function disegnaProposte(){
   if(inCorso.length){
     h += `<h3 style="font-size:16px;margin:${arrivo.length?'18px':'6px'} 2px 10px;color:var(--cioccolato)">Le tue proposte</h3>`;
     h += inCorso.map(p=>`<div class="proposta esito">
-      ${p.stato!=='attesa'?`<button class="chiudi-p" data-nascondi="${esc(p.id)}" aria-label="Togli dall'elenco">✕</button>`:''}
+      <button class="chiudi-p" ${p.stato==='attesa'?`data-ritira="${esc(p.id)}" aria-label="Ritira la proposta" title="Ritira"`:`data-nascondi="${esc(p.id)}" aria-label="Togli dall'elenco" title="Togli dall'elenco"`}>✕</button>
       <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
       <span class="stato ${p.stato}">${p.stato==='attesa'?'In attesa di risposta':p.stato==='ok'?'✅ Approvata':'✖️ Non accettata'}</span>
       </div>`).join('');
@@ -4649,6 +4654,27 @@ function disegnaProposte(){
   box.innerHTML = h;
 }
 document.addEventListener('click', async e=>{
+  const rit=e.target.closest('[data-ritira]');
+  if(rit){
+    const id=rit.dataset.ritira;
+    const p=S.proposte.find(x=>x.id===id); if(!p) return;
+    if(!S.io || (p.daId!==S.io.id && !gestore)) return;
+    const conferma = await chiedi('Ritirare la proposta?',
+      `«${p.nomeProposto}» sparisce e non verrà più vagliata.`, {ok:'Ritira', no:'Lasciala', pericolo:true});
+    if(conferma!==true) return;
+    try{
+      await DB.eliminaProposta(id);
+      S.proposte = S.proposte.filter(x=>x.id!==id);
+      disegnaProposte(); aggiornaPastiglia();
+      toast('Proposta ritirata');
+    }catch(err){
+      console.warn(err);
+      /* se il database non permette la cancellazione, almeno sparisce dalla vista */
+      nascondiProposta(id); disegnaProposte();
+      toast('Tolta dall\'elenco');
+    }
+    return;
+  }
   const ok=e.target.closest('[data-approva]'), no=e.target.closest('[data-rifiuta]');
   if(!ok && !no) return;
   const id = (ok||no).dataset.approva || (ok||no).dataset.rifiuta;
