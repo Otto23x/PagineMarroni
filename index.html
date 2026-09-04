@@ -900,7 +900,7 @@ body.ingresso{overflow:hidden}
             <li>Tocca la miniatura per vedere la foto in grande, tocca un pin per leggere la recensione.</li>
             <li>Il nome di un posto lo dà chi ci arriva per primo: se registri dove è già stato qualcuno, lo trovi già scritto e uguale per tutti. Tu scrivi il titolo.</li>
             <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla. Se ne possono mandare tre al giorno.</li>
-            <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete.</li>
+            <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete. Se la compagnia non c'è, proponila: la recensione parte subito con un nome generico ("Compagnia di navigazione") e, quando il gestore approva, prende il nome giusto; da lì la compagnia è nell'elenco per tutti.</li>
             <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
             <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
             <li>Il tipo di posto si scrive con parole tue — barbiere, metro, tribunale — e l'app lo mette in uno dei 22 gruppi. <b>Trasporto</b> è il mezzo in movimento; <b>Stazione, porto e aeroporto</b> è l'edificio dove aspetti, metro e fermate comprese. Le <b>abitazioni private</b> non si recensiscono: gli indirizzi di casa non stanno in un elenco pubblico.</li>
@@ -982,7 +982,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.1.0';
+const VERSIONE = '1.1.1';
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -2089,7 +2089,7 @@ function recuperaBozza(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(K_BOZZA)||'null'); }catch(e){}
   if(!d || !d.b) return;
   const b=d.b;
-  S.bozza = {...S.bozza, voti:b.voti||{}, tag:normalizzaTag(b.tag), categoria:b.categoria||null, tipo:b.tipo||null,
+  S.bozza = {...S.bozza, voti:b.voti||{}, tag:normalizzaTag(b.tag), categoria:b.categoria||null, tipo:b.tipo||null, idPrevisto:b.idPrevisto||null,
              luogoId:b.luogoId||null, pos:b.pos||null, citta:b.citta||null, paese:b.paese||null,
              fotoUrl:b.fotoUrl||null};
   $('#luogo').value = d.luogo||'';
@@ -2798,18 +2798,52 @@ $('#compagnia').addEventListener('focus', ()=>
   $(campo).addEventListener('input', e=>
     mostraSuggerimenti($(box), cittaVicine(e.target.value), c=>{ $(campo).value=c.nome; componiTratta(); }));
 });
+/* Compagnia che non c'è: la recensione non si ferma. Parte subito con un
+   nome generico del mezzo, e la proposta viaggia verso il gestore portandosi
+   dietro l'id della recensione. Quando il gestore approva, il nome vero
+   prende il posto di quello generico in quella recensione, e la compagnia
+   entra nell'elenco per tutti. */
+const COMPAGNIA_GENERICA = {aereo:'Compagnia aerea', treno:'Compagnia ferroviaria', nave:'Compagnia di navigazione', bus:'Compagnia di autobus'};
+const propostaCompagnia = p => p && String(p.luogoId||'').startsWith('compagnia');
+/* Nel campo motivo viaggiano tre cose: mezzo|paese|id della recensione. */
+function dettagliCompagnia(p){
+  const m=String(p.motivo||'');
+  const parti=m.split('|');
+  if(parti.length>=2 && MEZZI.some(x=>x.id===parti[0])) return {mezzo:parti[0], paese:parti[1]||'', recId:parti[2]||''};
+  const vecchio=(m.match(/\((aereo|treno|nave|bus)\)/)||[])[1]||'';
+  return {mezzo:vecchio, paese:'', recId:''};
+}
+function nomeMezzo(id){ return (MEZZI.find(m=>m.id===id)||{}).nome||''; }
+/* Le compagnie approvate diventano parte dell'elenco, come se fossero
+   sempre state in dati-trasporti.js. */
+function integraCompagnie(){
+  S.proposte.filter(p=>propostaCompagnia(p) && p.stato==='ok').forEach(p=>{
+    const d=dettagliCompagnia(p);
+    if(!d.mezzo) return;
+    if(COMPAGNIE.some(c=>c.nome.toLowerCase()===p.nomeProposto.toLowerCase())) return;
+    COMPAGNIE.push({nome:p.nomeProposto, mezzo:d.mezzo, paese:d.paese||'IT'});
+  });
+}
 $('#manca-compagnia').addEventListener('click', async ()=>{
   if(!S.io) return apriIngresso();
+  if(!S.bozza.mezzo){ toast('Scegli prima il mezzo, così so che compagnia è'); return; }
+  const generico = COMPAGNIA_GENERICA[S.bozza.mezzo];
   const nome = await chiedi('Manca una compagnia',
-    'Scrivila come si scrive davvero: dopo un controllo la aggiungo all\'elenco per tutti, così nessuno la scrive in tre modi diversi.',
+    `Scrivila come si scrive davvero. Intanto la recensione parte con «${generico}»: quando il gestore approva, il nome giusto va al suo posto e la compagnia entra nell'elenco per tutti.`,
     {campo:'testo', segnaposto:'es. Air Dolomiti', ok:'Proponi'});
   if(!nome || nome===true) return;
-  const p = {id:nuovoId('p'), luogoId:'compagnia', nomeAttuale:'(nuova compagnia)',
+  if(!S.bozza.idPrevisto) S.bozza.idPrevisto = S.modificaId || nuovoId('c');
+  const paesi=[(cittaDi($('#citta-da').value)||{}).paese, (cittaDi($('#citta-a').value)||{}).paese].filter(Boolean);
+  const paese = paesi.find(x=>x!=='IT') || paesi[0] || 'IT';
+  const p = {id:nuovoId('p'), luogoId:'compagnia', nomeAttuale:generico,
              nomeProposto:titoloMaiuscolo(String(nome)),
-             motivo:'Compagnia da aggiungere ('+(S.bozza.mezzo||'mezzo non scelto')+')',
+             motivo:`${S.bozza.mezzo}|${paese}|${S.bozza.idPrevisto}`,
              daId:S.io.id, daNome:S.io.nome, aId:null, ts:Date.now(), stato:'attesa'};
-  try{ await DB.proponi(p); S.proposte.unshift(p); toast('Proposta mandata al gestore'); }
-  catch(e){
+  try{
+    await DB.proponi(p); S.proposte.unshift(p);
+    $('#compagnia').value=generico; componiTratta(); salvaBozza();
+    toast(`Proposta mandata. Intanto vai avanti con «${generico}»`);
+  }catch(e){
     const m=String(e&&e.message||'').toLowerCase();
     toast(m.includes('troppe proposte') ? 'Hai già mandato tre proposte oggi' : 'Non è riuscita, riprova');
   }
@@ -3409,7 +3443,7 @@ $('#salva').addEventListener('click', async ()=>{
       toast(rinomina ? 'Posto rinominato per tutti' : 'Recensione aggiornata');
       nuovaBozza(); recuperaBozza(); vaiA('bacheca');
     } else {
-      const id = nuovoId('c');
+      const id = S.bozza.idPrevisto || nuovoId('c');   /* fissato prima se c'è una compagnia in approvazione */
       const r = {id, nome:S.io.nome, faccia:S.io.faccia, autoreId:S.io.id, ts:quandoTs, creatoTs:Date.now(),
         luogo:nomePosto, luogoId:idLuogo, titolo:titoloMaiuscolo($('#titolo-rec').value), testo:$('#testo-rec').value.trim(),
         voti:S.bozza.voti, tag:S.bozza.tag, categoria:S.bozza.categoria, settore:$('#settore-txt').value.trim(),
@@ -4438,7 +4472,7 @@ async function sincronizza(avvisa, forza){
     const recPrima = S.recensioni.slice();
     const nuove = await DB.carica();
     const propPrima = proposteInArrivo().length;
-    try{ S.proposte = await DB.caricaProposte(); }catch(e){}
+    try{ S.proposte = await DB.caricaProposte(); integraCompagnie(); }catch(e){}
     try{ S.stati = new Map((await DB.caricaStati()).map(x=>[x.luogoId,x])); }catch(e){}
     const propDopo = proposteInArrivo().length;
     if(propDopo>propPrima){
@@ -4895,23 +4929,39 @@ function disegnaProposte(){
   const arrivo=proposteInArrivo(), mie=proposteMie();
   let h='';
   if(arrivo.length){
-    h += `<h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Ti hanno proposto un nome</h3>`;
-    h += arrivo.map(p=>`<div class="proposta">
-      <h4>${esc(p.daNome)} ${p.luogoId==='compagnia'?'propone una compagnia nuova':'propone una rinomina'}</h4>
-      <p class="cambio">${p.luogoId==='compagnia'?`<b>${esc(p.nomeProposto)}</b>`:`<b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b>`}</p>
+    h += `<h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Da vagliare</h3>`;
+    h += arrivo.map(p=>{
+      if(propostaCompagnia(p)){
+        const d=dettagliCompagnia(p), rec=S.recensioni.find(r=>r.id===d.recId);
+        return `<div class="proposta">
+      <h4>${esc(p.daNome)} chiede di aggiungere una compagnia</h4>
+      <p class="cambio"><b>${esc(p.nomeProposto)}</b>${d.mezzo?` · ${esc(nomeMezzo(d.mezzo))}`:''}${d.paese?` · ${esc(d.paese)}`:''}</p>
+      <p class="perche">${rec?`La recensione «${esc(rec.luogo)}» prenderà questo nome.`:`Nessuna recensione collegata: entra solo nell'elenco.`}</p>
+      <div class="azioni-p">
+        <button class="btn fantasma" data-rifiuta="${p.id}">Non aggiungere</button>
+        <button class="btn scuro" data-approva="${p.id}">Aggiungi all'elenco</button>
+      </div></div>`;
+      }
+      return `<div class="proposta">
+      <h4>${esc(p.daNome)} propone di rinominare un posto</h4>
+      <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
       ${p.motivo?`<p class="perche">"${esc(p.motivo)}"</p>`:''}
       <div class="azioni-p">
         <button class="btn fantasma" data-rifiuta="${p.id}">Lascia com'è</button>
-        <button class="btn scuro" data-approva="${p.id}">Approva</button>
-      </div></div>`).join('');
+        <button class="btn scuro" data-approva="${p.id}">Rinomina</button>
+      </div></div>`;
+    }).join('');
   }
   const inCorso = mie;
   if(inCorso.length){
     h += `<h3 style="font-size:16px;margin:${arrivo.length?'18px':'6px'} 2px 10px;color:var(--cioccolato)">Le tue proposte</h3>`;
     h += inCorso.map(p=>`<div class="proposta esito">
       <button class="chiudi-p" ${p.stato==='attesa'?`data-ritira="${esc(p.id)}" aria-label="Ritira la proposta" title="Ritira"`:`data-nascondi="${esc(p.id)}" aria-label="Togli dall'elenco" title="Togli dall'elenco"`}>✕</button>
-      <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
-      <span class="stato ${p.stato}">${p.stato==='attesa'?'In attesa di risposta':p.stato==='ok'?'✅ Approvata':'✖️ Non accettata'}</span>
+      ${propostaCompagnia(p)
+        ? `<p class="cambio">Compagnia <b>${esc(p.nomeProposto)}</b>${dettagliCompagnia(p).mezzo?` · ${esc(nomeMezzo(dettagliCompagnia(p).mezzo))}`:''}</p>
+      <span class="stato ${p.stato}">${p.stato==='attesa'?`In attesa del gestore. Intanto la recensione dice «${esc(p.nomeAttuale)}»`:p.stato==='ok'?'✅ Aggiunta all\'elenco: la tua recensione ora ha il nome giusto':`✖️ Non aggiunta: la recensione resta con «${esc(p.nomeAttuale)}»`}</span>`
+        : `<p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
+      <span class="stato ${p.stato}">${p.stato==='attesa'?(p.aId?'In attesa di chi ha battezzato il posto':'In attesa del gestore'):p.stato==='ok'?'✅ Accettata: il posto adesso si chiama così':'✖️ Rifiutata: il nome resta quello di prima'}</span>`}
       </div>`).join('');
   }
   box.innerHTML = h;
@@ -4945,15 +4995,32 @@ document.addEventListener('click', async e=>{
   const bottoni = (ok||no).parentElement.querySelectorAll('button');
   bottoni.forEach(b=>b.disabled=true);
   try{
-    if(ok){
+    if(propostaCompagnia(p)){
+      if(ok){
+        const d=dettagliCompagnia(p), rec=S.recensioni.find(r=>r.id===d.recId);
+        if(rec){
+          rec.compagnia=p.nomeProposto;
+          rec.luogo=nomeTratta(p.nomeProposto, rec.da, rec.a);
+          rec.luogoId=idTratta(p.nomeProposto, rec.da, rec.a);
+          await DB.aggiorna(rec);
+        }
+        p.stato='ok'; await DB.rispondi(p.id,'ok');
+        integraCompagnie();
+        toast(rec ? `${p.nomeProposto} è nell'elenco e la recensione di ${p.daNome} ha il nome giusto`
+                  : `${p.nomeProposto} è nell'elenco per tutti`);
+      } else {
+        p.stato='no'; await DB.rispondi(p.id,'no');
+        toast(`Non aggiunta: la recensione resta con «${p.nomeAttuale}»`);
+      }
+    } else if(ok){
       S.recensioni.forEach(r=>{ if(r.luogoId===p.luogoId) r.luogo=p.nomeProposto; });
       await DB.rinominaLuogo(p.luogoId, p.nomeProposto);
       try{ await DB.segnaNomePrima(p.luogoId, p.nomeAttuale); }catch(e){}
       p.stato='ok'; await DB.rispondi(p.id,'ok');
-      toast('Rinominato: adesso è '+p.nomeProposto);
+      toast('Rinominato per tutti: adesso è '+p.nomeProposto);
     } else {
       p.stato='no'; await DB.rispondi(p.id,'no');
-      toast('Proposta rifiutata, il nome resta');
+      toast('Rifiutata: il posto resta '+p.nomeAttuale);
     }
     disegnaProposte(); ridisegna(); aggiornaPastiglia();
   }catch(err){ console.warn(err); toast('Non ha funzionato, riprova'); bottoni.forEach(b=>b.disabled=false); }
@@ -5001,7 +5068,7 @@ window.PM = {
   costruisciFacce();
   caricaCoda();
   await inizializzaSessione();
-  try{ S.proposte = await DB.caricaProposte(); }catch(e){ S.proposte=[]; }
+  try{ S.proposte = await DB.caricaProposte(); integraCompagnie(); }catch(e){ S.proposte=[]; }
   try{ S.stati = new Map((await DB.caricaStati()).map(x=>[x.luogoId,x])); }catch(e){ S.stati=new Map(); }
   try{ S.recensioni = await DB.carica(); }
   catch(e){ S.recensioni = []; toast('Database non raggiungibile: vedrai solo quello che hai in coda.'); }
