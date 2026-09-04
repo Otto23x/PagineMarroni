@@ -306,8 +306,33 @@ body.ingresso{overflow:hidden}
 .scelta{font-size:12px;hyphens:auto}
 .scelta .em{font-size:21px;line-height:1}
 .scelta[aria-pressed="true"]{border-color:var(--cioccolato);background:rgba(78,50,32,.07);transform:translateY(-2px)}
-.tag-lista{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:8px}
-.tag-lista button{height:42px;padding:0 8px;border-radius:var(--r-m);border:1.5px solid var(--fuga);background:#FBFDFC;font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag-lista{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+.tag-lista button{min-height:52px;padding:4px 3px;border-radius:var(--r-m);border:1.5px solid var(--fuga);background:#FBFDFC;font-size:11px;font-weight:600;line-height:1.1;text-align:center;white-space:normal;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
+.tag-lista button .em{font-size:15px;line-height:1}
+.scelte-categoria{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.scelte-categoria[hidden]{display:none}
+.scelte-categoria .scelta{flex-direction:row;justify-content:flex-start;gap:10px;text-align:left;padding:8px 10px;min-height:46px}
+.scelte-categoria .scelta .em{font-size:19px}
+.scelte-categoria .scelta .txt{display:flex;flex-direction:column;min-width:0}
+.scelte-categoria .scelta .txt b{font-size:13.5px}
+.scelte-categoria .scelta .txt span{font-size:11.5px;color:var(--tenue);font-weight:600}
+.scelte-categoria .scelta.altro{border-style:dashed}
+.categoria-scelta{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--r-m);border:1.5px solid var(--cioccolato);background:rgba(78,50,32,.07)}
+.categoria-scelta[hidden]{display:none}
+.categoria-scelta .em{font-size:22px;line-height:1}
+.categoria-scelta .txt{display:flex;flex-direction:column;min-width:0;flex:1}
+.categoria-scelta .txt b{font-size:14px}
+.categoria-scelta .txt span{font-size:12px;color:var(--tenue);font-weight:600}
+.categoria-scelta button{flex:none;height:32px;padding:0 12px;border-radius:999px;border:1.5px solid var(--cioccolato);background:#fff;font-size:12.5px;font-weight:700;color:var(--cioccolato)}
+.prestigio{flex:none;text-align:center;min-width:56px;padding:6px 8px;border-radius:14px;color:#fff;background:#7b6a5e}
+.prestigio b{display:block;font-family:var(--font-display);font-size:19px;line-height:1}
+.prestigio span{font-size:8.5px;opacity:.85;font-weight:700;letter-spacing:.02em;white-space:nowrap}
+.prestigio.rispettabile{background:#1f7a8c}
+.prestigio.tosta{background:#c2410c}
+.prestigio.leggenda{background:#6d28d9}
+.voto-globale{margin-left:auto}
+.targa .prestigio{margin-left:auto}
+.targa .prestigio + .voto-globale{margin-left:0}
 .tag-lista button[aria-pressed="true"]{background:var(--acqua);border-color:var(--acqua);color:#fff}
 .posizione{display:flex;align-items:center;gap:12px;font-size:13.5px}
 .posizione .stato{flex:1;line-height:1.4;min-width:0}
@@ -618,8 +643,12 @@ body.ingresso{overflow:hidden}
 
         <li class="passo" data-passo="2">
           <div class="testa-passo"><span class="numero">2</span><h3>Che posto è</h3></div>
-          <p class="nota" style="margin-bottom:12px">Una sola scelta, serve per le statistiche.</p>
-          <div class="scelte" id="scelte-categoria" role="group" aria-label="Tipo di posto"></div>
+          <p class="nota" style="margin-bottom:12px">Scrivi che posto è, con parole tue: bar, barbiere, metro, tribunale, sagra… Al gruppo ci penso io.</p>
+          <div class="campo">
+            <input type="text" id="cerca-categoria" name="tipo-posto" maxlength="40" placeholder="es. barbiere, autogrill, ospedale" autocomplete="off" data-lpignore="true" data-form-type="other" aria-label="Che posto è">
+          </div>
+          <div class="scelte-categoria" id="scelte-categoria" role="group" aria-label="Tipo di posto" hidden></div>
+          <div class="categoria-scelta" id="categoria-scelta" hidden></div>
         </li>
 
         <li class="passo" data-passo="3">
@@ -628,8 +657,8 @@ body.ingresso{overflow:hidden}
         </li>
 
         <li class="passo" data-passo="4">
-          <div class="testa-passo"><span class="numero">4</span><h3>Cos'è successo</h3></div>
-          <p class="nota" style="margin-bottom:12px">Se è filato tutto liscio tocca <b>Tutto ok</b>. Altrimenti segna quello che è andato storto: puoi sceglierne più di una.</p>
+          <div class="testa-passo"><span class="numero">4</span><h3>Cos'è successo <span class="facolt">facoltativo</span></h3></div>
+          <p class="nota" style="margin-bottom:12px">Segna com'era il bagno e cos'è andato storto, anche più di una cosa. Se è filato tutto liscio non toccare niente. Da qui nasce il <b>prestigio</b> della cagata: lo vedi dopo aver pubblicato.</p>
           <div class="tag-lista" id="lista-tag" role="group" aria-label="Cos'è successo"></div>
         </li>
 
@@ -874,6 +903,8 @@ body.ingresso{overflow:hidden}
             <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete.</li>
             <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
             <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
+            <li>Il tipo di posto si scrive con parole tue — barbiere, metro, tribunale — e l'app lo mette in uno dei 22 gruppi. <b>Trasporto</b> è il mezzo in movimento; <b>Stazione, porto e aeroporto</b> è l'edificio dove aspetti, metro e fermate comprese. Le <b>abitazioni private</b> non si recensiscono: gli indirizzi di casa non stanno in un elenco pubblico.</li>
+            <li>Ogni cagata ha un <b>prestigio</b> da 1 a 100, calcolato solo dalle etichette che dichiari (Promiscuo, Musica, Rumore, Bidet e Silenzio raccontano e basta, non pesano) e da quanto è raro il tipo di posto fra le vostre recensioni: <b>difficoltà</b> (il bagno era ostile), <b>audacia</b> (faccia tosta), <b>rarità</b> (che cala se in quel bagno ci sono già stati in tanti) e le <b>combinazioni</b> che si aggravano a vicenda. Gli amici possono ritoccarlo con 😄 e 😠. Quattro ranghi: <b>💩 Ordinaria</b>, <b>⭐ Rispettabile</b> da 45, <b>🎖️ Faccia tosta</b> da 68, <b>👑 Leggenda</b> da 85. Lo vedi solo dopo aver pubblicato: si recensiscono i bagni, non i punti.</li>
             <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
             <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
             <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>.</li>
@@ -951,7 +982,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.0.0';
+const VERSIONE = '1.1.0';
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -963,33 +994,86 @@ const PARAMETRI = [
   {id:'dotazione', nome:'Dotazione', sub:'Carta, sapone, specchio'}
 ];
 
-/* Che posto è: categorie larghe, una sola per recensione.
-   Il nome preciso del bagno sta già nel titolo, qui serve solo per le statistiche. */
-/* Ogni categoria sa che nome serve:
-   · auto  → lo compone l'app dall'indirizzo (casa, all'aperto) o dalla tratta
-   · invito → la domanda da fare all'utente, con le parole di quella categoria */
-/* Ogni categoria sa che nome serve:
-   · auto   → lo compone l'app (casa, all'aperto) o la tratta (trasporto)
-   · componi→ scrivi il nome, l'app ci aggiunge via e numero per distinguerlo
-              da tutti gli omonimi del mondo
-   · invito → la domanda da fare, con le parole di quella categoria
-   L'evento fa eccezione: si raggruppa per nome, e due persone in due angoli
-   della stessa sagra devono finire nello stesso posto. */
+/* Che posto è: 22 gruppi, uno solo per recensione. L'utente non li vede come
+   griglia: scrive "barbiere" e il dizionario SINONIMI gli assegna il gruppo.
+   Gli id vecchi restano (lavoro, vacanza, negozi, locali, sport…) così le
+   recensioni già salvate non vanno toccate.
+   · auto   → il nome lo compone l'app (all'aperto) o la tratta (trasporto)
+   · componi→ scrivi il nome, l'app ci aggiunge via e numero
+   · invito → la domanda da fare, con le parole di quel gruppo
+   · proponiIndirizzo → posti che spesso un nome non ce l'hanno
+   · tipi   → le voci precise, servono alla ricerca */
 const CATEGORIE = [
-  {id:'sosta',     em:'🛣️', nome:'Autogrill e sosta', invito:'Che area di sosta è?', componi:true},
-  {id:'lavoro',    em:'🏢', nome:'Azienda',           invito:"Come si chiama l'azienda in cui ti trovi?", componi:true},
-  {id:'ristoro',   em:'🍽️', nome:'Ristorante e bar',  invito:'Come si chiama il ristorante o il bar?',    componi:true},
-  {id:'vacanza',   em:'🏨', nome:'Hotel e B&B',       invito:"Come si chiama l'hotel o il B&B?",          componi:true},
-  {id:'negozi',    em:'🛒', nome:'Negozio',           invito:'Come si chiama il negozio?',                componi:true},
-  {id:'locali',    em:'🪩', nome:'Locale notturno',   invito:'Come si chiama il locale?',                 componi:true},
-  {id:'pubblico',  em:'🏛️', nome:'Servizio pubblico', invito:'Che posto è? Comune, ospedale, biblioteca…',componi:true},
-  {id:'sport',     em:'⚽', nome:'Sport',             invito:'Come si chiama la struttura sportiva?',     componi:true},
-  {id:'trasporti', em:'🚆', nome:'Trasporto',         auto:'tratta'},
-  {id:'evento',    em:'🎪', nome:'Evento',            invito:"Come si chiama l'evento?"},
-  {id:'aperto',    em:'🌳', nome:"All'aperto",        auto:'aperto'},
-  {id:'altro',     em:'❓', nome:'Altro',             invito:'In che luogo ti trovi?',                    componi:true}
+  {id:'lavoro',     em:'🏢', nome:'Ufficio e azienda',       invito:"Come si chiama l'azienda o l'ufficio?",   componi:true, tipi:['Ufficio','Azienda','Studio professionale','Fabbrica','Officina','Magazzino','Cantiere','Laboratorio artigiano']},
+  {id:'ristoro',    em:'🍽️', nome:'Ristorazione e bar',      invito:'Come si chiama il ristorante o il bar?',    componi:true, tipi:['Ristorante','Trattoria','Pizzeria','Bar','Caffetteria','Pub e birreria','Fast food','Gelateria','Pasticceria','Osteria']},
+  {id:'vacanza',    em:'🏨', nome:'Hotel e alloggi',         invito:"Come si chiama l'hotel o l'alloggio?",       componi:true, tipi:['Hotel','B&B','Affittacamere','Agriturismo','Ostello','Villaggio turistico','Campeggio']},
+  {id:'negozi',     em:'🛒', nome:'Negozio e attività',      invito:"Come si chiama il negozio o l'attività?",    componi:true, tipi:['Negozio','Supermercato','Centro commerciale','Mercato','Barbiere e parrucchiere','Estetista','Lavanderia','Concessionaria','Vivaio']},
+  {id:'locali',     em:'🪩', nome:'Discoteca e locale',      invito:'Come si chiama il locale?',                 componi:true, tipi:['Discoteca','Club','Sala da ballo','Casinò','Sala giochi','Sala scommesse','Bingo']},
+  {id:'spettacolo', em:'🎬', nome:'Cinema e teatro',         invito:'Come si chiama il cinema o il teatro?',     componi:true, tipi:['Cinema','Teatro','Auditorium','Sala concerti']},
+  {id:'pubblico',   em:'🏛️', nome:'Servizio pubblico',       invito:'Che ufficio è? Comune, posta, tribunale…',  componi:true, proponiIndirizzo:true, tipi:['Comune','Tribunale','Questura e polizia','Ufficio postale','Banca','Agenzia delle entrate','Motorizzazione','Museo','Ambasciata e consolato']},
+  {id:'sanita',     em:'🏥', nome:'Sanità',                  invito:"Come si chiama l'ospedale o lo studio?",     componi:true, tipi:['Ospedale','Pronto soccorso','Ambulatorio','Studio medico','Dentista','Farmacia','Clinica privata','Veterinario']},
+  {id:'istruzione', em:'🎓', nome:'Istruzione',              invito:'Come si chiama la scuola o la biblioteca?', componi:true, tipi:['Scuola','Università','Biblioteca','Asilo','Scuola guida','Corso e formazione']},
+  {id:'sport',      em:'🏋️', nome:'Palestra e piscina',      invito:'Come si chiama la palestra o la piscina?',  componi:true, tipi:['Palestra','Piscina','Terme e spa','Centro sportivo','Campo da calcetto','Circolo e bocciofila','Centro benessere']},
+  {id:'stadio',     em:'🏟️', nome:'Stadio e palazzetto',     invito:"Come si chiama l'impianto?",                 componi:true, tipi:['Stadio','Palazzetto','Autodromo','Ippodromo','Impianto sciistico']},
+  {id:'sosta',      em:'⛽', nome:'Distributore e sosta',    invito:'Che distributore o area di sosta è?',       componi:true, tipi:['Distributore','Area di servizio','Autogrill','Autolavaggio','Parcheggio e autosilo','Casello','Area di sosta camper']},
+  {id:'scalo',      em:'🚉', nome:'Stazione, porto e aeroporto', invito:'Che stazione, porto o aeroporto è?',   componi:true, tipi:['Stazione ferroviaria','Metropolitana','Autostazione','Fermata','Aeroporto','Porto','Terminal traghetti','Porto turistico']},
+  {id:'trasporti',  em:'🚆', nome:'Trasporto',               auto:'tratta', tipi:['Treno','Aereo','Nave e traghetto','Autobus e pullman','Nave da crociera','Camper']},
+  {id:'fiera',      em:'🏙️', nome:'Fiera e congressi',       invito:'Come si chiama la fiera o il centro?',      componi:true, tipi:['Fiera','Centro congressi','Sala convegni','Padiglione espositivo']},
+  {id:'chiesa',     em:'⛪', nome:'Chiesa e cimitero',       invito:'Come si chiama la chiesa o il cimitero?',   componi:true, tipi:['Chiesa','Cimitero','Oratorio','Santuario','Convento','Moschea e sinagoga']},
+  {id:'balneare',   em:'🏖️', nome:'Stabilimento e rifugio',  invito:'Come si chiama lo stabilimento o il rifugio?', componi:true, tipi:['Stabilimento balneare','Rifugio','Chiosco in spiaggia','Baita','Bivacco']},
+  {id:'pubblici',   em:'🚻', nome:'Bagno pubblico',          invito:'Dove sta questo bagno pubblico?',           componi:true, proponiIndirizzo:true, tipi:['Bagno pubblico','Bagno comunale','Bagno del parco','Bagno del lungomare','Vespasiano']},
+  {id:'divertimento',em:'🎢',nome:'Parco divertimenti',      invito:'Come si chiama il parco?',                  componi:true, tipi:['Parco divertimenti','Acquapark','Luna park','Zoo','Acquario','Parco avventura']},
+  {id:'evento',     em:'🎡', nome:'Evento',                  invito:"Come si chiama l'evento?", tipi:['Sagra','Festa di paese','Concerto','Festival','Manifestazione','Mercatino']},
+  {id:'aperto',     em:'🌳', nome:"All'aperto",              auto:'aperto', tipi:['Parco','Bosco','Montagna','Campagna','Spiaggia libera','Lungofiume','Area picnic']},
+  {id:'altro',      em:'❓', nome:'Altro',                   invito:'In che luogo ti trovi?',                    componi:true, proponiIndirizzo:true, tipi:[]}
 ];
 const categoriaDi = id => CATEGORIE.find(c=>c.id===id) || {};
+
+/* Il dizionario: parole che la gente scrive davvero, ognuna agganciata al suo
+   gruppo. Chi scrive "barbiere" non deve sapere che sta in "Negozio e attività". */
+const SINONIMI = {
+  lavoro:['ufficio','uffici','azienda','ditta','studio','commercialista','avvocato','notaio','architetto','coworking','sede','capannone','fabbrica','officina','meccanico','gommista','carrozzeria','elettrauto','magazzino','deposito','logistica','cantiere','laboratorio','artigiano','falegnameria','tipografia','call center','agenzia','assicurazione','immobiliare'],
+  ristoro:['mcdonald','mcdonalds','burger king','kfc','old wild west','roadhouse','autogrill ristorante','spizzico','poke','starbucks','venchi','grom','rossopomodoro','alice pizza','panino giusto','flunch','vapiano','ristorante','trattoria','osteria','pizzeria','bar','caffe','caffetteria','pub','birreria','fast food','mcdonald','burger','kebab','gelateria','pasticceria','panetteria','forno','tavola calda','braceria','sushi','cinese','enoteca','vineria','bistrot','paninoteca','rosticceria','agriturismo ristorante','wine bar'],
+  vacanza:['b&b hotel','ibis','novotel','best western','nh hotel','hilton','marriott','holiday inn','mercure','hotel','albergo','b&b','bed and breakfast','affittacamere','pensione','ostello','agriturismo','villaggio','resort','motel','locanda','residence','appartamento vacanze','rifugio alpino','camping','campeggio','glamping'],
+  negozi:['ikea','leroy merlin','bricoman','obi','decathlon','media world','mediaworld','unieuro','euronics','conad','coop','esselunga','lidl','eurospin','despar','carrefour','pam','bennet','iper','tigotà','acqua e sapone','action','kasanova','maison du monde','zara','h&m','ovs','primark','upim','tigros','famila','aldi','mondadori','feltrinelli','trony','expert','negozio','supermercato','market','discount','centro commerciale','ipermercato','mercato','edicola','tabaccheria','farmacia comunale','ferramenta','libreria','abbigliamento','scarpe','elettronica','barbiere','parrucchiere','parrucchiera','estetista','centro estetico','tatuatore','lavanderia','concessionaria','vivaio','fioraio','ottico','gioielleria','pescheria','macelleria','panificio'],
+  locali:['discoteca','disco','club','sala da ballo','balera','locale notturno','after','casino','casinò','sala giochi','sala scommesse','bingo','slot','videolottery','night'],
+  spettacolo:['uci cinemas','the space','cinepolis','multiplex','cinema','multisala','teatro','auditorium','sala concerti','arena','opera','planetario'],
+  pubblico:['comune','municipio','anagrafe','tribunale','giudice di pace','questura','polizia','carabinieri','commissariato','posta','ufficio postale','banca','filiale','bancomat','agenzia entrate','motorizzazione','inps','asl','museo','pinacoteca','ambasciata','consolato','prefettura','catasto','camera di commercio'],
+  sanita:['ospedale','pronto soccorso','clinica','poliambulatorio','ambulatorio','studio medico','dottore','dentista','farmacia','laboratorio analisi','veterinario','consultorio','centro prelievi','radiologia','casa di cura'],
+  istruzione:['scuola','elementari','medie','liceo','istituto','università','universita','facoltà','ateneo','biblioteca','asilo','nido','materna','scuola guida','autoscuola','corso','conservatorio','accademia'],
+  sport:['virgin active','mcfit','anytime fitness','fitactive','get fit','palestra','piscina','terme','spa','centro benessere','centro sportivo','calcetto','tennis','padel','crossfit','yoga','danza','bocciofila','circolo','sauna','pattinaggio'],
+  stadio:['stadio','palazzetto','palasport','arena sportiva','autodromo','ippodromo','velodromo','impianto sciistico','skilift','seggiovia','tribuna','curva'],
+  sosta:['eni','agip','q8','ip','tamoil','esso','shell','api','autogrill','chef express','area sosta','distributore','benzinaio','pompa di benzina','area di servizio','autogrill','stazione di servizio','autolavaggio','parcheggio','autosilo','casello','area di sosta','piazzola','camper service','park'],
+  scalo:['stazione','stazione ferroviaria','binario','metro','metropolitana','fermata','capolinea','autostazione','terminal','aeroporto','gate','porto','molo','imbarco','traghetti','porto turistico','marina','eliporto'],
+  trasporti:['trenitalia','italo','flixbus','ryanair','easyjet','ita airways','wizz air','moby','grimaldi','gnv','tirrenia','msc','costa crociere','treno','regionale','frecciarossa','italo','intercity','aereo','volo','nave','traghetto','crociera','autobus','pullman','corriera','bus','camper','roulotte','vagone','carrozza','tram','funivia','cabinovia'],
+  fiera:['fiera','centro congressi','congresso','convegno','sala convegni','padiglione','expo','salone','esposizione','meeting','workshop'],
+  chiesa:['chiesa','duomo','cattedrale','basilica','santuario','cappella','oratorio','parrocchia','convento','monastero','abbazia','cimitero','camposanto','moschea','sinagoga','tempio'],
+  balneare:['stabilimento','stabilimento balneare','bagni','chiosco','beach','rifugio','baita','malga','bivacco','capanna','chalet','lido'],
+  pubblici:['bagno pubblico','bagni pubblici','wc pubblico','toilette pubblica','vespasiano','bagno comunale','bagno del parco','bagno chimico comunale','servizi igienici'],
+  divertimento:['gardaland','mirabilandia','leolandia','aquafan','caneva','movieland','italia in miniatura','rainbow magicland','cinecittà world','parco divertimenti','luna park','acquapark','acquascivoli','giostre','zoo','acquario','parco avventura','bioparco','safari park','mirabilandia','gardaland'],
+  evento:['sagra','festa','festa di paese','concerto','festival','manifestazione','mercatino','fiera paesana','carnevale','processione','raduno','palio','corteo'],
+  aperto:['parco','giardini','bosco','montagna','sentiero','campagna','spiaggia libera','lungomare','lungofiume','area picnic','prato','pineta','cespuglio','vigna','campo']
+};
+/* Cerca fra voci, sinonimi e nomi dei gruppi. Prima le corrispondenze esatte,
+   poi quelle che iniziano così, poi quelle che contengono la parola. */
+function cercaCategoria(q){
+  const x=normCat(q);
+  if(!x) return [];
+  const esiti=[];
+  CATEGORIE.forEach(g=>{
+    if(g.id==='altro') return;
+    const voci=[g.nome].concat(g.tipi||[], SINONIMI[g.id]||[]);
+    voci.forEach(v=>{
+      const nv=normCat(v);
+      const punteggio = nv===x?0 : nv.startsWith(x)?1 : nv.includes(x)?2 : -1;
+      if(punteggio<0) return;
+      if(esiti.some(e=>normCat(e.voce)===nv)) return;
+      esiti.push({voce:v, gruppo:g, punteggio});
+    });
+  });
+  return esiti.sort((a,b)=>a.punteggio-b.punteggio || a.voce.length-b.voce.length).slice(0,8);
+}
+function normCat(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
 
 /* Città note all'app: nome|lat|lng|paese. Servono a calcolare il punto della
    rotta senza rete. Coordinate al centesimo di grado: bastano e avanzano per
@@ -1618,12 +1702,153 @@ function idTratta(compagnia, da, a){
 const nomeCategoria = id => (CATEGORIE.find(c=>c.id===id)||{}).nome || '';
 const emCategoria   = id => (CATEGORIE.find(c=>c.id===id)||{}).em || '';
 
-/* Cosa è successo: le circostanze, quante ne vuoi. */
-const TAG = ['Tutto ok','Coda','Spettatori',
-             'Bussata','Carta finita','Serratura rotta',
-             'Fuori servizio','Senza luce','Alla turca',
-             'Bagno chimico','A pagamento','Chiave al bancone'];
-const TUTTO_OK = 'Tutto ok';
+/* Cos'è successo: le condizioni del bagno, quante ne vuoi. Se non segni niente
+   è andato tutto liscio. Le etichette con un pilastro alimentano il prestigio:
+   diff = difficoltà (il bagno era ostile), aud = audacia (faccia tosta);
+   quelle "racconta" descrivono e basta.
+   Nel salvataggio viaggiano i NOMI, come è sempre stato. */
+const ETICHETTE = [
+  {id:'attesa',    em:'⏳', nome:'Attesa',           pilastro:'diff', punti:4},
+  {id:'spett',     em:'👀', nome:'Spettatori',       pilastro:'aud',  punti:8},
+  {id:'bussata',   em:'✊', nome:'Bussata',          pilastro:'aud',  punti:5},
+  {id:'chiave',    em:'🔑', nome:'Chiave al bancone',pilastro:'aud',  punti:10},
+  {id:'imbucato',  em:'🎭', nome:'Da imbucato',      pilastro:'aud',  punti:12},
+  {id:'riservata', em:'🚷', nome:'Area riservata',   pilastro:'aud',  punti:15},
+  {id:'fuori',     em:'⛔', nome:'Fuori servizio',   pilastro:'aud',  punti:12},
+  {id:'pagamento', em:'💰', nome:'A pagamento',      pilastro:'aud',  punti:-5},
+  {id:'consumo',   em:'☕', nome:'Consumazione',     pilastro:'aud',  punti:-3},
+  {id:'carta',     em:'🧻', nome:'Carta finita',     pilastro:'diff', punti:10},
+  {id:'sapone',    em:'🧼', nome:'Senza sapone',     pilastro:'diff', punti:3},
+  {id:'acqua',     em:'💧', nome:'Senza acqua',      pilastro:'diff', punti:8},
+  {id:'sciacquone',em:'🌊', nome:'Sciacquone rotto', pilastro:'diff', punti:8},
+  {id:'serratura', em:'🔓', nome:'Serratura rotta',  pilastro:'diff', punti:5},
+  {id:'porta',     em:'🚪', nome:'Senza porta',      pilastro:'diff', punti:12},
+  {id:'luce',      em:'🕯️', nome:'Senza luce',       pilastro:'diff', punti:10},
+  {id:'turca',     em:'🕳️', nome:'Alla turca',       pilastro:'diff', punti:5},
+  {id:'chimico',   em:'🚽', nome:'Bagno chimico',    pilastro:'diff', punti:5},
+  {id:'vista',     em:'🪟', nome:'A vista',          pilastro:'aud',  punti:6},
+  {id:'tempo',     em:'⏱️', nome:'A tempo',          pilastro:'aud',  punti:4},
+  /* Queste raccontano com'era il bagno e non pesano sul prestigio: nessuno ha
+     motivo di barare con loro. */
+  {id:'promiscuo', em:'🚻', nome:'Promiscuo',        pilastro:'racconta', punti:0},
+  {id:'musica',    em:'🎵', nome:'Musica',           pilastro:'racconta', punti:0},
+  {id:'rumore',    em:'🔊', nome:'Rumore',           pilastro:'racconta', punti:0},
+  {id:'bidet',     em:'🚿', nome:'Bidet',            pilastro:'racconta', punti:0},
+  {id:'silenzio',  em:'🤫', nome:'Silenzio',         pilastro:'racconta', punti:0},
+  {id:'ventola',   em:'🌀', nome:'Ventola rotta',    pilastro:'diff', punti:3},
+  {id:'strisciata',em:'〰️', nome:'Strisciata trovata', pilastro:'diff', punti:4},
+  {id:'scopettino',em:'🧹', nome:'Senza scopettino', pilastro:'diff', punti:3}
+];
+const TAG = ETICHETTE.map(e=>e.nome);
+/* Nomi vecchi che possono ancora arrivare dal database. */
+const TAG_VECCHI = {'Coda':'Attesa', 'Tutto ok':null};
+function normalizzaTag(lista){
+  const out=[];
+  (lista||[]).forEach(t=>{ const n = t in TAG_VECCHI ? TAG_VECCHI[t] : t; if(n && !out.includes(n)) out.push(n); });
+  return out;
+}
+
+/* ============ IL PRESTIGIO ============
+   Quanto vale la cagata, da 1 a 100. Quattro pilastri più il giudizio del gruppo:
+   PRESTIGIO = tara(Difficoltà + Audacia + Rarità×Saturazione + Combinazioni) + Giudizio
+   Principio: si recensiscono i bagni, non le cagate. Contano solo etichette
+   dichiarate, che chiunque può contestare col 😠. Niente parole chiave nel testo. */
+const TETTO = {diff:35, aud:35, rar:30, combo:12};
+
+/* Condizioni che si aggravano a vicenda. Al massimo tre, non più di 12 punti. */
+const COMBO = [
+  {ids:['porta','spett'],      punti:10},
+  {ids:['luce','carta'],       punti:8},
+  {ids:['carta','acqua'],      punti:8},
+  {ids:['serratura','spett'],  punti:8},
+  {ids:['serratura','bussata'],punti:7},
+  {ids:['turca','luce'],       punti:7},
+  {ids:['sciacquone','spett'], punti:7},
+  {ids:['riservata','spett'],  punti:7},
+  {ids:['imbucato','chiave'],  punti:6},
+  {ids:['porta','luce'],       punti:6},
+  {ids:['silenzio','spett'],   punti:5},
+  {ids:['strisciata','scopettino'], punti:4}
+];
+
+/* Quanto scende la rarità man mano che il bagno viene battuto da tutti.
+   Tocca SOLO la rarità: quello che hai passato tu resta tuo. Il numero è
+   quante recensioni c'erano già in quel posto quando hai pubblicato la tua. */
+const SATURAZIONE = [
+  {fino:0,  m:1.10}, {fino:2,  m:1.00}, {fino:4,  m:0.92}, {fino:7,  m:0.84},
+  {fino:11, m:0.76}, {fino:16, m:0.68}, {fino:22, m:0.60}, {fino:30, m:0.52},
+  {fino:45, m:0.45}, {fino:1e9,m:0.38}
+];
+function scalaSaturazione(n){ return (SATURAZIONE.find(x=>n<=x.fino)||SATURAZIONE[SATURAZIONE.length-1]).m; }
+
+/* La somma grezza dei pilastri sta quasi sempre fra 5 e 50: questa curva la
+   stira su tutta la scala 1-100 senza cambiare l'ordine. */
+const CURVA = [[0,1],[5,8],[10,18],[15,28],[20,37],[25,45],[30,53],[35,60],[39,64],[43,68],[47,77],[51,85],[57,91],[65,96],[100,100]];
+function tara(grezzo){
+  const x=Math.max(0, Math.min(100, grezzo));
+  for(let i=1;i<CURVA.length;i++){
+    const [x0,y0]=CURVA[i-1], [x1,y1]=CURVA[i];
+    if(x<=x1) return Math.round(y0 + (y1-y0)*(x-x0)/(x1-x0));
+  }
+  return 100;
+}
+const RANGHI = [
+  {da:85, em:'👑', nome:'Leggenda',     classe:'leggenda'},
+  {da:68, em:'🎖️', nome:'Faccia tosta', classe:'tosta'},
+  {da:45, em:'⭐', nome:'Rispettabile', classe:'rispettabile'},
+  {da:0,  em:'💩', nome:'Ordinaria',    classe:'ordinaria'}
+];
+function rangoPrestigio(n){ return RANGHI.find(r=>n>=r.da) || RANGHI[RANGHI.length-1]; }
+
+/* Rarità del gruppo, misurata sui vostri dati e non decisa a tavolino: più un
+   tipo di posto è raro fra le cagate del gruppo, più vale. Un tipo che copre
+   il 20% o più delle recensioni non dà niente; uno mai visto dà il massimo. */
+const RARITA_MAX = 16, RARITA_PIENA_A = 0.20;
+function raritaCategoria(cat, elenco){
+  if(!cat || cat==='altro') return 0;
+  const tot=elenco.filter(r=>r.categoria).length;
+  if(!tot) return RARITA_MAX;
+  const quota = elenco.filter(r=>r.categoria===cat).length/tot;
+  return Math.round(RARITA_MAX * (1 - Math.min(1, quota/RARITA_PIENA_A)));
+}
+/* Quante recensioni c'erano già in quel posto quando è stata pubblicata questa. */
+function recensioniPrima(r, elenco){
+  const g=gruppoLuogo(r), t=r.creatoTs||r.ts;
+  return elenco.filter(x=>x.id!==r.id && gruppoLuogo(x)===g && (x.creatoTs||x.ts)<t).length;
+}
+function prestigioDi(r, elenco){
+  elenco = elenco || S.recensioni;
+  if(!r || !r.categoria) return null;
+  const ids = new Set(normalizzaTag(r.tag).map(n=>(ETICHETTE.find(e=>e.nome===n)||{}).id).filter(Boolean));
+  let diff=0, aud=0;
+  ETICHETTE.forEach(e=>{ if(!ids.has(e.id)) return; if(e.pilastro==='diff') diff+=e.punti; else if(e.pilastro==='aud') aud+=e.punti; });
+  diff=Math.min(TETTO.diff, Math.max(0,diff));
+  aud=Math.min(TETTO.aud, Math.max(-8,aud));
+
+  const prima = recensioniPrima(r, elenco);
+  let rar = raritaCategoria(r.categoria, elenco);
+  if(r.categoria!=='altro' && prima===0) rar+=8;    /* primo a battezzare il posto */
+  rar=Math.min(TETTO.rar, rar);
+  const rarScalata = Math.round(rar*scalaSaturazione(prima));
+
+  const combo=COMBO.filter(c=>c.ids.every(id=>ids.has(id))).sort((a,b)=>b.punti-a.punti).slice(0,3);
+  const cpt=Math.min(TETTO.combo, combo.reduce((s,c)=>s+c.punti,0));
+
+  /* giudizio del gruppo, a rendimento calante: applaudire vale al massimo 6,
+     sbugiardare fino a −15, e si applica DOPO la curva così pesa davvero */
+  const su=reazioniDi(r,'su').length, giu=reazioniDi(r,'giu').length;
+  const netto=su-giu;
+  const giudizio=Math.max(-15, Math.min(6, Math.round(Math.sign(netto)*3.2*Math.sqrt(Math.abs(netto)))));
+
+  const grezzo = diff+aud+rarScalata+cpt;
+  const finale = Math.max(1, Math.min(100, tara(grezzo)+giudizio));
+  return {finale, rango:rangoPrestigio(finale), diff, aud, rar:rarScalata, combo:cpt, giudizio, prima};
+}
+function pastigliaPrestigio(r, elenco){
+  const p=prestigioDi(r, elenco);
+  if(!p) return '';
+  return `<div class="prestigio ${p.rango.classe}" title="Prestigio ${p.finale} su 100: ${p.rango.nome}"><b>${p.finale}</b><span>${p.rango.em} ${p.rango.nome.toUpperCase()}</span></div>`;
+}
 
 const DISTINTIVI = [
   {id:'battesimo', em:'🎉', nome:'Battesimo',    desc:'La prima resta impressa',      test:s=>s.totale>=1},
@@ -1648,9 +1873,11 @@ const DISTINTIVI = [
   {id:'scout',     em:'🌳', nome:'Boy scout',    desc:'Tre all\'aria aperta',         test:s=>s.cat['aperto']>=3},
   {id:'autostrada',em:'🛣️', nome:'Casello',       desc:'Cinque in area di sosta',      test:s=>s.cat['sosta']>=5},
   {id:'burocrate', em:'🏛️', nome:'Burocrate',    desc:'Una in un servizio pubblico',  test:s=>s.cat['pubblico']>0},
+  {id:'tosta',     em:'🎖️', nome:'Faccia tosta',  desc:'Una cagata almeno Faccia tosta', test:s=>s.maxPrestigio>=68},
+  {id:'leggenda',  em:'👑', nome:'Leggenda',      desc:'Una cagata da Leggenda',       test:s=>s.maxPrestigio>=85},
   {id:'discoteca', em:'🪩', nome:'Dopo il ballo', desc:'Una in un locale notturno',    test:s=>s.cat['locali']>0},
   {id:'atleta',    em:'⚽', nome:'Terzo tempo',  desc:'Una dopo lo sport',            test:s=>s.cat['sport']>0},
-  {id:'paziente',  em:'🧘', nome:'Paziente',     desc:'Hai fatto la coda e resistito',test:s=>s.tag['Coda']>0},
+  {id:'paziente',  em:'🧘', nome:'Paziente',     desc:'Hai fatto la coda e resistito',test:s=>s.tag['Attesa']>0},
   {id:'sfortuna',  em:'🧻', nome:'Sfortunato',   desc:'Carta finita: tre volte',      test:s=>s.tag['Carta finita']>=3},
   {id:'turca',     em:'🦶', nome:'Equilibrista', desc:'Una alla turca',               test:s=>s.tag['Alla turca']>0},
   {id:'buio',      em:'🔦', nome:'Al buio',      desc:'Senza luce, e ce l\'hai fatta',test:s=>s.tag['Senza luce']>0},
@@ -1697,7 +1924,7 @@ function daRiga(x){
   return {id:x.id, nome:x.nome, faccia:x.faccia, autoreId:x.autore_id, ts:Number(x.ts),
     creatoTs: x.creato ? Date.parse(x.creato) : Number(x.ts),
     luogo:x.luogo, luogoId:x.luogo_id, titolo:x.titolo, testo:x.testo, voti:x.voti||{},
-    tag:x.tag||[], categoria:x.categoria||null, settore:x.settore||'',
+    tag:normalizzaTag(x.tag), categoria:(x.categoria==='casa'?'altro':x.categoria)||null, settore:x.settore||'',
     mezzo:x.mezzo||null, compagnia:x.compagnia||null, da:x.citta_da||null, a:x.citta_a||null, lat:x.lat, lng:x.lng, citta:x.citta, paese:x.paese,
     haFoto:!!x.foto_url, fotoUrl:x.foto_url, reaz:x.reaz||{}};
 }
@@ -1862,7 +2089,7 @@ function recuperaBozza(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(K_BOZZA)||'null'); }catch(e){}
   if(!d || !d.b) return;
   const b=d.b;
-  S.bozza = {...S.bozza, voti:b.voti||{}, tag:b.tag||[], categoria:b.categoria||null,
+  S.bozza = {...S.bozza, voti:b.voti||{}, tag:normalizzaTag(b.tag), categoria:b.categoria||null, tipo:b.tipo||null,
              luogoId:b.luogoId||null, pos:b.pos||null, citta:b.citta||null, paese:b.paese||null,
              fotoUrl:b.fotoUrl||null};
   $('#luogo').value = d.luogo||'';
@@ -2481,7 +2708,7 @@ function schedaPosto(stato){
     const c=categoriaDi(S.bozza.categoria);
     /* Se il telefono ha riconosciuto un'attività la si propone come nome;
        altrimenti, dove il nome è libero, si propone l'indirizzo. */
-    const proposto = S.bozza.locale || ((c.id==='altro'||c.id==='pubblico'||!S.bozza.categoria) ? S.bozza.indirizzo : null);
+    const proposto = S.bozza.locale || ((c.proponiIndirizzo||!S.bozza.categoria) ? S.bozza.indirizzo : null);
     azioni.innerHTML =
       (proposto && c.auto!=='aperto'
         ? `<button type="button" id="usa-indirizzo">📍 Usa “${esc(proposto)}”</button>` : '') +
@@ -2728,7 +2955,7 @@ document.addEventListener('click', e=>{
   if(e.target.closest('#usa-indirizzo')){
     const i=$('#luogo');
     const c=categoriaDi(S.bozza.categoria);
-    i.value = S.bozza.locale || ((c.id==='altro'||c.id==='pubblico'||!S.bozza.categoria) ? (S.bozza.indirizzo||'') : '');
+    i.value = S.bozza.locale || ((c.proponiIndirizzo||!S.bozza.categoria) ? (S.bozza.indirizzo||'') : '');
     i.readOnly = false;
     salvaBozza(); segnaPassi();
     anteprimaComposta();
@@ -2811,9 +3038,8 @@ function costruisciModulo(){
     <div class="scala" role="group" aria-label="${p.nome}" data-p="${p.id}">
       ${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" class="${(S.bozza.voti[p.id]||0)>=n?'acceso':''}" aria-label="${n} su 5">💩</button>`).join('')}
     </div></div>`).join('');
-  $('#lista-tag').innerHTML = TAG.map(t=>`<button type="button" data-tag="${t}" aria-pressed="${S.bozza.tag.includes(t)}">${t}</button>`).join('');
-  $('#scelte-categoria').innerHTML = CATEGORIE.map(c=>
-    `<button type="button" class="scelta" data-cat="${c.id}" aria-pressed="${S.bozza.categoria===c.id}"><span class="em">${c.em}</span>${c.nome}</button>`).join('');
+  $('#lista-tag').innerHTML = ETICHETTE.map(e=>`<button type="button" data-tag="${e.nome}" aria-pressed="${S.bozza.tag.includes(e.nome)}"><span class="em">${e.em}</span>${e.nome}</button>`).join('');
+  disegnaCategoria();
 }
 /* Parte da una recensione altrui e ne eredita SOLO il posto, il bagno e la
    categoria: voti e racconto sono tuoi, se li copiasse nascerebbero cloni.
@@ -2840,7 +3066,7 @@ function dicoLaMia(id){
   if(!S.io) return apriIngresso();
   nuovaBozza();
   S.bozza.luogoId = r.luogoId || null;
-  S.bozza.categoria = r.categoria || null;
+  S.bozza.categoria = r.categoria || null; S.bozza.tipo = null;
   S.bozza.citta = r.citta || null;
   S.bozza.paese = r.paese || null;
   if(r.lat!=null) S.bozza.pos = {lat:r.lat, lng:r.lng, acc:null, ereditata:true};
@@ -2910,21 +3136,56 @@ $('#scale-voti').addEventListener('click', e=>{
   Array.from(g.children).forEach(x=>x.classList.toggle('acceso', +x.dataset.n<=n));
   salvaBozza();
 });
-$('#scelte-categoria').addEventListener('click', e=>{
-  const b=e.target.closest('.scelta'); if(!b) return;
-  S.bozza.categoria = S.bozza.categoria===b.dataset.cat ? null : b.dataset.cat;
-  $$('#scelte-categoria .scelta').forEach(x=>x.setAttribute('aria-pressed', x.dataset.cat===S.bozza.categoria));
+/* La categoria si sceglie scrivendo: "barbiere" → Negozio e attività.
+   Le voci trovate compaiono sotto il campo; una volta scelta resta la
+   pastiglia con il gruppo, e un pulsante per cambiare idea. */
+function disegnaCategoria(){
+  const campo=$('#cerca-categoria'), esiti=$('#scelte-categoria'), fatta=$('#categoria-scelta');
+  if(!campo||!esiti||!fatta) return;
+  const c=categoriaDi(S.bozza.categoria);
+  if(c.id){
+    campo.hidden=true; esiti.innerHTML=''; esiti.hidden=true;
+    fatta.hidden=false;
+    fatta.innerHTML = `<span class="em">${c.em}</span><span class="txt"><b>${esc(c.nome)}</b>${S.bozza.tipo&&normCat(S.bozza.tipo)!==normCat(c.nome)?`<span>${esc(S.bozza.tipo)}</span>`:''}</span><button type="button" id="cambia-categoria">Cambia</button>`;
+    return;
+  }
+  fatta.hidden=true; campo.hidden=false;
+  const q=campo.value.trim();
+  const trovati=cercaCategoria(q);
+  esiti.hidden = !q;
+  if(!q){ esiti.innerHTML=''; return; }
+  esiti.innerHTML = trovati.map(t=>
+    `<button type="button" class="scelta" data-cat="${t.gruppo.id}" data-voce="${esc(t.voce)}"><span class="em">${t.gruppo.em}</span><span class="txt"><b>${esc(t.voce)}</b>${normCat(t.voce)!==normCat(t.gruppo.nome)?`<span>${esc(t.gruppo.nome)}</span>`:''}</span></button>`).join('')
+    + `<button type="button" class="scelta altro" data-cat="altro" data-voce="${esc(q)}"><span class="em">❓</span><span class="txt"><b>${trovati.length?'Nessuna di queste':'Non lo conosco'}</b><span>${trovati.length?'Metti “'+esc(q)+'” in Altro':'Metti “'+esc(q)+'” in Altro, senza rarità'}</span></span></button>`;
+}
+function scegliCategoria(id, voce){
+  S.bozza.categoria = id || null;
+  S.bozza.tipo = id ? (voce || null) : null;
+  const campo=$('#cerca-categoria'); if(campo && !id) campo.value='';
+  disegnaCategoria();
   aggiornaViaggio();
   aggiornaSuggerimentoEvento();
   aggiornaNomePosto();
   salvaBozza(); segnaPassi();
+}
+$('#cerca-categoria').addEventListener('input', disegnaCategoria);
+$('#cerca-categoria').addEventListener('keydown', e=>{
+  if(e.key!=='Enter') return;
+  e.preventDefault();
+  const primo=$('#scelte-categoria .scelta'); if(primo) primo.click();
+});
+$('#scelte-categoria').addEventListener('click', e=>{
+  const b=e.target.closest('.scelta'); if(!b) return;
+  scegliCategoria(b.dataset.cat, b.dataset.voce);
+});
+document.addEventListener('click', e=>{
+  if(e.target.closest('#cambia-categoria')){ scegliCategoria(null); $('#cerca-categoria').focus(); }
 });
 $('#lista-tag').addEventListener('click', e=>{
   const b=e.target.closest('button'); if(!b) return;
   const t=b.dataset.tag, i=S.bozza.tag.indexOf(t);
   if(i>=0) S.bozza.tag.splice(i,1);
-  else if(t===TUTTO_OK) S.bozza.tag=[TUTTO_OK];          /* è andato tutto bene: niente altro */
-  else S.bozza.tag = S.bozza.tag.filter(x=>x!==TUTTO_OK).concat(t);
+  else S.bozza.tag = S.bozza.tag.concat(t);
   $$('#lista-tag button').forEach(x=>x.setAttribute('aria-pressed', S.bozza.tag.includes(x.dataset.tag)));
   salvaBozza();
 });
@@ -3102,9 +3363,6 @@ $('#salva').addEventListener('click', async ()=>{
   }
   if(Object.values(S.bozza.voti).filter(v=>v>0).length<2){
     vaiA_blocco('#scale-voti', 'Dai almeno due voti, non essere timido'); return;
-  }
-  if(!S.bozza.tag.length){
-    vaiA_blocco('#lista-tag', "Dimmi com'è andata: se è filato liscio, tocca Tutto ok"); return;
   }
   const scelta = $('#quando').value ? new Date($('#quando').value).getTime() : Date.now();
   if(scelta && !isNaN(scelta) && scelta > Date.now() + 60000){
@@ -3477,6 +3735,7 @@ function scheda(r){
         <div class="dove tronca"><span class="et-testato">Testato</span> ${quando(r.ts)}${r.citta?' · '+esc(r.citta):''}</div>
         <div class="dove tronca piccola"><span class="et-testato">Pubblicata</span> ${dataBreve(r.creatoTs||r.ts)}</div>
       </div>
+      ${pastigliaPrestigio(r)}
       <div class="voto-globale"><b>${v.toFixed(1)}</b><span>SU 5</span></div>
     </header>
     ${r.haFoto?`<button class="miniatura" onclick="apriFoto('${r.id}')">
@@ -3684,6 +3943,7 @@ function mostraAnteprimaPosto(gruppo){
         <span>${rec.length} ${rec.length===1?'cagata':'cagate'} · ${persone} ${persone===1?'persona':'persone'}${ultima.citta?` · ${esc(ultima.citta)}`:''}</span>
         <span>${cacche(medio)} ultima ${quando(ultima.ts)}, di ${esc(ultima.nome)}</span>
       </div>
+      ${(()=>{ const ps=rec.map(r=>prestigioDi(r)).filter(Boolean); if(!ps.length) return ''; const m=Math.round(ps.reduce((a,p)=>a+p.finale,0)/ps.length), rg=rangoPrestigio(m); return `<div class="prestigio ${rg.classe}" title="Prestigio medio del posto"><b>${m}</b><span>${rg.em} ${rg.nome.toUpperCase()}</span></div>`; })()}
       <div class="ap-voto"><b>${medio.toFixed(1)}</b><span>su 5</span></div>
     </div>
     ${bagni.size>1 ? `<div class="ap-bagni">`+[...bagni.entries()].map(([k,v])=>
@@ -3996,6 +4256,9 @@ function statistiche(chiave, filtro){
     migliore:mie.length?Math.max(...mie.map(r=>media(r.voti))):0,
     km:0, tag:{}, cat:{}, categorie:0,
     reazioni: mie.reduce((a,r)=>a+reazioniDi(r,'su').length,0)};
+  const prest = mie.map(r=>prestigioDi(r)).filter(Boolean).map(p=>p.finale);
+  s.prestigio = prest.length ? Math.round(prest.reduce((a,b)=>a+b,0)/prest.length) : 0;
+  s.maxPrestigio = prest.length ? Math.max(...prest) : 0;
   s.media = mie.length ? mie.reduce((a,r)=>a+media(r.voti),0)/mie.length : 0;
   mie.forEach(r=>{
     (r.tag||[]).forEach(t=>s.tag[t]=(s.tag[t]||0)+1);
@@ -4092,7 +4355,7 @@ function disegnaProfilo(){
   $('#statistiche').innerHTML = [
     ['Cagate', s.totale],
     ['Voto medio', s.totale?s.media.toFixed(1):'–'],
-    ['Posti', s.posti],
+    ['Prestigio', s.totale?s.prestigio:'–'],
     ['Città', s.citta],
     ['Paesi', s.paesi],
     ['Km', s.km]
