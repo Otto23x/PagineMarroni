@@ -340,6 +340,10 @@ body.ingresso{overflow:hidden}
 .riga-class .num span{font-size:11px;color:var(--tenue);font-family:var(--font-ui);font-weight:600}
 
 /* ---------- profilo: griglie uniformi ---------- */
+.filtri-profilo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
+.filtri-profilo .menu{font-size:12px;padding:0 8px}
+.mappa-profilo{height:clamp(220px,38dvh,360px);margin-bottom:14px}
+#mappa-profilo{position:absolute;inset:0;background:#DCE7E2}
 .statistiche{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
 @media (min-width:620px){.statistiche{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .stat{background:var(--porcellana);border:var(--bordo);border-radius:var(--r-m);padding:12px 10px;box-shadow:var(--ombra);min-height:82px;display:flex;flex-direction:column;justify-content:center;gap:2px;text-align:center}
@@ -371,6 +375,10 @@ body.ingresso{overflow:hidden}
 .testata-profilo .avatar{width:58px;height:58px;font-size:32px}
 .testata-profilo h2{font-size:26px;color:var(--cioccolato)}
 .testata-profilo p{font-size:13px;color:var(--tenue);margin-top:3px}
+.crediti{margin-top:16px;background:rgba(242,194,48,.12);border-color:rgba(242,194,48,.35)}
+.crediti h4{font-family:var(--font-display);font-size:15px;margin-bottom:8px;color:var(--cioccolato)}
+.crediti p{font-size:13.5px;color:var(--cioccolato-2);margin-bottom:8px;line-height:1.5}
+.crediti p:last-child{margin-bottom:0}
 .chi-siamo{padding:20px 18px}
 .testata-app{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .testata-app .logo{font-size:34px;line-height:1}
@@ -706,6 +714,9 @@ body.ingresso{overflow:hidden}
         <div><h2>Classifica</h2><p>Tocca un nome per le sue statistiche</p></div>
       </div>
       <div class="podio" id="podio"></div>
+      <div class="campo" style="margin:0 0 10px">
+        <input type="search" id="cerca-persona" placeholder="Cerca una persona" autocomplete="off" aria-label="Cerca una persona">
+      </div>
       <div class="scheda" id="tabellone"></div>
       <div class="titolo-sezione" style="margin-top:24px">
         <div><h2>Bagni d'oro</h2><p>Tocca un bagno per leggerne le recensioni</p></div>
@@ -717,7 +728,15 @@ body.ingresso{overflow:hidden}
     <section class="vista stretta" id="vista-profilo" role="tabpanel" aria-label="Profilo" hidden>
       <div class="scheda testata-profilo" id="testata-profilo"></div>
       <div id="zona-proposte"></div>
+      <div class="filtri-profilo" id="filtri-profilo">
+        <button type="button" class="menu" id="fp-anno"><span class="et">Tutti gli anni</span><span class="freccia">▾</span></button>
+        <button type="button" class="menu" id="fp-categoria"><span class="et">Ogni tipo</span><span class="freccia">▾</span></button>
+        <button type="button" class="menu" id="fp-paese"><span class="et">Ogni paese</span><span class="freccia">▾</span></button>
+      </div>
       <div class="statistiche" id="statistiche"></div>
+      <div class="guscio-mappa mappa-profilo" id="guscio-profilo" hidden>
+        <div id="mappa-profilo"></div>
+      </div>
       <h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Distintivi</h3>
       <div class="distintivi" id="distintivi"></div>
       <div class="azioni-io" id="azioni-io">
@@ -835,6 +854,13 @@ body.ingresso{overflow:hidden}
           <img src="locandina.jpg?v=1" alt="Pagine Marroni — Elenco Nazionale ed Internazionale dei Servizi Igienici" class="locandina">
         </div>
 
+        <div class="scheda crediti">
+          <h4>Chi l'ha fatta</h4>
+          <p>Tutto è partito da una frase di <b>Fabiano</b>: «potremmo fare una cosa per registrare le cagate».</p>
+          <p>Da lì <b>Alberto</b> ha costruito l'app: idee, disegno, algoritmi, prove, riprove e una pazienza notevole — con <b>Claude</b> alla tastiera.</p>
+          <p><b>Fabiano</b> e <b>Mattia</b> hanno provato, rotto e segnalato: metà dei difetti sono saltati fuori grazie a loro.</p>
+        </div>
+
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
         <div class="scheda guida">
           <ol>
@@ -950,7 +976,7 @@ const PARAMETRI = [
    L'evento fa eccezione: si raggruppa per nome, e due persone in due angoli
    della stessa sagra devono finire nello stesso posto. */
 const CATEGORIE = [
-  {id:'casa',      em:'🏠', nome:'Casa',              auto:'casa'},
+  {id:'sosta',     em:'🛣️', nome:'Autogrill e sosta', invito:'Che area di sosta è?', componi:true},
   {id:'lavoro',    em:'🏢', nome:'Azienda',           invito:"Come si chiama l'azienda in cui ti trovi?", componi:true},
   {id:'ristoro',   em:'🍽️', nome:'Ristorante e bar',  invito:'Come si chiama il ristorante o il bar?',    componi:true},
   {id:'vacanza',   em:'🏨', nome:'Hotel e B&B',       invito:"Come si chiama l'hotel o il B&B?",          componi:true},
@@ -1620,7 +1646,7 @@ const DISTINTIVI = [
   {id:'pendolare', em:'🚆', nome:'Pendolare',    desc:'Tre nei trasporti',            test:s=>s.cat['trasporti']>=3},
   {id:'buongusto', em:'🍝', nome:'Buona forchetta',desc:'Cinque fra bar e ristoranti',test:s=>s.cat['ristoro']>=5},
   {id:'scout',     em:'🌳', nome:'Boy scout',    desc:'Tre all\'aria aperta',         test:s=>s.cat['aperto']>=3},
-  {id:'padrone',   em:'🏠', nome:'Padrone di casa',desc:'Dieci nel tuo bagno',        test:s=>s.cat['casa']>=10},
+  {id:'autostrada',em:'🛣️', nome:'Casello',       desc:'Cinque in area di sosta',      test:s=>s.cat['sosta']>=5},
   {id:'burocrate', em:'🏛️', nome:'Burocrate',    desc:'Una in un servizio pubblico',  test:s=>s.cat['pubblico']>0},
   {id:'discoteca', em:'🪩', nome:'Dopo il ballo', desc:'Una in un locale notturno',    test:s=>s.cat['locali']>0},
   {id:'atleta',    em:'⚽', nome:'Terzo tempo',  desc:'Una dopo lo sport',            test:s=>s.cat['sport']>0},
@@ -1859,7 +1885,7 @@ let gestore = false;
 
 
 /* ============ STATO ============ */
-const S = {io:null, recensioni:[], proposte:[], stati:new Map(), vista:'registra', foto:new Map(), modificaId:null,
+const S = {io:null, recensioni:[], proposte:[], stati:new Map(), filtriProfilo:{anno:'',categoria:'',paese:''}, vista:'registra', foto:new Map(), modificaId:null,
            bozza:null, profilo:null, mappa:null, strato:null, perni:new Map(),
            ordina:'nuove',
            filtri:{utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''}};
@@ -2443,7 +2469,7 @@ function schedaPosto(stato){
     corpo.className='sp-corpo visibile nuovo';
     const cc=categoriaDi(S.bozza.categoria);
     corpo.innerHTML = `✨ <b>Qui non c'è ancora una recensione</b>
-      <span class="dett">${cc.auto==='casa'||cc.auto==='aperto'
+      <span class="dett">${cc.auto==='aperto'
         ? 'Il nome lo scrivo io dall\'indirizzo: se preferisci, cambialo.'
         : 'Il nome che scegli resterà per tutti, scegli bene.'}</span>`;
     /* Due strade: il nome del locale, oppure l'indirizzo rilevato dal telefono.
@@ -2453,7 +2479,7 @@ function schedaPosto(stato){
        altrimenti, dove il nome è libero, si propone l'indirizzo. */
     const proposto = S.bozza.locale || ((c.id==='altro'||c.id==='pubblico'||!S.bozza.categoria) ? S.bozza.indirizzo : null);
     azioni.innerHTML =
-      (proposto && c.auto!=='casa' && c.auto!=='aperto'
+      (proposto && c.auto!=='aperto'
         ? `<button type="button" id="usa-indirizzo">📍 Usa “${esc(proposto)}”</button>` : '') +
       (stato.tornaIndietro ? `<button type="button" id="ripristina-luogo">Era il posto di prima</button>` : '');
     disegnaSettori(null);
@@ -2610,7 +2636,6 @@ function aggiornaViaggio(){
 function nomeAutomatico(){
   const c=categoriaDi(S.bozza.categoria);
   if(!c.auto || c.auto==='tratta' || !S.bozza.indirizzo) return null;
-  if(c.auto==='casa')   return `Casa · ${S.bozza.indirizzo}`;
   if(c.auto==='aperto') return `All'aperto · vicino a ${S.bozza.indirizzo}`;
   return null;
 }
@@ -2638,9 +2663,14 @@ function aggiornaNomePosto(){
 function nomeComposto(base){
   const c=categoriaDi(S.bozza.categoria);
   const b=String(base||'').trim();
-  if(!c.componi || !S.bozza.indirizzo || !b) return b;
-  const coda = ' · '+S.bozza.indirizzo;
-  return b.endsWith(coda) ? b : b+coda;
+  const ind=String(S.bozza.indirizzo||'').trim();
+  if(!c.componi || !ind || !b) return b;
+  /* Niente da aggiungere se l'indirizzo è già dentro il nome, o se coincide
+     con esso: capitava con le aziende, dove il telefono restituisce il nome
+     dell'attività anche al posto della via, e usciva "Electrolux · Electrolux". */
+  const norm = t => t.toLowerCase().replace(/[^a-z0-9]+/g,'');
+  if(norm(b).includes(norm(ind)) || norm(ind).includes(norm(b))) return b;
+  return b + ' · ' + ind;
 }
 function anteprimaComposta(){
   const p=document.getElementById('anteprima-nome');
@@ -2920,30 +2950,47 @@ async function chiediPosizione(automatica){
   navigator.geolocation.getCurrentPosition(async p=>{
     ultimaPosizione={lat:p.coords.latitude, lng:p.coords.longitude};
     S.bozza.pos={lat:p.coords.latitude,lng:p.coords.longitude,acc:Math.round(p.coords.accuracy)};
+    S.bozza.indirizzo=null; S.bozza.locale=null;
+    anteprimaComposta();
     punto.className='punto ok';
     stato.innerHTML=`<b>Posizione presa</b>${S.bozza.pos.acc<=25?'Precisa':'Approssimativa'}, sto riconoscendo il posto…`;
     mostraVicini(S.bozza.pos);
     salvaBozza();
     const n = await nomeDelPosto(S.bozza.pos);
-    if(n){
-      /* città e paese servono alle statistiche; il NOME del bagno no:
-         "Via Roma 12" non è il nome di un bagno, quello lo scrive l'utente. */
-      S.bozza.citta=n.citta; S.bozza.paese=n.paese;
-      S.bozza.indirizzo = n.indirizzo ? titoloMaiuscolo(n.indirizzo) : null;
-      S.bozza.locale    = n.locale    ? titoloMaiuscolo(n.locale)    : null;
-      const dove=[ [S.bozza.locale, S.bozza.indirizzo].filter(Boolean).join(' · '), n.citta ].filter(Boolean)[0];
-      if(dove) $('#stato-gps').innerHTML=`<b>Sei qui</b>${esc(dove)}`;
-      if(!S.bozza.bloccato && S.bozza.categoria!=='trasporti' && !$('#luogo').value.trim())
-        schedaPosto({tipo:'nuovo'});
-      aggiornaNomePosto();
-      salvaBozza();
-    }
+    applicaIndirizzo(n, 'Sei qui');
   }, err=>{
     punto.className='punto ko';
     stato.innerHTML = err.code===1 ? '<b>Permesso negato</b>Niente pin sulla mappa, ma puoi scrivere il posto a mano.'
                                    : '<b>Non ti trovo</b>Riprova, o scrivi il posto a mano.';
   }, {enableHighAccuracy:true, timeout:12000, maximumAge:60000});
 }
+/* Quello che si fa con l'indirizzo risolto, da GPS o da mappa: la stessa
+   strada per entrambi, così non capita più che uno dei due lasci il
+   messaggio "sto riconoscendo…" appeso e il nome senza via. */
+function applicaIndirizzo(n, titolo){
+  const stato=$('#stato-gps');
+  /* Prima di tutto si buttano via indirizzo e locale del punto precedente:
+     altrimenti, scegliendo un punto sulla mappa dove l'indirizzo non si
+     risolve, il nome finiva composto con la via di dov'eri prima. */
+  S.bozza.indirizzo=null; S.bozza.locale=null;
+  if(!n){
+    stato.innerHTML=`<b>${titolo}</b>Indirizzo non disponibile: scrivi tu il nome del posto.`;
+    anteprimaComposta(); salvaBozza(); return;
+  }
+  S.bozza.citta=n.citta; S.bozza.paese=n.paese;
+  /* accettiamo come indirizzo solo qualcosa che assomigli a una via */
+  const pare = n.indirizzo && /^(via|viale|corso|piazza|piazzale|largo|vicolo|strada|contrada|località|borgo|lungo|calle|salita|rampa|str\.|str |v\.le|c\.so)/i.test(n.indirizzo.trim());
+  S.bozza.indirizzo = pare ? titoloMaiuscolo(n.indirizzo) : (n.indirizzo && /\d/.test(n.indirizzo) ? titoloMaiuscolo(n.indirizzo) : null);
+  S.bozza.locale    = n.locale ? titoloMaiuscolo(n.locale) : null;
+  const dove=[ [S.bozza.locale, S.bozza.indirizzo].filter(Boolean).join(' · '), n.citta ].filter(Boolean)[0];
+  stato.innerHTML = `<b>${titolo}</b>${dove ? esc(dove) : 'Posto riconosciuto'}`;
+  if(!S.modificaId && !S.bozza.bloccato && S.bozza.categoria!=='trasporti' && !$('#luogo').value.trim())
+    schedaPosto({tipo:'nuovo'});
+  if(!S.modificaId) aggiornaNomePosto();
+  else anteprimaComposta();          /* in modifica il nome non si tocca, ma l'anteprima sì */
+  salvaBozza();
+}
+
 async function nomeDelPosto(p){
   try{
     const c=new AbortController(); setTimeout(()=>c.abort(),6000);
@@ -3307,8 +3354,9 @@ document.addEventListener('click', async e=>{
   const cfg=VOCI_MENU[b.id]; if(!cfg) return;
   const scelto = await scegliDaElenco(cfg.titolo, cfg.voci, b.dataset.valore||'');
   if(scelto===null) return;
-  if(b.id==='ordina'){ S.ordina=scelto; }
-  else { S.filtri[b.id.slice(2)] = scelto; }
+  if(b.id==='ordina'){ S.ordina=scelto; disegnaBacheca(); return; }
+  if(b.id.startsWith('fp-')){ S.filtriProfilo[b.id.slice(3)] = scelto; disegnaProfilo(); return; }
+  S.filtri[b.id.slice(2)] = scelto;
   disegnaBacheca();
 });
 
@@ -3874,6 +3922,7 @@ function perPersona(){
   return Array.from(m.values()).map(u=>({...u,medio:u.n?u.somma/u.n:0,citta:u.citta.size,paesi:u.paesi.size,posti:u.posti.size}))
     .sort((a,b)=>b.n-a.n||b.medio-a.medio);
 }
+$('#cerca-persona').addEventListener('input', ()=>disegnaClassifica());
 function disegnaClassifica(){
   const cl=perPersona();
   if(!cl.length){
@@ -3889,10 +3938,13 @@ function disegnaClassifica(){
       <span style="font-size:19px">${med[i]}</span><span class="avatar">${u.faccia||'💩'}</span>
       <b>${esc(u.nome)}</b><span>${u.n} · media ${u.medio.toFixed(1)}</span></button>`;
   }).join('');
-  $('#tabellone').innerHTML=cl.map((u,i)=>`<button class="riga-class" data-chiave="${esc(u.chiave)}">
+  const cerca=($('#cerca-persona').value||'').toLowerCase().trim();
+  const visibili=cl.map((u,i)=>({u,i})).filter(({u})=>!cerca || u.nome.toLowerCase().includes(cerca));
+  $('#tabellone').innerHTML = (visibili.length ? visibili : []).map(({u,i})=>`<button class="riga-class" data-chiave="${esc(u.chiave)}">
     <span class="pos">${i+1}</span><span class="avatar">${u.faccia||'💩'}</span>
     <span class="info"><b>${esc(u.nome)}</b><span>media ${u.medio.toFixed(1)} · ${u.citta} ${u.citta===1?'città':'città'} · ${u.posti} ${u.posti===1?'posto':'posti'}</span></span>
-    <span class="num">${u.n}<span> cagate</span></span></button>`).join('');
+    <span class="num">${u.n}<span> cagate</span></span></button>`).join('')
+    || `<div class="vuoto" style="padding:18px"><p>Nessuno si chiama così.</p></div>`;
 
   const bagni=new Map();
   S.recensioni.filter(r=>r.luogo).forEach(r=>{
@@ -3921,10 +3973,10 @@ function apriBagno(luogo){
 }
 
 /* ============ PROFILO ============ */
-function apriProfiloDi(chiave){ S.profilo=chiave; vaiA('profilo'); }
+function apriProfiloDi(chiave){ S.profilo=chiave; S.filtriProfilo={anno:'',categoria:'',paese:''}; vaiA('profilo'); }
 
-function statistiche(chiave){
-  const mie=S.recensioni.filter(r=>chiaveDi(r)===chiave).slice().sort((a,b)=>a.ts-b.ts);
+function statistiche(chiave, filtro){
+  const mie=S.recensioni.filter(r=>chiaveDi(r)===chiave && (!filtro || filtro(r))).slice().sort((a,b)=>a.ts-b.ts);
   const s={totale:mie.length, media:0,
     citta:new Set(mie.map(r=>r.citta).filter(Boolean)).size,
     paesi:new Set(mie.map(r=>r.paese).filter(Boolean)).size,
@@ -3939,7 +3991,7 @@ function statistiche(chiave){
     peggiore:mie.length?Math.min(...mie.map(r=>media(r.voti))):null,
     migliore:mie.length?Math.max(...mie.map(r=>media(r.voti))):0,
     km:0, tag:{}, cat:{}, categorie:0,
-    reazioni: mie.reduce((a,r)=>a+(((r.reaz&&r.reaz['💩'])||[]).length),0)};
+    reazioni: mie.reduce((a,r)=>a+reazioniDi(r,'su').length,0)};
   s.media = mie.length ? mie.reduce((a,r)=>a+media(r.voti),0)/mie.length : 0;
   mie.forEach(r=>{
     (r.tag||[]).forEach(t=>s.tag[t]=(s.tag[t]||0)+1);
@@ -3950,11 +4002,71 @@ function statistiche(chiave){
   s.km=Math.round(s.km);
   return {s, mie};
 }
+/* I filtri del profilo: anno, tipo di posto, paese. I numeri e la mappa
+   seguono il filtro; i distintivi no, perché quelli si guadagnano una volta
+   e restano. */
+function passaFiltriProfilo(r){
+  const f=S.filtriProfilo;
+  if(f.anno && String(new Date(r.ts).getFullYear())!==f.anno) return false;
+  if(f.categoria && r.categoria!==f.categoria) return false;
+  if(f.paese && (r.paese||'')!==f.paese) return false;
+  return true;
+}
+function disegnaFiltriProfilo(chiave){
+  const mie=S.recensioni.filter(r=>chiaveDi(r)===chiave);
+  const anni=[...new Set(mie.map(r=>String(new Date(r.ts).getFullYear())))].sort().reverse();
+  const cats=[...new Set(mie.map(r=>r.categoria).filter(Boolean))];
+  const paesi=[...new Set(mie.map(r=>r.paese).filter(Boolean))].sort();
+  const f=S.filtriProfilo;
+  impostaMenu('fp-anno', 'Quale anno', [['','Tutti gli anni']].concat(anni.map(a=>[a,a])), f.anno);
+  impostaMenu('fp-categoria', 'Che tipo di posto', [['','Ogni tipo']].concat(cats.map(c=>[c, (categoriaDi(c).em||'')+' '+(categoriaDi(c).nome||c)])), f.categoria);
+  impostaMenu('fp-paese', 'Quale paese', [['','Ogni paese']].concat(paesi.map(p=>[p,p])), f.paese);
+  $('#filtri-profilo').hidden = mie.length===0;
+}
+let mappaProfilo=null, stratoProfilo=null;
+function disegnaMappaProfilo(chiave){
+  const guscio=$('#guscio-profilo');
+  const punti=[];
+  postiSullaMappa().forEach(p=>{
+    p.rec.forEach(r=>{
+      if(chiaveDi(r)!==chiave || !passaFiltriProfilo(r)) return;
+      const pt=p.punti.get(r.id); if(!pt) return;
+      punti.push({lat:pt.lat, lng:pt.lng, r, gruppo:p.gruppo, tratta:p.tratta, evento:p.evento, vero:pt.vero});
+    });
+  });
+  guscio.hidden = punti.length===0;
+  if(!punti.length || typeof L==='undefined') return;
+  setTimeout(()=>{
+    if(!mappaProfilo){
+      mappaProfilo=L.map('mappa-profilo',{zoomControl:false, attributionControl:false, minZoom:2, maxZoom:18});
+      L.tileLayer(FONTI[fonte].url,{maxZoom:19}).addTo(mappaProfilo);
+      stratoProfilo=L.layerGroup().addTo(mappaProfilo);
+    }
+    stratoProfilo.clearLayers();
+    punti.forEach(p=>{
+      L.marker([p.lat,p.lng],{
+        icon:L.divIcon({className:'perno'+(p.tratta?' tratta':'')+(p.evento?' evento':'')+(p.vero?'':' stimato'),
+          html:`<div class="bolla"><span>${p.r.faccia||'💩'}</span></div>`, iconSize:[38,38], iconAnchor:[19,36]}),
+        title:nomeCanonico(p.gruppo)})
+        .on('click', ()=>apriBagno(p.gruppo))
+        .addTo(stratoProfilo);
+    });
+    mappaProfilo.invalidateSize({animate:false});
+    const ll=punti.map(p=>[p.lat,p.lng]);
+    if(ll.length===1) mappaProfilo.setView(ll[0],13,{animate:false});
+    else mappaProfilo.fitBounds(L.latLngBounds(ll),{padding:[30,30],maxZoom:14,animate:false});
+    setTimeout(()=>mappaProfilo.invalidateSize({animate:false}), 250);
+  }, 60);
+}
+
 function disegnaProfilo(){
   const suoi = S.profilo && (!S.io || S.profilo!==S.io.id);
   const chiave = S.profilo || (S.io?S.io.id:'');
   if(!chiave){ apriIngresso(); return; }
-  const {s}=statistiche(chiave);
+  const tutte=statistiche(chiave).s;                       /* per i distintivi */
+  const {s}=statistiche(chiave, passaFiltriProfilo);       /* per i numeri */
+  disegnaFiltriProfilo(chiave);
+  disegnaMappaProfilo(chiave);
   const uno = S.recensioni.find(r=>chiaveDi(r)===chiave);
   const nome = suoi ? (uno?uno.nome:'Sconosciuto') : S.io.nome;
   const faccia = suoi ? (uno?uno.faccia:'💩') : S.io.faccia;
@@ -3983,7 +4095,7 @@ function disegnaProfilo(){
   ].map(([e,v])=>`<div class="stat"><b>${v}</b><span>${e}</span></div>`).join('');
 
   $('#distintivi').innerHTML = DISTINTIVI.map(d=>{
-    const preso = d.test(s);
+    const preso = d.test(tutte);
     return `<div class="distintivo ${preso?'preso':''}"><span class="em">${d.em}</span>
       <span class="txt"><b>${d.nome}</b><span>${d.desc}</span></span></div>`;
   }).join('');
@@ -4390,17 +4502,15 @@ $('#esiti-sel').addEventListener('click', e=>{
 $('#usa-punto').addEventListener('click', async ()=>{
   if(!puntoScelto) return;
   S.bozza.pos={lat:puntoScelto.lat, lng:puntoScelto.lng, acc:null, manuale:true};
+  S.bozza.indirizzo=null; S.bozza.locale=null;   /* il punto è cambiato: via il vecchio */
+  anteprimaComposta();
   $('#punto-gps').className='punto ok';
   $('#stato-gps').innerHTML=`<b>Punto scelto sulla mappa</b>Sto riconoscendo il posto…`;
   chiudiSelettore();
   mostraVicini(S.bozza.pos);
   salvaBozza(); segnaPassi();
   const n = await nomeDelPosto(S.bozza.pos);
-  if(n){
-    S.bozza.citta=n.citta; S.bozza.paese=n.paese;
-    /* La via non è il nome del bagno: il nome lo mette l'utente. */
-    salvaBozza();
-  }
+  applicaIndirizzo(n, 'Punto scelto sulla mappa');
 });
 
 /* ---- data e ora dell'evento ---- */
