@@ -227,6 +227,10 @@ body.ingresso{overflow:hidden}
 @media (min-width:900px){.bacheca{grid-template-columns:1fr 1fr;align-items:start}}
 .targa{display:flex;align-items:center;gap:10px;padding:14px 16px;background:linear-gradient(180deg,#FFFFFF,#F6FAF8);border-bottom:1px dashed var(--fuga)}
 .targa .avatar{width:38px;height:38px;font-size:20px;border:2px solid var(--porcellana)}
+.avatar-btn{cursor:pointer;padding:0;background:var(--porcellana);flex:none}
+.avatar-btn:active{transform:scale(.94)}
+.chi-btn{background:none;border:0;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer;max-width:100%}
+.chi-btn:active{opacity:.6}
 .targa .chi{font-weight:800;font-size:15px;font-family:var(--font-display)}
 .targa .dove{font-size:12.5px;color:var(--tenue);margin-top:1px}
 .voto-globale{margin-left:auto;flex:none;text-align:center;min-width:56px;padding:6px 8px;border-radius:14px;background:var(--cioccolato);color:#fff}
@@ -584,7 +588,17 @@ body.ingresso{overflow:hidden}
 
       <ol class="passi">
         <li class="passo" data-passo="1">
-          <div class="testa-passo"><span class="numero">1</span><h3>Dove sei</h3></div>
+          <div class="testa-passo"><span class="numero">1</span><h3>Che posto è</h3></div>
+          <p class="nota" style="margin-bottom:12px">Scrivi che posto è, con parole tue: bar, barbiere, metro, tribunale, sagra… Al gruppo ci penso io.</p>
+          <div class="campo">
+            <input type="text" id="cerca-categoria" name="tipo-posto" maxlength="40" placeholder="es. barbiere, autogrill, ospedale" autocomplete="off" data-lpignore="true" data-form-type="other" aria-label="Che posto è">
+          </div>
+          <div class="scelte-categoria" id="scelte-categoria" role="group" aria-label="Tipo di posto" hidden></div>
+          <div class="categoria-scelta" id="categoria-scelta" hidden></div>
+        </li>
+
+        <li class="passo" data-passo="2">
+          <div class="testa-passo"><span class="numero">2</span><h3>Dove sei</h3></div>
           <div class="posizione" id="posizione-riga">
             <span class="punto" id="punto-gps"></span>
             <span class="stato" id="stato-gps"><b>Posizione non richiesta</b>Serve a riconoscere il bagno e a metterlo sulla mappa.</span>
@@ -639,16 +653,6 @@ body.ingresso{overflow:hidden}
             </div>
           </div>
           <div class="vicini" id="vicini" hidden></div>
-        </li>
-
-        <li class="passo" data-passo="2">
-          <div class="testa-passo"><span class="numero">2</span><h3>Che posto è</h3></div>
-          <p class="nota" style="margin-bottom:12px">Scrivi che posto è, con parole tue: bar, barbiere, metro, tribunale, sagra… Al gruppo ci penso io.</p>
-          <div class="campo">
-            <input type="text" id="cerca-categoria" name="tipo-posto" maxlength="40" placeholder="es. barbiere, autogrill, ospedale" autocomplete="off" data-lpignore="true" data-form-type="other" aria-label="Che posto è">
-          </div>
-          <div class="scelte-categoria" id="scelte-categoria" role="group" aria-label="Tipo di posto" hidden></div>
-          <div class="categoria-scelta" id="categoria-scelta" hidden></div>
         </li>
 
         <li class="passo" data-passo="3">
@@ -765,6 +769,7 @@ body.ingresso{overflow:hidden}
       <div class="statistiche" id="statistiche"></div>
       <div class="guscio-mappa mappa-profilo" id="guscio-profilo" hidden>
         <div id="mappa-profilo"></div>
+        <div class="anteprima-posto" id="anteprima-profilo" hidden></div>
       </div>
       <h3 style="font-size:16px;margin:6px 2px 10px;color:var(--cioccolato)">Distintivi</h3>
       <div class="distintivi" id="distintivi"></div>
@@ -900,12 +905,13 @@ body.ingresso{overflow:hidden}
             <li>Ogni cagata ha un <b>prestigio</b> da 1 a 100, calcolato solo dalle etichette che dichiari (Promiscuo, Musica, Rumore, Bidet e Silenzio raccontano e basta, non pesano) e da quanto è raro il tipo di posto fra le vostre recensioni: <b>difficoltà</b> (il bagno era ostile), <b>audacia</b> (faccia tosta), <b>rarità</b> (che cala se in quel bagno ci sono già stati in tanti) e le <b>combinazioni</b> che si aggravano a vicenda. Gli amici possono ritoccarlo con 😄 e 😠. Quattro ranghi: <b>💩 Ordinaria</b>, <b>⭐ Rispettabile</b> da 45, <b>🎖️ Faccia tosta</b> da 68, <b>👑 Leggenda</b> da 85. Lo vedi solo dopo aver pubblicato: si recensiscono i bagni, non i punti.</li>
             <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
             <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
-            <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>.</li>
+            <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>, e solo se il nome è cambiato davvero.</li>
             <li>Un bagno che non esiste più — locale chiuso, sagra finita, tratta soppressa — si segnala dal suo pin sulla mappa con <b>🚫 Questo bagno non c'è più</b>: le recensioni restano ma diventano grigie e il pin si spegne. Per riaccenderlo non basta un tocco: serve che qualcuno ci vada e <b>scriva una recensione nuova</b>, non a posteriori.</li>
             <li>Su una recensione di un altro c'è <b>Dico la mia</b>: apre il modulo già agganciato a quel bagno, senza bisogno del GPS. Voti e racconto restano tuoi.</li>
             <li>Se un bagno non esiste più — i chimici di una sagra, un cantiere finito — apri il suo pin sulla mappa e tocca <b>Questo bagno non c'è più</b>. Le recensioni non si cancellano: restano in grigio con l'etichetta 🚫 e il pin spento. Chiunque può riaccenderlo con <b>È tornato</b>.</li>
             <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
             <li>Nome e faccia si cambiano da "Io" → Modifica: lo storico ti segue.</li>
+            <li>In bacheca tocca la <b>faccia</b> o il <b>nome</b> di chi ha scritto per aprire il suo profilo: numeri, mappa e distintivi. Anche lì i pin si toccano per l'anteprima del posto.</li>
           </ol>
         </div>
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Chi l'ha fatta</h3>
@@ -981,7 +987,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.1.1';
+const VERSIONE = '1.1.2';
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -2201,9 +2207,15 @@ async function forseRiattiva(gruppo, recensione){
 
 /* Un locale che cambia insegna resta lo stesso bagno: si tiene il nome vecchio
    e lo si mostra sotto, così chi torna dopo mesi lo riconosce. */
+function stessoNome(a,b){
+  const n=t=>String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+  return n(a)===n(b);
+}
 function nomePrima(gruppo){
   const st=S.stati.get(gruppo);
-  return (st && st.nomePrima) || null;
+  const vecchio=(st && st.nomePrima) || null;
+  /* se combacia con il nome di adesso non è storia: non si mostra */
+  return (vecchio && !stessoNome(vecchio, nomeCanonico(gruppo))) ? vecchio : null;
 }
 function postoAssente(gruppo){
   const st = S.stati.get(gruppo);
@@ -2999,8 +3011,8 @@ document.addEventListener('click', e=>{
 /* i passi si spuntano man mano che li completi */
 function segnaPassi(){
   const fatto={
-    1: !!$('#luogo').value.trim(),
-    2: !!S.bozza.categoria,
+    1: !!S.bozza.categoria,
+    2: !!$('#luogo').value.trim(),
     3: Object.values(S.bozza.voti||{}).filter(v=>v>0).length>=2,
     4: (S.bozza.tag||[]).length>0,
     5: !!($('#testo-rec').value.trim() || $('#titolo-rec').value.trim() || S.bozza.foto || S.bozza.fotoUrl)
@@ -3436,7 +3448,9 @@ $('#salva').addEventListener('click', async ()=>{
         const vecchio = nomeCanonico(idLuogo);
         S.recensioni.forEach(x=>{ if(x.luogoId===idLuogo) x.luogo=nomePosto; });
         try{ await DB.rinominaLuogo(idLuogo, nomePosto); }catch(e){ console.warn(e); }
-        try{ await DB.segnaNomePrima(idLuogo, vecchio); }catch(e){ console.warn(e); }
+        if(!stessoNome(vecchio, nomePosto)){
+          try{ await DB.segnaNomePrima(idLuogo, vecchio); }catch(e){ console.warn(e); }
+        }
       }
       scartaBozza();
       toast(rinomina ? 'Posto rinominato per tutti' : 'Recensione aggiornata');
@@ -3762,9 +3776,9 @@ function scheda(r){
   const contestata = giu.length>=SOGLIA_DUBBI;
   return `<article class="scheda${postoAssente(gruppoLuogo(r))?' assente':''}${contestata?' contestata':''}" data-rec="${r.id}">
     <header class="targa">
-      <span class="avatar" aria-hidden="true">${r.faccia||'💩'}</span>
+      <button class="avatar avatar-btn" data-chiave="${esc(chiaveDi(r))}" title="Apri il profilo di ${esc(r.nome)}" aria-label="Apri il profilo di ${esc(r.nome)}">${r.faccia||'💩'}</button>
       <div style="min-width:0">
-        <div class="chi tronca">${esc(r.nome)}</div>
+        <button class="chi tronca chi-btn" data-chiave="${esc(chiaveDi(r))}">${esc(r.nome)}</button>
         <div class="dove tronca"><span class="et-testato">Testato</span> ${quando(r.ts)}${r.citta?' · '+esc(r.citta):''}</div>
         <div class="dove tronca piccola"><span class="et-testato">Pubblicata</span> ${dataBreve(r.creatoTs||r.ts)}</div>
       </div>
@@ -3954,8 +3968,8 @@ function bagniDelPosto(p){
 /* Anteprima del posto: una scheda dell'app che sale dal basso della mappa.
    Il fumetto di Leaflet dipendeva dal suo foglio di stile e su qualche
    telefono non compariva affatto; questa è roba nostra e si vede sempre. */
-let postoInAnteprima=null;
-function mostraAnteprimaPosto(gruppo){
+let postoInAnteprima=null, anteprimaIn=null;
+function mostraAnteprimaPosto(gruppo, dove){
   const rec=S.recensioni.filter(r=>gruppoLuogo(r)===gruppo).sort((a,b)=>b.ts-a.ts);
   if(!rec.length) return;
   postoInAnteprima=gruppo;
@@ -3968,7 +3982,12 @@ function mostraAnteprimaPosto(gruppo){
   /* chi ha spento il posto può disdirsi subito: un errore non deve costare
      l'attesa che qualcuno vada a cagare lì */
   const mioErrore = assente && S.io && (stato.daId===S.io.id || gestore);
-  const box=$('#anteprima-posto');
+  /* due mappe, due riquadri: quello che non serve si svuota, così gli id
+     dei bottoni restano unici nella pagina */
+  const box = $(dove==='profilo' ? '#anteprima-profilo' : '#anteprima-posto');
+  const altro = $(dove==='profilo' ? '#anteprima-posto' : '#anteprima-profilo');
+  if(altro){ altro.innerHTML=''; altro.hidden=true; }
+  anteprimaIn = dove==='profilo' ? 'profilo' : 'mappa';
   box.innerHTML = `
     <div class="ap-riga">
       <div class="ap-nome">
@@ -3992,7 +4011,10 @@ function mostraAnteprimaPosto(gruppo){
     </div>`;
   box.hidden=false;
 }
-function chiudiAnteprimaPosto(){ $('#anteprima-posto').hidden=true; postoInAnteprima=null; }
+function chiudiAnteprimaPosto(){
+  ['#anteprima-posto','#anteprima-profilo'].forEach(sel=>{ const b=$(sel); if(b){ b.innerHTML=''; b.hidden=true; } });
+  postoInAnteprima=null; anteprimaIn=null;
+}
 document.addEventListener('click', async e=>{
   if(e.target.closest('#ap-annulla')){
     const g=postoInAnteprima; if(!g || !S.io) return;
@@ -4001,7 +4023,7 @@ document.addEventListener('click', async e=>{
     try{
       await DB.segnaStato(g, true, S.io.nome);
       S.stati.set(g, {...st, luogoId:g, presente:true, daNome:S.io.nome, daId:S.io.id, ts:Date.now()});
-      mostraAnteprimaPosto(g); disegnaMappa(true); ridisegna();
+      mostraAnteprimaPosto(g, anteprimaIn); if(anteprimaIn==='profilo') disegnaMappaProfilo(S.profilo||(S.io?S.io.id:'')); else disegnaMappa(true); ridisegna();
       toast('Riacceso: era un errore');
     }catch(err){ console.warn(err); toast('Non ha funzionato, riprova'); }
     return;
@@ -4018,7 +4040,7 @@ document.addEventListener('click', async e=>{
     try{
       await DB.segnaStato(g, assente, S.io.nome);
       S.stati.set(g, {luogoId:g, presente:assente, daNome:S.io.nome, daId:S.io.id, ts:Date.now()});
-      mostraAnteprimaPosto(g); disegnaMappa(true); ridisegna();
+      mostraAnteprimaPosto(g, anteprimaIn); if(anteprimaIn==='profilo') disegnaMappaProfilo(S.profilo||(S.io?S.io.id:'')); else disegnaMappa(true); ridisegna();
       toast(assente?'Riacceso':'Segnato come non più esistente');
     }catch(err){
       console.warn(err);
@@ -4256,9 +4278,12 @@ function disegnaClassifica(){
     <span class="num">${b.medio.toFixed(1)}<span> /5</span></span></button>`).join('')
     : `<div class="vuoto"><p>Ancora nessun bagno con un nome.</p></div>`;
 }
-['#podio','#tabellone'].forEach(sel=>document.querySelector(sel).addEventListener('click', e=>{
-  const b=e.target.closest('[data-chiave]'); if(b) apriProfiloDi(b.dataset.chiave);
-}));
+['#podio','#tabellone','#lista-bacheca'].forEach(sel=>{
+  const el=document.querySelector(sel); if(!el) return;
+  el.addEventListener('click', e=>{
+    const b=e.target.closest('[data-chiave]'); if(b) apriProfiloDi(b.dataset.chiave);
+  });
+});
 $('#migliori-bagni').addEventListener('click', e=>{
   const b=e.target.closest('[data-luogo]'); if(b) apriBagno(b.dataset.luogo);
 });
@@ -4348,7 +4373,7 @@ function disegnaMappaProfilo(chiave){
         icon:L.divIcon({className:'perno'+(p.tratta?' tratta':'')+(p.evento?' evento':'')+(p.vero?'':' stimato'),
           html:`<div class="bolla"><span>${p.r.faccia||'💩'}</span></div>`, iconSize:[38,38], iconAnchor:[19,36]}),
         title:nomeCanonico(p.gruppo)})
-        .on('click', ()=>apriBagno(p.gruppo))
+        .on('click', ()=>mostraAnteprimaPosto(p.gruppo, 'profilo'))
         .addTo(stratoProfilo);
     });
     mappaProfilo.invalidateSize({animate:false});
@@ -5014,7 +5039,7 @@ document.addEventListener('click', async e=>{
     } else if(ok){
       S.recensioni.forEach(r=>{ if(r.luogoId===p.luogoId) r.luogo=p.nomeProposto; });
       await DB.rinominaLuogo(p.luogoId, p.nomeProposto);
-      try{ await DB.segnaNomePrima(p.luogoId, p.nomeAttuale); }catch(e){}
+      if(!stessoNome(p.nomeAttuale, p.nomeProposto)){ try{ await DB.segnaNomePrima(p.luogoId, p.nomeAttuale); }catch(e){} }
       p.stato='ok'; await DB.rispondi(p.id,'ok');
       toast('Rinominato per tutti: adesso è '+p.nomeProposto);
     } else {
