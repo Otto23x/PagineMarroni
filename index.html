@@ -56,21 +56,26 @@ h1,h2,h3{font-family:var(--font-display);font-weight:800;letter-spacing:-.02em;m
 p{margin:0}
 img,canvas,svg{max-width:100%}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.zona-foto-guscio{position:relative;display:block}
+.zona-foto-guscio[hidden]{display:none}
+.zona-foto-guscio input[type=file]{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
+.zona-foto-guscio input[type=file]::-webkit-file-upload-button{width:100%;height:100%;cursor:pointer}
 .tronca{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .tronca2{display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 
 /* ---------- guscio ---------- */
-.app{min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
+.app{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
 .intestazione{
   position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:12px;
   padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
-  background:rgba(233,240,236,.82);backdrop-filter:blur(14px) saturate(1.3);
+  background:rgba(233,240,236,.82);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);
   border-bottom:1px solid rgba(78,50,32,.08);
 }
 .marchio{display:flex;align-items:baseline;gap:7px;min-width:0;font-family:var(--font-display);font-weight:800;font-size:clamp(17px,4.6vw,22px);white-space:nowrap;letter-spacing:-.03em;color:var(--cioccolato)}
 .chip-utente{margin-left:auto;flex:none;max-width:46%;display:flex;align-items:center;gap:8px;background:var(--porcellana);border:var(--bordo);border-radius:999px;padding:5px 12px 5px 5px;box-shadow:var(--ombra);min-height:40px;max-width:52%}
 .avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:17px;background:var(--fuga);flex:none}
-.chip-utente{cursor:default}
+.chip-utente{cursor:pointer;font:inherit;color:inherit}
+.chip-utente:active{transform:scale(.97)}
 .chip-utente b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:16px 16px calc(150px + var(--safe-b));overflow-x:hidden;min-width:0}
 .vista{display:none;max-width:100%;animation:entra .26s cubic-bezier(.22,1,.36,1)}
@@ -84,7 +89,7 @@ main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:16px 16px calc(150
 .titolo-sezione p{font-size:13px;color:var(--tenue);margin-top:3px}
 
 /* ---------- tab ---------- */
-.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding:8px 8px calc(8px + var(--safe-b));background:rgba(255,255,255,.9);backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(78,50,32,.10)}
+.tabbar{position:fixed;left:0;right:0;bottom:0;z-index:60;display:grid;grid-template-columns:repeat(5,1fr);align-items:end;padding:8px 8px calc(8px + var(--safe-b));background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);border-top:1px solid rgba(78,50,32,.10)}
 .tab{display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px;border-radius:14px;min-height:var(--tap);font-size:11px;font-weight:600;color:var(--tenue);transition:color .15s,background .15s}
 .tab .ico{font-size:19px;line-height:1;filter:grayscale(.55);transition:filter .15s,transform .2s}
 .tab[aria-selected="true"]{color:var(--cioccolato);background:rgba(15,163,163,.10)}
@@ -105,7 +110,7 @@ main{flex:1;width:100%;max-width:1080px;margin:0 auto;padding:16px 16px calc(150
 .btn.largo{width:100%}
 
 /* ---------- login ---------- */
-.velo{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:rgba(233,240,236,.96);backdrop-filter:blur(8px);overflow-y:auto}
+.velo{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:rgba(233,240,236,.96);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow-y:auto}
 .velo[hidden]{display:none}
 body.ingresso .app{visibility:hidden;pointer-events:none}
 body.ingresso{overflow:hidden}
@@ -140,7 +145,7 @@ body.ingresso{overflow:hidden}
 .nota{font-size:12px;color:var(--tenue);line-height:1.45}
 
 /* ---------- mappa ---------- */
-.guscio-mappa{position:relative;isolation:isolate;z-index:0;width:100%;max-width:100%;height:clamp(320px,56dvh,560px);border-radius:var(--r-l);overflow:hidden;border:var(--bordo);box-shadow:var(--ombra)}
+.guscio-mappa{position:relative;isolation:isolate;z-index:0;width:100%;max-width:100%;height:clamp(320px,56vh,560px);height:clamp(320px,56dvh,560px);border-radius:var(--r-l);overflow:hidden;border:var(--bordo);box-shadow:var(--ombra)}
 #mappa{position:absolute;inset:0;background:#DCE7E2}
 .guscio-mappa .leaflet-marker-pane{z-index:600}
 .guscio-mappa .leaflet-tile-pane{z-index:200}
@@ -313,7 +318,10 @@ body.ingresso{overflow:hidden}
 .tag-lista{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
 .tag-lista button{min-height:52px;padding:4px 3px;border-radius:var(--r-m);border:1.5px solid var(--fuga);background:#FBFDFC;font-size:11px;font-weight:600;line-height:1.1;text-align:center;white-space:normal;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .tag-lista button .em{font-size:15px;line-height:1}
-.scelte-categoria{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.tag-lista button.ovvia{border-style:dashed;color:var(--tenue)}
+.tag-lista button.ovvia[aria-pressed="true"]{background:rgba(78,50,32,.09);border-color:rgba(78,50,32,.25);color:var(--tenue)}
+.etichetta.ovvia{background:rgba(78,50,32,.08);color:var(--tenue);font-weight:600}
+.scelte-categoria{display:flex;flex-direction:column;gap:6px;margin-top:8px;max-height:min(46vh,340px);max-height:min(46dvh,340px);overflow:auto;-webkit-overflow-scrolling:touch}
 .scelte-categoria[hidden]{display:none}
 .scelte-categoria .scelta{flex-direction:row;justify-content:flex-start;gap:10px;text-align:left;padding:8px 10px;min-height:46px}
 .scelte-categoria .scelta .em{font-size:19px}
@@ -371,7 +379,7 @@ body.ingresso{overflow:hidden}
 /* ---------- profilo: griglie uniformi ---------- */
 .filtri-profilo{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:12px}
 .filtri-profilo .menu{font-size:12px;padding:0 8px}
-.mappa-profilo{height:clamp(220px,38dvh,360px);margin-bottom:14px}
+.mappa-profilo{height:clamp(220px,38vh,360px);height:clamp(220px,38dvh,360px);margin-bottom:14px}
 #mappa-profilo{position:absolute;inset:0;background:#DCE7E2}
 .statistiche{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:18px}
 @media (min-width:620px){.statistiche{grid-template-columns:repeat(6,minmax(0,1fr))}}
@@ -427,7 +435,7 @@ body.ingresso{overflow:hidden}
 /* ---------- foto ingrandita ---------- */
 .lightbox{position:fixed;inset:0;z-index:9998;background:rgba(30,20,12,.94);display:grid;place-items:center;padding:16px}
 .lightbox[hidden]{display:none}
-.lightbox img{max-width:100%;max-height:82dvh;border-radius:var(--r-m);display:block}
+.lightbox img{max-width:100%;max-height:82vh;max-height:82dvh;border-radius:var(--r-m);display:block}
 .lightbox .chiudi{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;background:rgba(255,255,255,.18);color:#fff;width:44px;height:44px;border-radius:50%;font-size:22px;display:grid;place-items:center}
 .lightbox .did{position:absolute;bottom:calc(20px + var(--safe-b));left:16px;right:16px;text-align:center;color:#fff;font-size:13px;opacity:.85}
 
@@ -510,7 +518,7 @@ body.ingresso{overflow:hidden}
 .cerca-sel{display:flex;gap:8px;padding:12px 16px}
 .cerca-sel input{flex:1;min-width:0;min-height:48px;padding:0 16px;border-radius:999px;border:1.5px solid var(--fuga);background:var(--porcellana);-webkit-appearance:none;appearance:none}
 .cerca-sel input:focus{outline:none;border-color:var(--acqua)}
-.esiti-sel{max-height:34dvh;overflow-y:auto;margin:0 16px 8px;background:var(--porcellana);border:var(--bordo);border-radius:var(--r-m);box-shadow:var(--ombra)}
+.esiti-sel{max-height:34vh;max-height:34dvh;overflow-y:auto;margin:0 16px 8px;background:var(--porcellana);border:var(--bordo);border-radius:var(--r-m);box-shadow:var(--ombra)}
 .esiti-sel[hidden]{display:none}
 .esiti-sel button{display:block;width:100%;text-align:left;padding:12px 14px;border-bottom:1px solid var(--fuga);font-size:13.5px;line-height:1.4}
 .esiti-sel button:last-child{border-bottom:none}
@@ -520,7 +528,7 @@ body.ingresso{overflow:hidden}
 .mappa-sel .leaflet-tile-pane{z-index:200}
 .piede-sel{display:flex;align-items:center;gap:12px;padding:12px 16px calc(14px + var(--safe-b))}
 .piede-sel span{flex:1;min-width:0;font-size:12.5px;color:var(--tenue);line-height:1.35}
-.finestra{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:22px;background:rgba(42,28,18,.55);backdrop-filter:blur(5px);animation:sfuma .18s ease-out}
+.finestra{position:fixed;inset:0;z-index:10050;display:grid;place-items:center;padding:22px;background:rgba(42,28,18,.55);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);animation:sfuma .18s ease-out}
 .finestra[hidden]{display:none}
 @keyframes sfuma{from{opacity:0}to{opacity:1}}
 .riquadro{max-width:380px;width:100%;padding:24px 22px;animation:spunta .24s cubic-bezier(.22,1,.36,1)}
@@ -536,13 +544,13 @@ body.ingresso{overflow:hidden}
 .menu .freccia{flex:none;opacity:.45;font-size:11px}
 .menu.attivo{border-color:var(--acqua);color:var(--acqua-scuro);background:rgba(15,163,163,.08)}
 .barra-comandi .menu{font-size:13.5px}
-.lista-scelte{max-height:52dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
+.lista-scelte{max-height:52vh;max-height:52dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
 .lista-scelte button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:14px 15px;
   border-bottom:1px solid var(--fuga);font-size:14px;color:var(--cioccolato)}
 .lista-scelte button:last-child{border-bottom:none}
 .lista-scelte button[aria-selected="true"]{background:rgba(15,163,163,.10);font-weight:700;color:var(--acqua-scuro)}
 .lista-scelte .segno{flex:none;width:18px;text-align:center;color:var(--acqua);font-weight:800}
-.lista-profili{max-height:44dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
+.lista-profili{max-height:44vh;max-height:44dvh;overflow-y:auto;margin-top:14px;border:var(--bordo);border-radius:var(--r-m)}
 .lista-profili button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px 14px;border-bottom:1px solid var(--fuga)}
 .lista-profili button:last-child{border-bottom:none}
 .lista-profili .info{min-width:0}
@@ -567,10 +575,10 @@ body.ingresso{overflow:hidden}
 <div class="app">
   <header class="intestazione">
     <div class="marchio"><span aria-hidden="true">💩</span>Pagine Marroni</div>
-    <div class="chip-utente" id="chip-utente">
+    <button class="chip-utente" id="chip-utente" title="Vai al tuo profilo" aria-label="Vai al tuo profilo">
       <span class="avatar" id="avatar-mio" aria-hidden="true">💩</span>
       <b id="nome-mio">ospite</b>
-    </div>
+    </button>
     <button class="btn-info" id="apri-info" aria-label="Cos'è Pagine Marroni e come funziona" title="Cos'è e come funziona">i</button>
   </header>
 
@@ -664,6 +672,7 @@ body.ingresso{overflow:hidden}
           <div class="testa-passo"><span class="numero">4</span><h3>Cos'è successo <span class="facolt">facoltativo</span></h3></div>
           <p class="nota" style="margin-bottom:12px">Segna com'era il bagno e cos'è andato storto, anche più di una cosa. Se è filato tutto liscio non toccare niente. Da qui nasce il <b>prestigio</b> della cagata: lo vedi dopo aver pubblicato.</p>
           <div class="tag-lista" id="lista-tag" role="group" aria-label="Cos'è successo"></div>
+          <p class="nota" id="nota-ovvie" style="margin-top:10px" hidden></p>
         </li>
 
         <li class="passo" data-passo="5">
@@ -677,11 +686,17 @@ body.ingresso{overflow:hidden}
             <textarea id="testo-rec" name="racconto-cagata" maxlength="600" autocomplete="off" data-lpignore="true" data-form-type="other" placeholder="Carta a posto? Serratura funzionante? Code? Rumori molesti?"></textarea>
             <div class="contatore" id="contatore">0 / 600</div>
           </div>
-          <input type="file" id="file-foto" accept="image/*" capture="environment" class="sr">
-          <button class="zona-foto" id="zona-foto">
-            <span class="em" aria-hidden="true">📸</span>
-            <span>Fotografa il bagno<br><small>Niente contenuti espliciti.</small></span>
-          </button>
+          <!-- Il campo file sta SOPRA il pulsante, trasparente: il dito tocca
+               direttamente il campo vero. Niente click finto, che su Safari e
+               Opera a volte non parte. Niente "capture": così offrono anche la
+               galleria, non solo la fotocamera. -->
+          <div class="zona-foto-guscio" id="zona-foto">
+            <button type="button" class="zona-foto" id="zona-foto-btn">
+              <span class="em" aria-hidden="true">📸</span>
+              <span>Metti una foto del bagno<br><small>Scattala o prendila dalla galleria. Niente contenuti espliciti.</small></span>
+            </button>
+            <input type="file" id="file-foto" accept="image/*" aria-label="Scegli o scatta una foto del bagno">
+          </div>
           <div class="anteprima" id="anteprima" hidden>
             <img id="img-anteprima" alt="Anteprima della foto scelta">
             <button id="togli-foto">Togli</button>
@@ -901,8 +916,10 @@ body.ingresso{overflow:hidden}
             <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete. Se la compagnia non c'è, proponila: la recensione parte subito con un nome generico ("Compagnia di navigazione") e, quando il gestore approva, prende il nome giusto; da lì la compagnia è nell'elenco per tutti.</li>
             <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
             <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
-            <li>Il tipo di posto si scrive con parole tue — barbiere, metro, tribunale — e l'app lo mette in uno dei 22 gruppi. <b>Trasporto</b> è il mezzo in movimento; <b>Stazione, porto e aeroporto</b> è l'edificio dove aspetti, metro e fermate comprese. Le <b>abitazioni private</b> non si recensiscono: gli indirizzi di casa non stanno in un elenco pubblico.</li>
-            <li>Ogni cagata ha un <b>prestigio</b> da 1 a 100, calcolato solo dalle etichette che dichiari (Promiscuo, Musica, Rumore, Bidet e Silenzio raccontano e basta, non pesano) e da quanto è raro il tipo di posto fra le vostre recensioni: <b>difficoltà</b> (il bagno era ostile), <b>audacia</b> (faccia tosta), <b>rarità</b> (che cala se in quel bagno ci sono già stati in tanti) e le <b>combinazioni</b> che si aggravano a vicenda. Gli amici possono ritoccarlo con 😄 e 😠. Quattro ranghi: <b>💩 Ordinaria</b>, <b>⭐ Rispettabile</b> da 45, <b>🎖️ Faccia tosta</b> da 68, <b>👑 Leggenda</b> da 85. Lo vedi solo dopo aver pubblicato: si recensiscono i bagni, non i punti.</li>
+            <li>Il tipo di posto è il <b>passo 1</b>: tocca il campo e si apre l'elenco dei 22 gruppi, oppure scrivi con parole tue — barbiere, metro, tribunale — e l'elenco si restringe. <b>Trasporto</b> è il mezzo in movimento; <b>Stazione, porto e aeroporto</b> è l'edificio dove aspetti, metro e fermate comprese. Le <b>abitazioni private</b> non si recensiscono: gli indirizzi di casa non stanno in un elenco pubblico.</li>
+            <li>Ogni cagata ha un <b>prestigio</b> da 1 a 100: <b>difficoltà</b> (il bagno era ostile), <b>audacia</b> (faccia tosta), <b>rarità</b> (che cala se in quel bagno ci sono già stati in tanti) e le <b>combinazioni</b> che si aggravano a vicenda. Gli amici lo ritoccano con 😄 e 😠. Quattro ranghi: <b>💩 Ordinaria</b>, <b>⭐ Rispettabile</b> da 45, <b>🎖️ Faccia tosta</b> da 68, <b>👑 Leggenda</b> da 85. Lo vedi solo dopo aver pubblicato: si recensiscono i bagni, non i punti.</li>
+            <li>Le etichette dipendono dal posto. Quelle che lì <b>non esistono</b> non compaiono: in mezzo a un prato non c'è lo scopettino. Quelle che lì sono <b>la norma</b> nascono accese e <b>grigie</b>: raccontano com'era, ma non danno prestigio, perché all'aperto la porta non c'è per tutti e non è un'impresa. Se non è vero, spegnile; e se qualcosa manca davvero contro ogni previsione, riaccendila. Lo stesso vale fra etichette: chi dichiara <b>Bagno chimico</b> ha già detto che acqua e sapone non ci sono. Quello che invece non è mai scontato — <b>Spettatori</b>, <b>A vista</b>, <b>Strisciata trovata</b> — vale sempre pieno. Di notte, all'aperto, <b>Senza luce</b> torna a pesare: al buio è un'altra cosa.</li>
+            <li>Promiscuo, Musica, Rumore, Bidet e Silenzio raccontano e basta: non danno mai punti, quindi nessuno ha motivo di segnarle a caso.</li>
             <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
             <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
             <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>, e solo se il nome è cambiato davvero.</li>
@@ -911,7 +928,8 @@ body.ingresso{overflow:hidden}
             <li>Se un bagno non esiste più — i chimici di una sagra, un cantiere finito — apri il suo pin sulla mappa e tocca <b>Questo bagno non c'è più</b>. Le recensioni non si cancellano: restano in grigio con l'etichetta 🚫 e il pin spento. Chiunque può riaccenderlo con <b>È tornato</b>.</li>
             <li>Entri con email e password: cambiando telefono ritrovi tutto, e se scordi la password te la rimandi da sola.</li>
             <li>Nome e faccia si cambiano da "Io" → Modifica: lo storico ti segue.</li>
-            <li>In bacheca tocca la <b>faccia</b> o il <b>nome</b> di chi ha scritto per aprire il suo profilo: numeri, mappa e distintivi. Anche lì i pin si toccano per l'anteprima del posto.</li>
+            <li>In bacheca tocca la <b>faccia</b> o il <b>nome</b> di chi ha scritto per aprire il suo profilo: numeri, mappa e distintivi. Anche lì i pin si toccano per l'anteprima del posto. Il tuo nome in alto a destra porta al tuo.</li>
+            <li>Nel profilo il prestigio è la tua <b>cagata migliore</b>, non la media: chi ne registra tante non viene punito, e la corona resta raggiungibile.</li>
           </ol>
         </div>
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Chi l'ha fatta</h3>
@@ -987,7 +1005,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.1.2';
+const VERSIONE = '1.2.2';
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -1753,6 +1771,72 @@ function normalizzaTag(lista){
   return out;
 }
 
+/* ============ IL CONTESTO ============
+   Ogni tipo di posto ha le sue ovvietà. In mezzo a un prato non c'è la porta,
+   e non è un'impresa: è la norma. In un bagno chimico l'acqua corrente non
+   c'è per definizione.
+   · ovvie   → si accendono da sole, restano grigie, si possono spegnere.
+               Raccontano com'era il bagno ma NON danno punti: sarebbe
+               prestigio regalato dal posto, non guadagnato.
+   · escluse → lì non esistono proprio (lo scopettino di un prato) e non
+               compaiono nemmeno nella griglia.
+   Tutto il resto vale i suoi punti pieni, anche in un prato: gli spettatori
+   e la strisciata trovata non sono mai scontati. */
+const CONTESTO = {
+  lavoro:      {ovvie:[],                              escluse:['pagamento','bidet','musica','tempo']},
+  ristoro:     {ovvie:[],                              escluse:['tempo']},
+  vacanza:     {ovvie:[],                              escluse:['pagamento','consumo','tempo']},
+  negozi:      {ovvie:[],                              escluse:['bidet','tempo']},
+  locali:      {ovvie:['musica','rumore','promiscuo'], escluse:['bidet','silenzio','tempo']},
+  spettacolo:  {ovvie:[],                              escluse:['bidet','chiave','tempo']},
+  pubblico:    {ovvie:[],                              escluse:['bidet','musica','consumo','chiave']},
+  sanita:      {ovvie:[],                              escluse:['chiave','imbucato','consumo','musica','tempo']},
+  istruzione:  {ovvie:[],                              escluse:['chiave','consumo','bidet','musica','tempo']},
+  sport:       {ovvie:['promiscuo'],                   escluse:['bidet','consumo','tempo']},
+  stadio:      {ovvie:['rumore','promiscuo'],          escluse:['bidet','silenzio','chiave','tempo']},
+  sosta:       {ovvie:[],                              escluse:['bidet','musica']},
+  scalo:       {ovvie:['rumore','promiscuo'],          escluse:['bidet','chiave','consumo']},
+  trasporti:   {ovvie:['promiscuo','rumore'],          escluse:['chiave','imbucato','pagamento','consumo','bidet','scopettino','attesa','musica','tempo']},
+  fiera:       {ovvie:['promiscuo'],                   escluse:['bidet','chiave','tempo']},
+  chiesa:      {ovvie:['silenzio','promiscuo'],        escluse:['musica','bidet','consumo','pagamento','tempo']},
+  balneare:    {ovvie:[],                              escluse:['bidet','tempo']},
+  pubblici:    {ovvie:['promiscuo'],                   escluse:['chiave','imbucato','consumo','musica','bidet']},
+  divertimento:{ovvie:['rumore','promiscuo'],          escluse:['bidet','chiave','silenzio','tempo']},
+  evento:      {ovvie:['promiscuo'],                   escluse:['chiave','bidet','ventola','tempo']},
+  /* il prato: quasi tutto quello che manca è la norma, e mezze etichette
+     non hanno proprio senso */
+  aperto:      {ovvie:['carta','sapone','acqua','sciacquone','serratura','porta','vista','luce'],
+                escluse:['attesa','bussata','chiave','imbucato','riservata','fuori','pagamento','consumo','turca','chimico','ventola','scopettino','musica','bidet','tempo','promiscuo','strisciata']},
+  altro:       {ovvie:[],                              escluse:[]}
+};
+/* Certe etichette ne implicano altre: chi dichiara un bagno chimico ha già
+   detto che acqua corrente non ce n'è. Le implicate diventano ovvie. */
+const IMPLICA = {
+  chimico:    ['acqua','sapone','sciacquone','ventola','scopettino','bidet'],
+  turca:      ['scopettino','bidet'],
+  porta:      ['serratura'],
+  fuori:      ['sciacquone','acqua']
+};
+function contestoDi(cat){ return CONTESTO[cat] || {ovvie:[], escluse:[]}; }
+function escluseDi(cat){ return new Set(contestoDi(cat).escluse); }
+/* Le ovvie di questa cagata: quelle del posto più quelle implicate dalle
+   etichette accese. Le une e le altre valgono zero punti. */
+function ovvieAttive(cat, ids){
+  const fuori=escluseDi(cat);
+  const set=new Set(contestoDi(cat).ovvie.filter(id=>!fuori.has(id)));
+  (ids||[]).forEach(id=>{ (IMPLICA[id]||[]).forEach(x=>{ if(!fuori.has(x) && x!==id) set.add(x); }); });
+  return set;
+}
+/* Di notte, all'aperto, il buio smette di essere la norma e torna a pesare:
+   farla al buio in un prato è un'altra cosa che farla di giorno. */
+const NOTTE_DA = 21, NOTTE_A = 6;
+function diNotte(ts){ const h=new Date(ts||Date.now()).getHours(); return h>=NOTTE_DA || h<NOTTE_A; }
+function luceCheConta(cat, ts){ return cat==='aperto' && diNotte(ts); }
+function etichetteVisibili(cat){
+  const fuori=escluseDi(cat);
+  return ETICHETTE.filter(e=>!fuori.has(e.id));
+}
+
 /* ============ IL PRESTIGIO ============
    Quanto vale la cagata, da 1 a 100. Quattro pilastri più il giudizio del gruppo:
    PRESTIGIO = tara(Difficoltà + Audacia + Rarità×Saturazione + Combinazioni) + Giudizio
@@ -1825,8 +1909,11 @@ function prestigioDi(r, elenco){
   elenco = elenco || S.recensioni;
   if(!r || !r.categoria) return null;
   const ids = new Set(normalizzaTag(r.tag).map(n=>(ETICHETTE.find(e=>e.nome===n)||{}).id).filter(Boolean));
+  /* quello che in quel posto è la norma racconta ma non paga */
+  const ovvie = ovvieAttive(r.categoria, [...ids]);
+  if(luceCheConta(r.categoria, r.ts)) ovvie.delete('luce');   /* di notte il buio torna a pesare */
   let diff=0, aud=0;
-  ETICHETTE.forEach(e=>{ if(!ids.has(e.id)) return; if(e.pilastro==='diff') diff+=e.punti; else if(e.pilastro==='aud') aud+=e.punti; });
+  ETICHETTE.forEach(e=>{ if(!ids.has(e.id) || ovvie.has(e.id)) return; if(e.pilastro==='diff') diff+=e.punti; else if(e.pilastro==='aud') aud+=e.punti; });
   diff=Math.min(TETTO.diff, Math.max(0,diff));
   aud=Math.min(TETTO.aud, Math.max(-8,aud));
 
@@ -1836,7 +1923,7 @@ function prestigioDi(r, elenco){
   rar=Math.min(TETTO.rar, rar);
   const rarScalata = Math.round(rar*scalaSaturazione(prima));
 
-  const combo=COMBO.filter(c=>c.ids.every(id=>ids.has(id))).sort((a,b)=>b.punti-a.punti).slice(0,3);
+  const combo=COMBO.filter(c=>c.ids.every(id=>ids.has(id) && !ovvie.has(id))).sort((a,b)=>b.punti-a.punti).slice(0,3);
   const cpt=Math.min(TETTO.combo, combo.reduce((s,c)=>s+c.punti,0));
 
   /* giudizio del gruppo, a rendimento calante: applaudire vale al massimo 6,
@@ -2094,7 +2181,7 @@ function recuperaBozza(){
   let d=null; try{ d=JSON.parse(localStorage.getItem(K_BOZZA)||'null'); }catch(e){}
   if(!d || !d.b) return;
   const b=d.b;
-  S.bozza = {...S.bozza, voti:b.voti||{}, tag:normalizzaTag(b.tag), categoria:b.categoria||null, tipo:b.tipo||null, idPrevisto:b.idPrevisto||null,
+  S.bozza = {...S.bozza, voti:b.voti||{}, tag:normalizzaTag(b.tag), tolteAMano:b.tolteAMano||[], categoria:b.categoria||null, tipo:b.tipo||null, idPrevisto:b.idPrevisto||null,
              luogoId:b.luogoId||null, pos:b.pos||null, citta:b.citta||null, paese:b.paese||null,
              fotoUrl:b.fotoUrl||null};
   $('#luogo').value = d.luogo||'';
@@ -2645,8 +2732,9 @@ function ridisegna(){
 /* ============ REGISTRA ============ */
 function nuovaBozza(){
   S.modificaId = null;
-  S.bozza = {voti:{}, tag:[], categoria:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null,
+  S.bozza = {voti:{}, tag:[], tolteAMano:[], categoria:null, tipo:null, foto:null, fotoUrl:null, pos:null, citta:null, paese:null,
              indirizzo:null, locale:null, mezzo:null, compagnia:null, da:null, a:null};
+  const cc=document.getElementById('cerca-categoria'); if(cc) cc.value='';
   $('#viaggio').hidden=true;
   /* i pulsanti della posizione si nascondono solo sul trasporto: una bozza
      nuova li deve sempre rimettere, altrimenti dopo un viaggio sparivano */
@@ -2809,6 +2897,53 @@ $('#compagnia').addEventListener('focus', ()=>
   $(campo).addEventListener('input', e=>
     mostraSuggerimenti($(box), cittaVicine(e.target.value), c=>{ $(campo).value=c.nome; componiTratta(); }));
 });
+/* La griglia delle etichette dipende dal posto: quelle che lì non esistono
+   spariscono, quelle che sono la norma nascono accese e grigie. */
+function disegnaEtichette(){
+  const zona=$('#lista-tag'); if(!zona) return;
+  const cat=S.bozza.categoria;
+  const ids=new Set((S.bozza.tag||[]).map(n=>(ETICHETTE.find(e=>e.nome===n)||{}).id).filter(Boolean));
+  const ovvie=ovvieAttive(cat, [...ids]);
+  if(luceCheConta(cat, quandoScelto())) ovvie.delete('luce');
+  zona.innerHTML = etichetteVisibili(cat).map(e=>{
+    const accesa=S.bozza.tag.includes(e.nome), ovvia=ovvie.has(e.id);
+    return `<button type="button" data-tag="${e.nome}" class="${ovvia?'ovvia':''}" aria-pressed="${accesa}"${ovvia?' title="Qui è la norma: lo racconta, ma non dà prestigio"':''}><span class="em">${e.em}</span>${e.nome}</button>`;
+  }).join('');
+  const nota=$('#nota-ovvie');
+  if(nota){
+    const grigie=[...ovvie].filter(id=>S.bozza.tag.includes((ETICHETTE.find(e=>e.id===id)||{}).nome));
+    nota.hidden = !grigie.length;
+    nota.textContent = grigie.length ? 'Le grigie qui sono la norma: restano nel racconto ma non danno prestigio. Se non è vero, spegnile.' : '';
+  }
+}
+/* Le ovvie del posto si accendono da sole, le impossibili si spengono.
+   Quello che l'utente ha scelto a mano non si tocca mai. */
+function adeguaEtichetteAlPosto(){
+  const cat=S.bozza.categoria;
+  const fuori=escluseDi(cat);
+  S.bozza.tolteAMano = S.bozza.tolteAMano || [];
+  S.bozza.tag = (S.bozza.tag||[]).filter(n=>{
+    const e=ETICHETTE.find(x=>x.nome===n);
+    return e ? !fuori.has(e.id) : true;
+  });
+  contestoDi(cat).ovvie.forEach(id=>{
+    if(fuori.has(id)) return;
+    const e=ETICHETTE.find(x=>x.id===id); if(!e) return;
+    if(S.bozza.tolteAMano.includes(e.nome)) return;   /* l'ha spenta lui: rispettiamo */
+    if(!S.bozza.tag.includes(e.nome)) S.bozza.tag.push(e.nome);
+  });
+  if(luceCheConta(cat, quandoScelto())){
+    const notte=ETICHETTE.find(x=>x.id==='luce');
+    if(notte && !S.bozza.tolteAMano.includes(notte.nome) && !S.bozza.tag.includes(notte.nome)) S.bozza.tag.push(notte.nome);
+  }
+  disegnaEtichette();
+}
+function quandoScelto(){
+  const v=$('#quando') && $('#quando').value;
+  const t=v ? new Date(v).getTime() : NaN;
+  return isNaN(t) ? Date.now() : t;
+}
+
 /* Compagnia che non c'è: la recensione non si ferma. Parte subito con un
    nome generico del mezzo, e la proposta viaggia verso il gestore portandosi
    dietro l'id della recensione. Quando il gestore approva, il nome vero
@@ -3083,7 +3218,7 @@ function costruisciModulo(){
     <div class="scala" role="group" aria-label="${p.nome}" data-p="${p.id}">
       ${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}" class="${(S.bozza.voti[p.id]||0)>=n?'acceso':''}" aria-label="${n} su 5">💩</button>`).join('')}
     </div></div>`).join('');
-  $('#lista-tag').innerHTML = ETICHETTE.map(e=>`<button type="button" data-tag="${e.nome}" aria-pressed="${S.bozza.tag.includes(e.nome)}"><span class="em">${e.em}</span>${e.nome}</button>`).join('');
+  disegnaEtichette();
   disegnaCategoria();
 }
 /* Parte da una recensione altrui e ne eredita SOLO il posto, il bagno e la
@@ -3195,25 +3330,39 @@ function disegnaCategoria(){
     return;
   }
   fatta.hidden=true; campo.hidden=false;
+  campo.setAttribute('aria-expanded', String(!!tendinaAperta || !!campo.value.trim()));
   const q=campo.value.trim();
-  const trovati=cercaCategoria(q);
-  esiti.hidden = !q;
-  if(!q){ esiti.innerHTML=''; return; }
+  /* senza niente scritto è una tendina: tutti i gruppi, in ordine.
+     Appena scrivi si restringe. */
+  const trovati = q ? cercaCategoria(q)
+                    : CATEGORIE.filter(g=>g.id!=='altro').map(g=>({voce:g.nome, gruppo:g, punteggio:0}));
+  esiti.hidden = !tendinaAperta && !q;
+  if(esiti.hidden){ esiti.innerHTML=''; return; }
   esiti.innerHTML = trovati.map(t=>
     `<button type="button" class="scelta" data-cat="${t.gruppo.id}" data-voce="${esc(t.voce)}"><span class="em">${t.gruppo.em}</span><span class="txt"><b>${esc(t.voce)}</b>${normCat(t.voce)!==normCat(t.gruppo.nome)?`<span>${esc(t.gruppo.nome)}</span>`:''}</span></button>`).join('')
-    + `<button type="button" class="scelta altro" data-cat="altro" data-voce="${esc(q)}"><span class="em">❓</span><span class="txt"><b>${trovati.length?'Nessuna di queste':'Non lo conosco'}</b><span>${trovati.length?'Metti “'+esc(q)+'” in Altro':'Metti “'+esc(q)+'” in Altro, senza rarità'}</span></span></button>`;
+    + `<button type="button" class="scelta altro" data-cat="altro" data-voce="${esc(q)}"><span class="em">❓</span><span class="txt"><b>${q?(trovati.length?'Nessuna di queste':'Non lo conosco'):'Altro'}</b><span>${q?'Metti “'+esc(q)+'” in Altro'+(trovati.length?'':', senza rarità'):'Un posto che non rientra in nessuno di questi'}</span></span></button>`;
 }
 function scegliCategoria(id, voce){
+  tendinaAperta=false;
   S.bozza.categoria = id || null;
   S.bozza.tipo = id ? (voce || null) : null;
   const campo=$('#cerca-categoria'); if(campo && !id) campo.value='';
   disegnaCategoria();
+  adeguaEtichetteAlPosto();
   aggiornaViaggio();
   aggiornaSuggerimentoEvento();
   aggiornaNomePosto();
   salvaBozza(); segnaPassi();
 }
-$('#cerca-categoria').addEventListener('input', disegnaCategoria);
+let tendinaAperta=false;
+$('#cerca-categoria').addEventListener('input', ()=>{ tendinaAperta=true; disegnaCategoria(); });
+$('#cerca-categoria').addEventListener('focus', ()=>{ tendinaAperta=true; disegnaCategoria(); });
+/* toccando fuori la tendina si richiude, ma non quando scegli una voce */
+document.addEventListener('click', e=>{
+  if(e.target.closest('#cerca-categoria') || e.target.closest('#scelte-categoria')) return;
+  if(!tendinaAperta) return;
+  tendinaAperta=false; disegnaCategoria();
+});
 $('#cerca-categoria').addEventListener('keydown', e=>{
   if(e.key!=='Enter') return;
   e.preventDefault();
@@ -3229,8 +3378,15 @@ document.addEventListener('click', e=>{
 $('#lista-tag').addEventListener('click', e=>{
   const b=e.target.closest('button'); if(!b) return;
   const t=b.dataset.tag, i=S.bozza.tag.indexOf(t);
-  if(i>=0) S.bozza.tag.splice(i,1);
-  else S.bozza.tag = S.bozza.tag.concat(t);
+  S.bozza.tolteAMano = S.bozza.tolteAMano || [];
+  if(i>=0){
+    S.bozza.tag.splice(i,1);
+    if(!S.bozza.tolteAMano.includes(t)) S.bozza.tolteAMano.push(t);
+  } else {
+    S.bozza.tag = S.bozza.tag.concat(t);
+    S.bozza.tolteAMano = S.bozza.tolteAMano.filter(x=>x!==t);
+  }
+  disegnaEtichette();
   $$('#lista-tag button').forEach(x=>x.setAttribute('aria-pressed', S.bozza.tag.includes(x.dataset.tag)));
   salvaBozza();
 });
@@ -3354,7 +3510,12 @@ async function nomeDelPosto(p){
   }catch(e){ return null; }
 }
 
-$('#zona-foto').addEventListener('click', ()=>$('#file-foto').click());
+/* Il dito tocca già il campo file: al pulsante serve solo per la tastiera.
+   Se per qualche motivo il campo non risponde, il click finto resta come rete. */
+$('#zona-foto-btn').addEventListener('click', e=>{
+  if(e.detail!==0) return;                 /* tocco vero: ci pensa il campo sopra */
+  const f=$('#file-foto'); if(f) f.click();
+});
 $('#togli-foto').addEventListener('click', ()=>{ S.bozza.foto=null; S.bozza.fotoUrl=null; S.bozza.tolta=true; $('#anteprima').hidden=true; $('#zona-foto').hidden=false; });
 $('#file-foto').addEventListener('change', async e=>{
   const f=e.target.files&&e.target.files[0]; if(!f) return;
@@ -3362,7 +3523,12 @@ $('#file-foto').addEventListener('change', async e=>{
     const d=await comprimi(f);
     S.bozza.foto=d; S.bozza.tolta=false;
     $('#img-anteprima').src=d; $('#anteprima').hidden=false; $('#zona-foto').hidden=true;
-  }catch(err){ toast('Questa immagine non si apre, provane un\'altra'); }
+  }catch(err){
+    console.warn(err);
+    const heic=/heic|heif/i.test(f.type||'') || /\.hei[cf]$/i.test(f.name||'');
+    toast(heic ? 'Questo formato (HEIC) non si apre qui: scattala di nuovo o salvala come JPEG'
+               : 'Questa immagine non si apre, provane un\'altra');
+  }
   e.target.value='';
 });
 function comprimi(file){
@@ -3805,7 +3971,11 @@ function scheda(r){
       <div class="etichette">
         ${r.inCoda?`<span class="etichetta neutra">⏳ In attesa di rete</span>`:''}
         ${r.categoria?`<span class="etichetta neutra">${emCategoria(r.categoria)} ${esc(nomeCategoria(r.categoria))}</span>`:''}
-        ${(r.tag||[]).map(t=>`<span class="etichetta">${esc(t)}</span>`).join('')}
+        ${(()=>{ const idsT=new Set((r.tag||[]).map(n=>(ETICHETTE.find(e=>e.nome===n)||{}).id).filter(Boolean));
+                 const ov=ovvieAttive(r.categoria, [...idsT]);
+                 if(luceCheConta(r.categoria, r.ts)) ov.delete('luce');
+                 return (r.tag||[]).map(t=>{ const e=ETICHETTE.find(x=>x.nome===t);
+                   return `<span class="etichetta${e&&ov.has(e.id)?' ovvia':''}"${e&&ov.has(e.id)?' title="Qui è la norma: non dà prestigio"':''}>${esc(t)}</span>`; }).join(''); })()}
       </div>
     </div>
     <footer class="piede">
@@ -4295,6 +4465,10 @@ function apriBagno(luogo){
 }
 
 /* ============ PROFILO ============ */
+$('#chip-utente').addEventListener('click', ()=>{
+  if(!S.io) return apriIngresso();
+  S.profilo=null; S.filtriProfilo={anno:'',categoria:'',paese:''}; vaiA('profilo');
+});
 function apriProfiloDi(chiave){ S.profilo=chiave; S.filtriProfilo={anno:'',categoria:'',paese:''}; vaiA('profilo'); }
 
 function statistiche(chiave, filtro){
@@ -4314,9 +4488,12 @@ function statistiche(chiave, filtro){
     migliore:mie.length?Math.max(...mie.map(r=>media(r.voti))):0,
     km:0, tag:{}, cat:{}, categorie:0,
     reazioni: mie.reduce((a,r)=>a+reazioniDi(r,'su').length,0)};
+  /* il prestigio di una persona è la sua cagata migliore, non la media:
+     con la media chi ne registra tante viene punito e la corona non arriva mai */
   const prest = mie.map(r=>prestigioDi(r)).filter(Boolean).map(p=>p.finale);
-  s.prestigio = prest.length ? Math.round(prest.reduce((a,b)=>a+b,0)/prest.length) : 0;
   s.maxPrestigio = prest.length ? Math.max(...prest) : 0;
+  s.prestigio = s.maxPrestigio;
+  s.mediaPrestigio = prest.length ? Math.round(prest.reduce((a,b)=>a+b,0)/prest.length) : 0;
   s.media = mie.length ? mie.reduce((a,r)=>a+media(r.voti),0)/mie.length : 0;
   mie.forEach(r=>{
     (r.tag||[]).forEach(t=>s.tag[t]=(s.tag[t]||0)+1);
@@ -4413,7 +4590,7 @@ function disegnaProfilo(){
   $('#statistiche').innerHTML = [
     ['Cagate', s.totale],
     ['Voto medio', s.totale?s.media.toFixed(1):'–'],
-    ['Prestigio', s.totale?s.prestigio:'–'],
+    ['Cagata migliore', s.totale?s.maxPrestigio:'–'],
     ['Città', s.citta],
     ['Paesi', s.paesi],
     ['Km', s.km]
@@ -4852,6 +5029,7 @@ function impostaQuando(ts){
 /* Se sposti solo il giorno, l'ora di adesso non significa niente su una data
    passata: la porto a mezzogiorno. Se poi la cambi a mano, resta come vuoi tu. */
 let quandoPrima = '';
+$('#quando').addEventListener('input', ()=>{ if(S.bozza.categoria==='aperto') adeguaEtichetteAlPosto(); });
 $('#quando').addEventListener('change', e=>{
   const v = e.target.value;
   if(v && quandoPrima){
@@ -5087,15 +5265,28 @@ window.PM = {
 };
 
 /* ============ AVVIO ============ */
+/* Una rete che non risponde non deve tenere l'app in ostaggio: dopo tot
+   secondi si va avanti con quello che c'è. */
+function conScadenza(promessa, ms, ripiego){
+  return Promise.race([
+    Promise.resolve(promessa).catch(e=>{ console.warn(e); return ripiego; }),
+    new Promise(ok=>setTimeout(()=>ok(ripiego), ms))
+  ]);
+}
 (async function avvio(){
   const et=document.getElementById('versione'); if(et) et.textContent=VERSIONE;
   costruisciFacce();
   caricaCoda();
-  await inizializzaSessione();
-  try{ S.proposte = await DB.caricaProposte(); integraCompagnie(); }catch(e){ S.proposte=[]; }
-  try{ S.stati = new Map((await DB.caricaStati()).map(x=>[x.luogoId,x])); }catch(e){ S.stati=new Map(); }
-  try{ S.recensioni = await DB.carica(); }
-  catch(e){ S.recensioni = []; toast('Database non raggiungibile: vedrai solo quello che hai in coda.'); }
+  await conScadenza(inizializzaSessione(), 12000, null);
+  S.proposte = await conScadenza(DB.caricaProposte(), 12000, []);
+  integraCompagnie();
+  const stati = await conScadenza(DB.caricaStati(), 12000, []);
+  S.stati = new Map(stati.map(x=>[x.luogoId,x]));
+  S.recensioni = await conScadenza(DB.carica(), 15000, null);
+  if(S.recensioni===null){
+    S.recensioni = [];
+    toast('Database non raggiungibile: vedrai solo quello che hai in coda.');
+  }
   innestaCoda();
   nuovaBozza();
   disegnaFiltriBacheca();
