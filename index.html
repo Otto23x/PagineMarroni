@@ -276,6 +276,8 @@ body.ingresso{overflow:hidden}
    stringono invece di essere tagliate */
 /* solo icone: si dividono la riga in parti uguali, quante che siano */
 .piede .azione{flex:1 1 0;min-width:0;padding:0;font-size:16px;justify-content:center}
+@keyframes lampeggia{0%,100%{box-shadow:var(--ombra)}40%{box-shadow:0 0 0 4px rgba(15,163,163,.35),var(--ombra)}}
+.scheda.evidenziata{animation:lampeggia 1.3s ease-in-out 2}
 .piede .azione small{font-size:12px}
 .piede .azione.rossa{color:var(--allarme);border-color:rgba(217,80,63,.35);background:rgba(217,80,63,.08)}
 .piede .azione.dubbio[aria-pressed="true"]{background:rgba(217,80,63,.14);border-color:rgba(217,80,63,.45)}
@@ -871,6 +873,7 @@ body.ingresso{overflow:hidden}
     <h3 id="dlg-titolo"></h3>
     <p id="dlg-testo"></p>
     <input type="text" id="dlg-campo" class="campo-dlg" autocomplete="off" data-lpignore="true" data-form-type="other" hidden>
+    <select id="dlg-scelta" class="campo-dlg" hidden></select>
     <div class="dlg-azioni">
       <button class="btn fantasma" id="dlg-no">Annulla</button>
       <button class="btn scuro" id="dlg-si">Ok</button>
@@ -901,6 +904,7 @@ body.ingresso{overflow:hidden}
             <li><b>Una gara amichevole.</b> Distintivi, classifica e statistiche, perché senza punteggio nessuno gioca.</li>
           </ul>
           <img src="locandina.jpg?v=1" alt="Pagine Marroni — Elenco Nazionale ed Internazionale dei Servizi Igienici" class="locandina">
+          <button class="btn scuro" id="btn-invita" style="width:100%;margin-top:16px" onclick="invitaAmico()">📲 Manda l'app a un amico</button>
         </div>
 
         <h3 style="font-size:16px;margin:24px 2px 10px;color:var(--cioccolato)">Come funziona</h3>
@@ -912,15 +916,15 @@ body.ingresso{overflow:hidden}
             <li>In bacheca filtri per persona, posto, tipo di posto, città, paese o voto: in cima compaiono le statistiche di quel taglio.</li>
             <li>Tocca la miniatura per vedere la foto in grande, tocca un pin per leggere la recensione.</li>
             <li>Il nome di un posto lo dà chi ci arriva per primo: se registri dove è già stato qualcuno, lo trovi già scritto e uguale per tutti. Tu scrivi il titolo.</li>
-            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e decide se accettarla. Se ne possono mandare tre al giorno.</li>
+            <li>Se il nome non ti convince, tocca <b>Proponi un altro nome</b>: chi l'ha battezzato riceve la proposta in "Io" e può accettarla, rifiutarla, oppure <b>accettarla con un ritocco</b> (sistema il nome come preferisce e poi conferma). Se dice di no, tu puoi <b>chiedere al gestore</b>, una volta sola: la proposta gli arriva segnata come secondo tentativo e decide lui. Se ne possono mandare tre al giorno.</li>
             <li>Se scegli <b>Trasporto</b> si apre <b>Il viaggio</b>: mezzo, compagnia e le due città. Il nome del posto lo scrive l'app — "Ryanair · Barcellona–Venezia" — uguale per tutti, e andata e ritorno sono lo stesso bagno. Non serve né GPS né rete. Se la compagnia non c'è, proponila: la recensione parte subito con un nome generico ("Compagnia di navigazione") e, quando il gestore approva, prende il nome giusto; da lì la compagnia è nell'elenco per tutti.</li>
             <li>Sulla mappa i mezzi hanno il <b>pin azzurro</b>, distribuito lungo la rotta e col bordo tratteggiato quando il punto è calcolato; gli <b>eventi</b> hanno il pin verde. Se il telefono dà una posizione coerente con la rotta, vince quella.</li>
             <li>Con la categoria <b>Evento</b> il nome del posto è il nome della sagra o della fiera: così tutte le recensioni di quell'evento stanno insieme.</li>
-            <li>Il tipo di posto è il <b>passo 1</b>: tocca il campo e si apre l'elenco dei 22 gruppi, oppure scrivi con parole tue — barbiere, metro, tribunale — e l'elenco si restringe. <b>Trasporto</b> è il mezzo in movimento; <b>Stazione, porto e aeroporto</b> è l'edificio dove aspetti, metro e fermate comprese. Le <b>abitazioni private</b> non si recensiscono: gli indirizzi di casa non stanno in un elenco pubblico.</li>
+            <li>Il tipo di posto è il <b>passo 1</b>: tocca il campo e si apre l'elenco dei <b>posti</b> — Barbiere, Metropolitana, Tribunale, Sagra… — in ordine alfabetico; scrivi e si restringe. Il gruppo lo assegna l'app. Se il tuo posto non c'è, tocca <b>Il mio posto non c'è</b>: lo scrivi tu e scegli il gruppo che gli somiglia di più. Vale subito per la tua recensione; il gestore poi lo conferma (e da lì lo trovano tutti), lo sposta in un altro gruppo (e la tua recensione lo segue) o lo rifiuta (la tua recensione resta come l'hai messa tu). <b>Trasporto</b> è il mezzo in movimento; <b>Stazione, porto e aeroporto</b> è l'edificio dove aspetti, metro e fermate comprese. Le <b>abitazioni private</b> non si recensiscono: gli indirizzi di casa non stanno in un elenco pubblico.</li>
             <li>Ogni cagata ha un <b>prestigio</b> da 1 a 100: <b>difficoltà</b> (il bagno era ostile), <b>audacia</b> (faccia tosta), <b>rarità</b> (che cala se in quel bagno ci sono già stati in tanti) e le <b>combinazioni</b> che si aggravano a vicenda. Gli amici lo ritoccano con 😄 e 😠. Quattro ranghi: <b>💩 Ordinaria</b>, <b>⭐ Rispettabile</b> da 45, <b>🎖️ Faccia tosta</b> da 68, <b>👑 Leggenda</b> da 85. Lo vedi solo dopo aver pubblicato: si recensiscono i bagni, non i punti.</li>
             <li>Le etichette dipendono dal posto. Quelle che lì <b>non esistono</b> non compaiono: in mezzo a un prato non c'è lo scopettino. Quelle che lì sono <b>la norma</b> nascono accese e <b>grigie</b>: raccontano com'era, ma non danno prestigio, perché all'aperto la porta non c'è per tutti e non è un'impresa. Se non è vero, spegnile; e se qualcosa manca davvero contro ogni previsione, riaccendila. Lo stesso vale fra etichette: chi dichiara <b>Bagno chimico</b> ha già detto che acqua e sapone non ci sono. Quello che invece non è mai scontato — <b>Spettatori</b>, <b>A vista</b>, <b>Strisciata trovata</b> — vale sempre pieno. Di notte, all'aperto, <b>Senza luce</b> torna a pesare: al buio è un'altra cosa.</li>
             <li>Promiscuo, Musica, Rumore, Bidet e Silenzio raccontano e basta: non danno mai punti, quindi nessuno ha motivo di segnarle a caso.</li>
-            <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
+            <li>Le icone in fondo a ogni recensione: <b>😄</b> mi piace, <b>😠</b> non mi convince, <b>🗺️</b> vedi sulla mappa, <b>📤</b> condividi su WhatsApp (chi apre il link la trova subito, dopo essere entrato col suo profilo), <b>✍️</b> scrivi la tua su quel bagno, <b>✏️</b> modifica, <b>✕</b> elimina. Le due reazioni si escludono e si tolgono ritoccandole; le ultime due icone compaiono solo sulle tue (e al gestore su tutte).</li>
             <li>Una recensione con tre <b>😠</b> viene segnata <b>In dubbio</b> e il gestore la controlla.</li>
             <li>Un posto che cambia insegna resta lo stesso bagno: sotto al nome compare <b>Prima: com'era</b>, e solo se il nome è cambiato davvero.</li>
             <li>Un bagno che non esiste più — locale chiuso, sagra finita, tratta soppressa — si segnala dal suo pin sulla mappa con <b>🚫 Questo bagno non c'è più</b>: le recensioni restano ma diventano grigie e il pin si spegne. Per riaccenderlo non basta un tocco: serve che qualcuno ci vada e <b>scriva una recensione nuova</b>, non a posteriori.</li>
@@ -1005,7 +1009,7 @@ body.ingresso{overflow:hidden}
 <script>
 'use strict';
 
-const VERSIONE = '1.2.2';
+const VERSIONE = '1.4.0';
 
 /* ============ CONTENUTI ============ */
 const FACCE = ['💩','🚽','🧻','🧭','🌶️','🙈','👃','🍑','🦨','🪠','🧼','😤'];
@@ -1055,46 +1059,59 @@ const categoriaDi = id => CATEGORIE.find(c=>c.id===id) || {};
 /* Il dizionario: parole che la gente scrive davvero, ognuna agganciata al suo
    gruppo. Chi scrive "barbiere" non deve sapere che sta in "Negozio e attività". */
 const SINONIMI = {
-  lavoro:['ufficio','uffici','azienda','ditta','studio','commercialista','avvocato','notaio','architetto','coworking','sede','capannone','fabbrica','officina','meccanico','gommista','carrozzeria','elettrauto','magazzino','deposito','logistica','cantiere','laboratorio','artigiano','falegnameria','tipografia','call center','agenzia','assicurazione','immobiliare'],
-  ristoro:['mcdonald','mcdonalds','burger king','kfc','old wild west','roadhouse','autogrill ristorante','spizzico','poke','starbucks','venchi','grom','rossopomodoro','alice pizza','panino giusto','flunch','vapiano','ristorante','trattoria','osteria','pizzeria','bar','caffe','caffetteria','pub','birreria','fast food','mcdonald','burger','kebab','gelateria','pasticceria','panetteria','forno','tavola calda','braceria','sushi','cinese','enoteca','vineria','bistrot','paninoteca','rosticceria','agriturismo ristorante','wine bar'],
-  vacanza:['b&b hotel','ibis','novotel','best western','nh hotel','hilton','marriott','holiday inn','mercure','hotel','albergo','b&b','bed and breakfast','affittacamere','pensione','ostello','agriturismo','villaggio','resort','motel','locanda','residence','appartamento vacanze','rifugio alpino','camping','campeggio','glamping'],
-  negozi:['ikea','leroy merlin','bricoman','obi','decathlon','media world','mediaworld','unieuro','euronics','conad','coop','esselunga','lidl','eurospin','despar','carrefour','pam','bennet','iper','tigotà','acqua e sapone','action','kasanova','maison du monde','zara','h&m','ovs','primark','upim','tigros','famila','aldi','mondadori','feltrinelli','trony','expert','negozio','supermercato','market','discount','centro commerciale','ipermercato','mercato','edicola','tabaccheria','farmacia comunale','ferramenta','libreria','abbigliamento','scarpe','elettronica','barbiere','parrucchiere','parrucchiera','estetista','centro estetico','tatuatore','lavanderia','concessionaria','vivaio','fioraio','ottico','gioielleria','pescheria','macelleria','panificio'],
-  locali:['discoteca','disco','club','sala da ballo','balera','locale notturno','after','casino','casinò','sala giochi','sala scommesse','bingo','slot','videolottery','night'],
-  spettacolo:['uci cinemas','the space','cinepolis','multiplex','cinema','multisala','teatro','auditorium','sala concerti','arena','opera','planetario'],
-  pubblico:['comune','municipio','anagrafe','tribunale','giudice di pace','questura','polizia','carabinieri','commissariato','posta','ufficio postale','banca','filiale','bancomat','agenzia entrate','motorizzazione','inps','asl','museo','pinacoteca','ambasciata','consolato','prefettura','catasto','camera di commercio'],
-  sanita:['ospedale','pronto soccorso','clinica','poliambulatorio','ambulatorio','studio medico','dottore','dentista','farmacia','laboratorio analisi','veterinario','consultorio','centro prelievi','radiologia','casa di cura'],
-  istruzione:['scuola','elementari','medie','liceo','istituto','università','universita','facoltà','ateneo','biblioteca','asilo','nido','materna','scuola guida','autoscuola','corso','conservatorio','accademia'],
-  sport:['virgin active','mcfit','anytime fitness','fitactive','get fit','palestra','piscina','terme','spa','centro benessere','centro sportivo','calcetto','tennis','padel','crossfit','yoga','danza','bocciofila','circolo','sauna','pattinaggio'],
-  stadio:['stadio','palazzetto','palasport','arena sportiva','autodromo','ippodromo','velodromo','impianto sciistico','skilift','seggiovia','tribuna','curva'],
-  sosta:['eni','agip','q8','ip','tamoil','esso','shell','api','autogrill','chef express','area sosta','distributore','benzinaio','pompa di benzina','area di servizio','autogrill','stazione di servizio','autolavaggio','parcheggio','autosilo','casello','area di sosta','piazzola','camper service','park'],
-  scalo:['stazione','stazione ferroviaria','binario','metro','metropolitana','fermata','capolinea','autostazione','terminal','aeroporto','gate','porto','molo','imbarco','traghetti','porto turistico','marina','eliporto'],
-  trasporti:['trenitalia','italo','flixbus','ryanair','easyjet','ita airways','wizz air','moby','grimaldi','gnv','tirrenia','msc','costa crociere','treno','regionale','frecciarossa','italo','intercity','aereo','volo','nave','traghetto','crociera','autobus','pullman','corriera','bus','camper','roulotte','vagone','carrozza','tram','funivia','cabinovia'],
-  fiera:['fiera','centro congressi','congresso','convegno','sala convegni','padiglione','expo','salone','esposizione','meeting','workshop'],
-  chiesa:['chiesa','duomo','cattedrale','basilica','santuario','cappella','oratorio','parrocchia','convento','monastero','abbazia','cimitero','camposanto','moschea','sinagoga','tempio'],
-  balneare:['stabilimento','stabilimento balneare','bagni','chiosco','beach','rifugio','baita','malga','bivacco','capanna','chalet','lido'],
-  pubblici:['bagno pubblico','bagni pubblici','wc pubblico','toilette pubblica','vespasiano','bagno comunale','bagno del parco','bagno chimico comunale','servizi igienici'],
-  divertimento:['gardaland','mirabilandia','leolandia','aquafan','caneva','movieland','italia in miniatura','rainbow magicland','cinecittà world','parco divertimenti','luna park','acquapark','acquascivoli','giostre','zoo','acquario','parco avventura','bioparco','safari park','mirabilandia','gardaland'],
-  evento:['sagra','festa','festa di paese','concerto','festival','manifestazione','mercatino','fiera paesana','carnevale','processione','raduno','palio','corteo'],
-  aperto:['parco','giardini','bosco','montagna','sentiero','campagna','spiaggia libera','lungomare','lungofiume','area picnic','prato','pineta','cespuglio','vigna','campo']
+  lavoro: ['ufficio', 'uffici', 'azienda', 'ditta', 'studio', 'commercialista', 'avvocato', 'notaio', 'architetto', 'coworking', 'sede', 'capannone', 'fabbrica', 'officina', 'meccanico', 'gommista', 'carrozzeria', 'elettrauto', 'magazzino', 'deposito', 'logistica', 'cantiere', 'laboratorio', 'artigiano', 'falegnameria', 'tipografia', 'call center', 'agenzia', 'assicurazione', 'immobiliare'],
+  ristoro: ['mcdonald', 'mcdonalds', 'burger king', 'kfc', 'old wild west', 'roadhouse', 'autogrill ristorante', 'spizzico', 'poke', 'starbucks', 'venchi', 'grom', 'rossopomodoro', 'alice pizza', 'panino giusto', 'flunch', 'vapiano', 'ristorante', 'trattoria', 'osteria', 'pizzeria', 'bar', 'caffe', 'caffetteria', 'pub', 'birreria', 'fast food', 'burger', 'kebab', 'gelateria', 'pasticceria', 'panetteria', 'forno', 'tavola calda', 'braceria', 'sushi', 'cinese', 'enoteca', 'vineria', 'bistrot', 'paninoteca', 'rosticceria', 'agriturismo ristorante', 'wine bar'],
+  vacanza: ['b&b hotel', 'ibis', 'novotel', 'best western', 'nh hotel', 'hilton', 'marriott', 'holiday inn', 'mercure', 'hotel', 'albergo', 'b&b', 'bed and breakfast', 'affittacamere', 'pensione', 'ostello', 'agriturismo', 'villaggio', 'resort', 'motel', 'locanda', 'residence', 'appartamento vacanze', 'rifugio alpino', 'camping', 'campeggio', 'glamping'],
+  negozi: ['ikea', 'leroy merlin', 'bricoman', 'obi', 'decathlon', 'media world', 'mediaworld', 'unieuro', 'euronics', 'conad', 'coop', 'esselunga', 'lidl', 'eurospin', 'despar', 'carrefour', 'pam', 'bennet', 'iper', 'tigotà', 'acqua e sapone', 'action', 'kasanova', 'maison du monde', 'zara', 'h&m', 'ovs', 'primark', 'upim', 'tigros', 'famila', 'aldi', 'mondadori', 'feltrinelli', 'trony', 'expert', 'negozio', 'supermercato', 'market', 'discount', 'centro commerciale', 'ipermercato', 'mercato', 'edicola', 'tabaccheria', 'farmacia comunale', 'ferramenta', 'libreria', 'abbigliamento', 'scarpe', 'elettronica', 'barbiere', 'parrucchiere', 'parrucchiera', 'estetista', 'centro estetico', 'tatuatore', 'lavanderia', 'concessionaria', 'vivaio', 'fioraio', 'ottico', 'gioielleria', 'pescheria', 'macelleria', 'panificio'],
+  locali: ['discoteca', 'disco', 'club', 'sala da ballo', 'balera', 'locale notturno', 'after', 'casino', 'casinò', 'sala giochi', 'sala scommesse', 'bingo', 'slot', 'videolottery', 'night'],
+  spettacolo: ['uci cinemas', 'the space', 'cinepolis', 'multiplex', 'cinema', 'multisala', 'teatro', 'auditorium', 'sala concerti', 'arena', 'opera', 'planetario'],
+  pubblico: ['comune', 'municipio', 'anagrafe', 'tribunale', 'giudice di pace', 'questura', 'polizia', 'carabinieri', 'commissariato', 'posta', 'ufficio postale', 'banca', 'filiale', 'agenzia entrate', 'motorizzazione', 'inps', 'asl', 'museo', 'pinacoteca', 'ambasciata', 'consolato', 'prefettura', 'catasto', 'camera di commercio'],
+  sanita: ['ospedale', 'pronto soccorso', 'clinica', 'poliambulatorio', 'ambulatorio', 'studio medico', 'dottore', 'dentista', 'farmacia', 'laboratorio analisi', 'veterinario', 'consultorio', 'centro prelievi', 'radiologia', 'casa di cura'],
+  istruzione: ['scuola', 'elementari', 'medie', 'liceo', 'istituto', 'università', 'universita', 'facoltà', 'ateneo', 'biblioteca', 'asilo', 'nido', 'materna', 'scuola guida', 'autoscuola', 'corso', 'conservatorio', 'accademia'],
+  sport: ['virgin active', 'mcfit', 'anytime fitness', 'fitactive', 'get fit', 'palestra', 'piscina', 'terme', 'spa', 'centro benessere', 'centro sportivo', 'calcetto', 'tennis', 'padel', 'crossfit', 'yoga', 'danza', 'bocciofila', 'circolo', 'sauna', 'pattinaggio'],
+  stadio: ['stadio', 'palazzetto', 'palasport', 'arena sportiva', 'autodromo', 'ippodromo', 'velodromo', 'impianto sciistico', 'tribuna', 'curva'],
+  sosta: ['eni', 'agip', 'q8', 'ip', 'tamoil', 'esso', 'shell', 'api', 'autogrill', 'chef express', 'area sosta', 'distributore', 'benzinaio', 'pompa di benzina', 'area di servizio', 'stazione di servizio', 'autolavaggio', 'parcheggio', 'autosilo', 'casello', 'area di sosta', 'piazzola', 'camper service', 'park'],
+  scalo: ['stazione', 'stazione ferroviaria', 'binario', 'metro', 'metropolitana', 'fermata', 'capolinea', 'autostazione', 'terminal', 'aeroporto', 'gate', 'porto', 'molo', 'imbarco', 'traghetti', 'porto turistico', 'marina', 'eliporto'],
+  trasporti: ['trenitalia', 'italo', 'flixbus', 'ryanair', 'easyjet', 'ita airways', 'wizz air', 'moby', 'grimaldi', 'gnv', 'tirrenia', 'msc', 'costa crociere', 'treno', 'regionale', 'frecciarossa', 'intercity', 'aereo', 'volo', 'nave', 'traghetto', 'crociera', 'autobus', 'pullman', 'corriera', 'bus', 'camper', 'roulotte'],
+  fiera: ['fiera', 'centro congressi', 'congresso', 'convegno', 'sala convegni', 'padiglione', 'expo', 'salone', 'esposizione'],
+  chiesa: ['chiesa', 'duomo', 'cattedrale', 'basilica', 'santuario', 'cappella', 'oratorio', 'parrocchia', 'convento', 'monastero', 'abbazia', 'cimitero', 'camposanto', 'moschea', 'sinagoga', 'tempio'],
+  balneare: ['stabilimento', 'stabilimento balneare', 'bagni', 'chiosco', 'beach', 'rifugio', 'baita', 'malga', 'bivacco', 'capanna', 'chalet', 'lido'],
+  pubblici: ['bagno pubblico', 'bagni pubblici', 'wc pubblico', 'toilette pubblica', 'vespasiano', 'bagno comunale', 'bagno del parco', 'bagno chimico comunale', 'servizi igienici'],
+  divertimento: ['gardaland', 'mirabilandia', 'leolandia', 'aquafan', 'caneva', 'movieland', 'italia in miniatura', 'rainbow magicland', 'cinecittà world', 'parco divertimenti', 'luna park', 'acquapark', 'acquascivoli', 'giostre', 'zoo', 'acquario', 'parco avventura', 'bioparco', 'safari park'],
+  evento: ['sagra', 'festa', 'festa di paese', 'concerto', 'festival', 'manifestazione', 'mercatino', 'fiera paesana', 'carnevale', 'processione', 'raduno', 'palio', 'corteo'],
+  aperto: ['parco', 'giardini', 'bosco', 'montagna', 'sentiero', 'campagna', 'spiaggia libera', 'lungomare', 'lungofiume', 'area picnic', 'prato', 'pineta', 'cespuglio', 'vigna', 'campo']
 };
 /* Cerca fra voci, sinonimi e nomi dei gruppi. Prima le corrispondenze esatte,
    poi quelle che iniziano così, poi quelle che contengono la parola. */
-function cercaCategoria(q){
-  const x=normCat(q);
-  if(!x) return [];
-  const esiti=[];
+/* Le voci proposte dagli utenti e approvate dal gestore entrano qui, e da
+   qui nel dizionario di tutti. */
+const VOCI_APPROVATE = [];
+function Maiuscola(t){ t=String(t||''); return t ? t.charAt(0).toUpperCase()+t.slice(1) : t; }
+/* Tutti i posti che l'app conosce: le voci precise dei gruppi, i sinonimi,
+   le voci approvate. Uno per nome, con il suo gruppo dietro. */
+function tuttiIPosti(){
+  const visti=new Set(), out=[];
   CATEGORIE.forEach(g=>{
     if(g.id==='altro') return;
-    const voci=[g.nome].concat(g.tipi||[], SINONIMI[g.id]||[]);
-    voci.forEach(v=>{
-      const nv=normCat(v);
-      const punteggio = nv===x?0 : nv.startsWith(x)?1 : nv.includes(x)?2 : -1;
-      if(punteggio<0) return;
-      if(esiti.some(e=>normCat(e.voce)===nv)) return;
-      esiti.push({voce:v, gruppo:g, punteggio});
+    [].concat(g.tipi||[], SINONIMI[g.id]||[], VOCI_APPROVATE.filter(v=>v.gruppo===g.id).map(v=>v.voce)).forEach(v=>{
+      const k=normCat(v); if(!k || visti.has(k)) return;
+      visti.add(k); out.push({voce:Maiuscola(v), gruppo:g});
     });
   });
-  return esiti.sort((a,b)=>a.punteggio-b.punteggio || a.voce.length-b.voce.length).slice(0,8);
+  return out;
+}
+function cercaCategoria(q, tutti){
+  const x=normCat(q);
+  const posti=tuttiIPosti();
+  if(!x) return tutti ? posti.sort((a,b)=>a.voce.localeCompare(b.voce,'it')) : [];
+  const esiti=[];
+  posti.forEach(p=>{
+    const nv=normCat(p.voce), ng=normCat(p.gruppo.nome);
+    const punteggio = nv===x?0 : nv.startsWith(x)?1 : nv.includes(x)?2 : ng.includes(x)?3 : -1;
+    if(punteggio<0) return;
+    esiti.push({voce:p.voce, gruppo:p.gruppo, punteggio});
+  });
+  return esiti.sort((a,b)=>a.punteggio-b.punteggio || a.voce.length-b.voce.length).slice(0, tutti?400:8);
 }
 function normCat(t){ return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
 
@@ -1781,7 +1798,12 @@ function normalizzaTag(lista){
    · escluse → lì non esistono proprio (lo scopettino di un prato) e non
                compaiono nemmeno nella griglia.
    Tutto il resto vale i suoi punti pieni, anche in un prato: gli spettatori
-   e la strisciata trovata non sono mai scontati. */
+   non sono mai scontati.
+   Ripasso del 5/9: promiscuo è ovvio solo dove il bagno è uno per tutti
+   (chiesa, sagra, mezzi in viaggio), non dove i bagni sono separati
+   (palestre, stadi, stazioni, fiere); la chiave dal bidello o dall'impiegato
+   è una cosa vera, quindi resta in scuole e uffici pubblici; sui treni
+   l'attesa esiste eccome, lo scopettino invece no. */
 const CONTESTO = {
   lavoro:      {ovvie:[],                              escluse:['pagamento','bidet','musica','tempo']},
   ristoro:     {ovvie:[],                              escluse:['tempo']},
@@ -1789,19 +1811,19 @@ const CONTESTO = {
   negozi:      {ovvie:[],                              escluse:['bidet','tempo']},
   locali:      {ovvie:['musica','rumore','promiscuo'], escluse:['bidet','silenzio','tempo']},
   spettacolo:  {ovvie:[],                              escluse:['bidet','chiave','tempo']},
-  pubblico:    {ovvie:[],                              escluse:['bidet','musica','consumo','chiave']},
-  sanita:      {ovvie:[],                              escluse:['chiave','imbucato','consumo','musica','tempo']},
-  istruzione:  {ovvie:[],                              escluse:['chiave','consumo','bidet','musica','tempo']},
-  sport:       {ovvie:['promiscuo'],                   escluse:['bidet','consumo','tempo']},
-  stadio:      {ovvie:['rumore','promiscuo'],          escluse:['bidet','silenzio','chiave','tempo']},
+  pubblico:    {ovvie:[],                              escluse:['bidet','musica','consumo']},
+  sanita:      {ovvie:[],                              escluse:['chiave','consumo','musica','tempo']},
+  istruzione:  {ovvie:[],                              escluse:['consumo','bidet','musica','tempo']},
+  sport:       {ovvie:[],                              escluse:['bidet','consumo','tempo']},
+  stadio:      {ovvie:['rumore'],                      escluse:['bidet','silenzio','chiave','tempo']},
   sosta:       {ovvie:[],                              escluse:['bidet','musica']},
-  scalo:       {ovvie:['rumore','promiscuo'],          escluse:['bidet','chiave','consumo']},
-  trasporti:   {ovvie:['promiscuo','rumore'],          escluse:['chiave','imbucato','pagamento','consumo','bidet','scopettino','attesa','musica','tempo']},
-  fiera:       {ovvie:['promiscuo'],                   escluse:['bidet','chiave','tempo']},
+  scalo:       {ovvie:['rumore'],                      escluse:['bidet','chiave','consumo']},
+  trasporti:   {ovvie:['promiscuo','rumore','scopettino'], escluse:['chiave','imbucato','pagamento','consumo','bidet','musica','tempo']},
+  fiera:       {ovvie:[],                              escluse:['bidet','chiave','tempo']},
   chiesa:      {ovvie:['silenzio','promiscuo'],        escluse:['musica','bidet','consumo','pagamento','tempo']},
   balneare:    {ovvie:[],                              escluse:['bidet','tempo']},
-  pubblici:    {ovvie:['promiscuo'],                   escluse:['chiave','imbucato','consumo','musica','bidet']},
-  divertimento:{ovvie:['rumore','promiscuo'],          escluse:['bidet','chiave','silenzio','tempo']},
+  pubblici:    {ovvie:[],                              escluse:['chiave','imbucato','consumo','musica','bidet']},
+  divertimento:{ovvie:['rumore'],                      escluse:['bidet','chiave','silenzio','tempo']},
   evento:      {ovvie:['promiscuo'],                   escluse:['chiave','bidet','ventola','tempo']},
   /* il prato: quasi tutto quello che manca è la norma, e mezze etichette
      non hanno proprio senso */
@@ -1823,8 +1845,11 @@ function escluseDi(cat){ return new Set(contestoDi(cat).escluse); }
    etichette accese. Le une e le altre valgono zero punti. */
 function ovvieAttive(cat, ids){
   const fuori=escluseDi(cat);
-  const set=new Set(contestoDi(cat).ovvie.filter(id=>!fuori.has(id)));
-  (ids||[]).forEach(id=>{ (IMPLICA[id]||[]).forEach(x=>{ if(!fuori.has(x) && x!==id) set.add(x); }); });
+  const set=new Set(contestoDi(cat).ovvie);
+  /* un'etichetta che in quel posto non esiste (recensioni vecchie, o gruppo
+     cambiato dopo) racconta al massimo, ma non paga mai */
+  fuori.forEach(id=>set.add(id));
+  (ids||[]).forEach(id=>{ (IMPLICA[id]||[]).forEach(x=>{ if(x!==id) set.add(x); }); });
   return set;
 }
 /* Di notte, all'aperto, il buio smette di essere la norma e torna a pesare:
@@ -2133,6 +2158,12 @@ const DB = {
     const {error} = await cli.from('proposte').update({stato}).eq('id',id);
     if(error) throw error;
   },
+  /* stato e motivo insieme: serve quando il gestore sposta una voce in un
+     altro gruppo e il gruppo vive nel motivo */
+  async aggiornaProposta(p){
+    const {error} = await cli.from('proposte').update({stato:p.stato, motivo:p.motivo}).eq('id',p.id);
+    if(error) throw error;
+  },
   async salvaFoto(id,dataURL){
     const blob = await (await fetch(dataURL)).blob();
     const nome = id + '.jpg';
@@ -2391,7 +2422,11 @@ function chiedi(titolo, testo, opz){
   const campo=$('#dlg-campo');
   campo.hidden = !opz.campo;
   campo.value='';
-  if(opz.campo){ campo.type = opz.campo==='segreto' ? 'password' : 'text'; campo.placeholder = opz.segnaposto||''; }
+  if(opz.campo){ campo.type = opz.campo==='segreto' ? 'password' : 'text'; campo.placeholder = opz.segnaposto||''; campo.value = opz.valore||''; }
+  const sel=$('#dlg-scelta');
+  sel.hidden = !opz.scelte;
+  sel.innerHTML = opz.scelte ? '<option value="">Scegli il gruppo…</option>'+opz.scelte.map(o=>`<option value="${esc(o.id)}"${o.id===opz.sceltaIniziale?' selected':''}>${esc(o.nome)}</option>`).join('') : '';
+  dialogoConScelte = !!opz.scelte;
   $('#dialogo').hidden=false;
   setTimeout(()=>(opz.campo?campo:si).focus(), 80);
   return new Promise(res=>{ risolviDialogo=res; });
@@ -2400,8 +2435,13 @@ function chiudiDialogo(v){
   $('#dialogo').hidden=true;
   if(risolviDialogo){ risolviDialogo(v); risolviDialogo=null; }
 }
-$('#dlg-si').addEventListener('click',()=>chiudiDialogo($('#dlg-campo').hidden ? true : $('#dlg-campo').value.trim()));
-$('#dlg-campo').addEventListener('keydown',e=>{ if(e.key==='Enter') chiudiDialogo($('#dlg-campo').value.trim()); });
+let dialogoConScelte=false;
+function esitoDialogo(){
+  if(dialogoConScelte) return {testo:$('#dlg-campo').hidden?'':$('#dlg-campo').value.trim(), scelta:$('#dlg-scelta').value};
+  return $('#dlg-campo').hidden ? true : $('#dlg-campo').value.trim();
+}
+$('#dlg-si').addEventListener('click',()=>chiudiDialogo(esitoDialogo()));
+$('#dlg-campo').addEventListener('keydown',e=>{ if(e.key==='Enter') chiudiDialogo(esitoDialogo()); });
 $('#dlg-no').addEventListener('click',()=>chiudiDialogo($('#dlg-campo').hidden ? false : null));
 $('#dialogo').addEventListener('click',e=>{ if(e.target.id==='dialogo') chiudiDialogo(false); });
 
@@ -2579,6 +2619,7 @@ async function dopoAccesso(appenaCreato){
   await sincronizza(false, true);
   ridisegna(); vaiA('registra');
   toast(appenaCreato ? `Benvenuto ${S.io.nome}` : `Bentornato ${S.io.nome}`);
+  apriRecensioneRichiesta();
   if(appenaCreato) chiediPosizione(true);
 }
 
@@ -3334,13 +3375,14 @@ function disegnaCategoria(){
   const q=campo.value.trim();
   /* senza niente scritto è una tendina: tutti i gruppi, in ordine.
      Appena scrivi si restringe. */
-  const trovati = q ? cercaCategoria(q)
-                    : CATEGORIE.filter(g=>g.id!=='altro').map(g=>({voce:g.nome, gruppo:g, punteggio:0}));
+  /* la tendina elenca i POSTI, in ordine alfabetico; il gruppo è un
+     dettaglio sotto, lo assegna l'app */
+  const trovati = q ? cercaCategoria(q) : cercaCategoria('', true);
   esiti.hidden = !tendinaAperta && !q;
   if(esiti.hidden){ esiti.innerHTML=''; return; }
   esiti.innerHTML = trovati.map(t=>
     `<button type="button" class="scelta" data-cat="${t.gruppo.id}" data-voce="${esc(t.voce)}"><span class="em">${t.gruppo.em}</span><span class="txt"><b>${esc(t.voce)}</b>${normCat(t.voce)!==normCat(t.gruppo.nome)?`<span>${esc(t.gruppo.nome)}</span>`:''}</span></button>`).join('')
-    + `<button type="button" class="scelta altro" data-cat="altro" data-voce="${esc(q)}"><span class="em">❓</span><span class="txt"><b>${q?(trovati.length?'Nessuna di queste':'Non lo conosco'):'Altro'}</b><span>${q?'Metti “'+esc(q)+'” in Altro'+(trovati.length?'':', senza rarità'):'Un posto che non rientra in nessuno di questi'}</span></span></button>`;
+    + `<button type="button" class="scelta altro" id="proponi-voce" data-voce="${esc(q)}"><span class="em">➕</span><span class="txt"><b>${q?(trovati.length?'Non è nessuno di questi':'Non lo conosco: «'+esc(Maiuscola(q))+'»'):'Il mio posto non c\'è'}</b><span>Proponi il posto e scegli tu il gruppo: vale subito, il gestore poi conferma</span></span></button>`;
 }
 function scegliCategoria(id, voce){
   tendinaAperta=false;
@@ -3370,8 +3412,48 @@ $('#cerca-categoria').addEventListener('keydown', e=>{
 });
 $('#scelte-categoria').addEventListener('click', e=>{
   const b=e.target.closest('.scelta'); if(!b) return;
+  if(b.id==='proponi-voce'){ proponiVoce(b.dataset.voce||''); return; }
   scegliCategoria(b.dataset.cat, b.dataset.voce);
 });
+/* Un posto che il dizionario non conosce: l'utente lo scrive e sceglie lui il
+   gruppo. Vale subito per la sua recensione. Il gestore poi conferma (e la
+   voce entra nel dizionario per tutti), la sposta in un altro gruppo (e la
+   recensione lo segue), o la rifiuta (la recensione resta come l'ha messa
+   l'utente). */
+async function proponiVoce(parola){
+  if(!S.io) return apriIngresso();
+  const scelte=CATEGORIE.filter(g=>g.id!=='altro').map(g=>({id:g.id, nome:g.em+' '+g.nome}));
+  const r = await chiedi('Un posto nuovo',
+    'Scrivi il posto come lo chiameresti e scegli il gruppo che gli somiglia di più. Vale subito per questa recensione; il gestore lo conferma e da lì lo troveranno tutti.',
+    {campo:'testo', valore:Maiuscola(parola), segnaposto:'es. Sala prove', scelte, ok:'Usa e proponi'});
+  if(!r || !r.testo || r.testo.length<2 || !r.scelta) return;
+  const voce=Maiuscola(r.testo.trim().slice(0,40));
+  scegliCategoria(r.scelta, voce);
+  if(!S.bozza.idPrevisto) S.bozza.idPrevisto = S.modificaId || nuovoId('c');
+  const p={id:nuovoId('p'), luogoId:'voce', nomeAttuale:r.scelta, nomeProposto:voce,
+           motivo:`voce|${r.scelta}|${S.bozza.idPrevisto}`,
+           daId:S.io.id, daNome:S.io.nome, aId:null, ts:Date.now(), stato:'attesa'};
+  try{ await DB.proponi(p); S.proposte.unshift(p); toast(`«${voce}» vale subito. Il gestore lo confermerà per tutti.`); }
+  catch(e){
+    const m=String(e&&e.message||'').toLowerCase();
+    toast(m.includes('troppe proposte') ? 'Vale per te; per proporlo a tutti hai già usato le tre proposte di oggi' : 'Vale per te; la proposta al gestore non è partita');
+  }
+}
+const propostaVoce = p => p && p.luogoId==='voce';
+/* Un secondo tentativo è una rinomina mandata al gestore dopo il rifiuto di
+   chi ha battezzato il posto: lo si segna nel motivo, così si riconosce. */
+const SEGNO_SECONDO='[secondo tentativo] ';
+const secondoTentativo = p => String(p.motivo||'').startsWith(SEGNO_SECONDO);
+const motivoPulito = p => String(p.motivo||'').replace(SEGNO_SECONDO,'');
+function dettagliVoce(p){ const parti=String(p.motivo||'').split('|'); return {gruppo:parti[1]||p.nomeAttuale||'', recId:parti[2]||''}; }
+function integraVoci(){
+  S.proposte.filter(p=>propostaVoce(p) && p.stato==='ok').forEach(p=>{
+    const d=dettagliVoce(p);
+    if(!categoriaDi(d.gruppo).id) return;
+    if(VOCI_APPROVATE.some(v=>normCat(v.voce)===normCat(p.nomeProposto))) return;
+    VOCI_APPROVATE.push({voce:p.nomeProposto, gruppo:d.gruppo});
+  });
+}
 document.addEventListener('click', e=>{
   if(e.target.closest('#cambia-categoria')){ scegliCategoria(null); $('#cerca-categoria').focus(); }
 });
@@ -3982,11 +4064,67 @@ function scheda(r){
       <button class="azione" aria-pressed="${segno==='su'}" onclick="reagisci('${r.id}','su')" title="Mi piace" aria-label="Mi piace">😄${su.length?` <small>${su.length}</small>`:''}</button>
       <button class="azione dubbio" aria-pressed="${segno==='giu'}" onclick="reagisci('${r.id}','giu')" title="Non mi convince" aria-label="Non mi convince">😠${giu.length?` <small>${giu.length}</small>`:''}</button>
       ${(r.lat!=null||r.categoria==='trasporti')?`<button class="azione" onclick="volaA('${r.id}')" title="Vedi sulla mappa" aria-label="Vedi sulla mappa">🗺️</button>`:''}
+      <button class="azione" onclick="condividi('${r.id}')" title="Condividi su WhatsApp" aria-label="Condividi">📤</button>
       ${S.io?`<button class="azione dico" onclick="dicoLaMia('${r.id}')" title="Scrivi la tua su questo bagno" aria-label="Scrivi la tua">✍️</button>`:''}
       ${mia?`<button class="azione" onclick="modifica('${r.id}')" title="${propria?'Modifica':'Modifica come gestore'}" aria-label="Modifica">✏️</button>`:''}
       ${mia?`<button class="azione rossa" onclick="eliminaDiretta('${r.id}')" title="Elimina" aria-label="Elimina">✕</button>`:''}
     </footer>
   </article>`;
+}
+/* ============ CONDIVIDERE ============
+   Il link porta dritto alla recensione (index.html?r=ID). Chi lo apre deve
+   comunque entrare con il suo profilo: l'app resta del gruppo. */
+function indirizzoApp(){ return location.origin + location.pathname; }
+function linkRecensione(r){ return indirizzoApp() + '?r=' + encodeURIComponent(r.id); }
+function testoCondivisione(r){
+  const p=prestigioDi(r), v=media(r.voti);
+  const righe=[`💩 ${r.nome} ha cagato a «${r.luogo}»`];
+  if(r.titolo) righe.push(`"${r.titolo}"`);
+  righe.push(`Voto ${v.toFixed(1)} su 5` + (p ? ` · prestigio ${p.finale} ${p.rango.em} ${p.rango.nome}` : ''));
+  righe.push('', `Leggila su Pagine Marroni: ${linkRecensione(r)}`);
+  return righe.join('\n');
+}
+/* Prima il foglio di condivisione del telefono (WhatsApp compreso); dove
+   non c'è, WhatsApp diretto. */
+async function condividiTesto(testo, titolo){
+  if(navigator.share){
+    try{ await navigator.share({title:titolo, text:testo}); return true; }
+    catch(e){ if(e && e.name==='AbortError') return false; }
+  }
+  window.open('https://wa.me/?text=' + encodeURIComponent(testo), '_blank', 'noopener');
+  return true;
+}
+async function condividi(id){
+  const r=S.recensioni.find(x=>x.id===id); if(!r) return;
+  await condividiTesto(testoCondivisione(r), 'Pagine Marroni');
+}
+async function invitaAmico(){
+  const testo = `💩 Pagine Marroni: il posto dove registriamo le nostre cagate, con voti, mappa e prestigio.\nEntra anche tu: ${indirizzoApp()}`;
+  await condividiTesto(testo, 'Pagine Marroni');
+}
+/* Il link a una recensione: si tiene da parte e si apre appena la bacheca
+   è pronta — anche dopo l'accesso, se chi lo apre non era dentro. */
+let recensioneRichiesta = null;
+function richiediRecensione(id){ recensioneRichiesta = id || null; }
+(function(){
+  try{
+    const q=new URLSearchParams(location.search);
+    const id=q.get('r');
+    if(id){ richiediRecensione(id); history.replaceState(null,'',location.pathname+location.hash); }
+  }catch(e){}
+})();
+function apriRecensioneRichiesta(){
+  const id=recensioneRichiesta; if(!id) return;
+  const r=S.recensioni.find(x=>x.id===id); if(!r) return;
+  recensioneRichiesta=null;
+  S.filtri={utente:'',luogo:'',categoria:'',citta:'',paese:'',voto:''};
+  vaiA('bacheca');
+  setTimeout(()=>{
+    const el=document.querySelector(`.scheda[data-rec="${CSS.escape(id)}"]`);
+    if(!el) return;
+    el.scrollIntoView({behavior:'smooth', block:'center'});
+    el.classList.add('evidenziata'); setTimeout(()=>el.classList.remove('evidenziata'), 2600);
+  }, 250);
 }
 async function reagisci(id, segno){
   if(!S.io) return apriIngresso();
@@ -4673,7 +4811,7 @@ async function sincronizza(avvisa, forza){
     const recPrima = S.recensioni.slice();
     const nuove = await DB.carica();
     const propPrima = proposteInArrivo().length;
-    try{ S.proposte = await DB.caricaProposte(); integraCompagnie(); }catch(e){}
+    try{ S.proposte = await DB.caricaProposte(); integraCompagnie(); integraVoci(); }catch(e){}
     try{ S.stati = new Map((await DB.caricaStati()).map(x=>[x.luogoId,x])); }catch(e){}
     const propDopo = proposteInArrivo().length;
     if(propDopo>propPrima){
@@ -5144,12 +5282,26 @@ function disegnaProposte(){
         <button class="btn scuro" data-approva="${p.id}">Aggiungi all'elenco</button>
       </div></div>`;
       }
+      if(propostaVoce(p)){
+        const d=dettagliVoce(p), g=categoriaDi(d.gruppo), rec=S.recensioni.find(r=>r.id===d.recId);
+        return `<div class="proposta">
+      <h4>${esc(p.daNome)} propone un posto nuovo</h4>
+      <p class="cambio"><b>${esc(p.nomeProposto)}</b> → ${g.em||''} ${esc(g.nome||d.gruppo)}</p>
+      <p class="perche">${rec?`La sua recensione «${esc(rec.luogo)}» sta già in ${esc(g.nome||'')}.`:'Nessuna recensione collegata.'} Se confermi, «${esc(p.nomeProposto)}» entra nel dizionario per tutti. Puoi anche spostarlo in un altro gruppo: la recensione lo segue.</p>
+      <div class="azioni-p">
+        <button class="btn fantasma" data-rifiuta="${p.id}">Non aggiungere</button>
+        <button class="btn fantasma" data-approva-modifica="${p.id}">Altro gruppo</button>
+        <button class="btn scuro" data-approva="${p.id}">Conferma</button>
+      </div></div>`;
+      }
+      const secondo=secondoTentativo(p);
       return `<div class="proposta">
-      <h4>${esc(p.daNome)} propone di rinominare un posto</h4>
+      <h4>${esc(p.daNome)} propone di rinominare un posto${secondo?' — secondo tentativo, dopo il rifiuto di chi l\'ha battezzato':''}</h4>
       <p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
-      ${p.motivo?`<p class="perche">"${esc(p.motivo)}"</p>`:''}
+      ${motivoPulito(p)?`<p class="perche">"${esc(motivoPulito(p))}"</p>`:''}
       <div class="azioni-p">
         <button class="btn fantasma" data-rifiuta="${p.id}">Lascia com'è</button>
+        <button class="btn fantasma" data-approva-modifica="${p.id}">Accetta, ma ritocco</button>
         <button class="btn scuro" data-approva="${p.id}">Rinomina</button>
       </div></div>`;
     }).join('');
@@ -5159,11 +5311,15 @@ function disegnaProposte(){
     h += `<h3 style="font-size:16px;margin:${arrivo.length?'18px':'6px'} 2px 10px;color:var(--cioccolato)">Le tue proposte</h3>`;
     h += inCorso.map(p=>`<div class="proposta esito">
       <button class="chiudi-p" ${p.stato==='attesa'?`data-ritira="${esc(p.id)}" aria-label="Ritira la proposta" title="Ritira"`:`data-nascondi="${esc(p.id)}" aria-label="Togli dall'elenco" title="Togli dall'elenco"`}>✕</button>
-      ${propostaCompagnia(p)
+      ${propostaVoce(p)
+        ? `<p class="cambio">Posto nuovo <b>${esc(p.nomeProposto)}</b> · ${esc(categoriaDi(dettagliVoce(p).gruppo).nome||'')}</p>
+      <span class="stato ${p.stato}">${p.stato==='attesa'?'Vale già per la tua recensione. Il gestore deciderà se metterlo nel dizionario di tutti':p.stato==='ok'?'✅ Nel dizionario per tutti'+(p.motivo&&p.motivo.includes('|spostata')?', spostato in '+esc(categoriaDi(dettagliVoce(p).gruppo).nome||''):''):'✖️ Non nel dizionario: la tua recensione resta com\'è'}</span>`
+        : propostaCompagnia(p)
         ? `<p class="cambio">Compagnia <b>${esc(p.nomeProposto)}</b>${dettagliCompagnia(p).mezzo?` · ${esc(nomeMezzo(dettagliCompagnia(p).mezzo))}`:''}</p>
       <span class="stato ${p.stato}">${p.stato==='attesa'?`In attesa del gestore. Intanto la recensione dice «${esc(p.nomeAttuale)}»`:p.stato==='ok'?'✅ Aggiunta all\'elenco: la tua recensione ora ha il nome giusto':`✖️ Non aggiunta: la recensione resta con «${esc(p.nomeAttuale)}»`}</span>`
         : `<p class="cambio"><b>${esc(p.nomeAttuale)}</b> → <b>${esc(p.nomeProposto)}</b></p>
-      <span class="stato ${p.stato}">${p.stato==='attesa'?(p.aId?'In attesa di chi ha battezzato il posto':'In attesa del gestore'):p.stato==='ok'?'✅ Accettata: il posto adesso si chiama così':'✖️ Rifiutata: il nome resta quello di prima'}</span>`}
+      <span class="stato ${p.stato}">${p.stato==='attesa'?(p.aId?'In attesa di chi ha battezzato il posto':'In attesa del gestore'):p.stato==='ok'?'✅ Accettata: il posto adesso si chiama '+esc(nomeCanonico(p.luogoId)):(p.aId?'✖️ Rifiutata da chi ha battezzato il posto: il nome resta quello di prima':'✖️ Rifiutata dal gestore: il nome resta quello di prima')}</span>
+      ${p.stato==='no' && p.aId && !secondoTentativo(p) && !S.proposte.some(x=>x.luogoId===p.luogoId && x.daId===p.daId && !x.aId && x.ts>p.ts) ? `<div class="azioni-p" style="margin-top:8px"><button class="btn piccolo fantasma" data-al-gestore="${esc(p.id)}">Chiedi al gestore</button></div>`:''}`}
       </div>`).join('');
   }
   box.innerHTML = h;
@@ -5190,14 +5346,56 @@ document.addEventListener('click', async e=>{
     }
     return;
   }
-  const ok=e.target.closest('[data-approva]'), no=e.target.closest('[data-rifiuta]');
-  if(!ok && !no) return;
-  const id = (ok||no).dataset.approva || (ok||no).dataset.rifiuta;
+  /* rifiutata dal proprietario: si può chiedere al gestore, una volta sola */
+  const alG=e.target.closest('[data-al-gestore]');
+  if(alG){
+    const p=S.proposte.find(x=>x.id===alG.dataset.alGestore); if(!p || !S.io || p.daId!==S.io.id) return;
+    const perche = await chiedi('Chiedi al gestore',
+      `Chi ha battezzato il posto ha detto no a «${p.nomeProposto}». Il gestore può decidere lo stesso. Vuoi aggiungere due parole?`,
+      {campo:'testo', segnaposto:'Perché il nome andrebbe cambiato (facoltativo)', ok:'Manda al gestore'});
+    if(perche===null) return;
+    const nuova={id:nuovoId('p'), luogoId:p.luogoId, nomeAttuale:nomeCanonico(p.luogoId), nomeProposto:p.nomeProposto,
+                 motivo:SEGNO_SECONDO+(typeof perche==='string'?perche:''), daId:S.io.id, daNome:S.io.nome, aId:null, ts:Date.now(), stato:'attesa'};
+    try{ await DB.proponi(nuova); S.proposte.unshift(nuova); disegnaProposte(); toast('Mandata al gestore'); }
+    catch(err){ const m=String(err&&err.message||'').toLowerCase(); toast(m.includes('troppe proposte')?'Hai già mandato tre proposte oggi':'Non è riuscita, riprova'); }
+    return;
+  }
+  const ok=e.target.closest('[data-approva]'), no=e.target.closest('[data-rifiuta]'), mod=e.target.closest('[data-approva-modifica]');
+  if(!ok && !no && !mod) return;
+  const id = (ok||no||mod).dataset.approva || (ok||no||mod).dataset.rifiuta || (ok||no||mod).dataset.approvaModifica;
   const p = S.proposte.find(x=>x.id===id); if(!p) return;
-  const bottoni = (ok||no).parentElement.querySelectorAll('button');
+  const bottoni = (ok||no||mod).parentElement.querySelectorAll('button');
+  /* "accetta, ma ritocco": prima si chiede la modifica, poi si procede come un'approvazione */
+  let ritocco=null;
+  if(mod){
+    if(propostaVoce(p)){
+      const scelte=CATEGORIE.filter(g=>g.id!=='altro').map(g=>({id:g.id, nome:g.em+' '+g.nome}));
+      const r=await chiedi('In quale gruppo?', `«${p.nomeProposto}» proposto da ${p.daNome}: scegli il gruppo giusto. La sua recensione verrà spostata lì.`, {scelte, sceltaIniziale:dettagliVoce(p).gruppo, ok:'Conferma qui'});
+      if(!r || !r.scelta) return;
+      ritocco=r.scelta;
+    } else {
+      const r=await chiedi('Accetta con una modifica', `${p.daNome} propone «${p.nomeProposto}». Sistemalo come preferisci: il posto prenderà il nome che scrivi qui.`, {campo:'testo', valore:p.nomeProposto, ok:'Rinomina così'});
+      if(!r || String(r).length<2) return;
+      ritocco=titoloMaiuscolo(String(r));
+    }
+  }
   bottoni.forEach(b=>b.disabled=true);
   try{
-    if(propostaCompagnia(p)){
+    if(propostaVoce(p)){
+      const d=dettagliVoce(p), rec=S.recensioni.find(r=>r.id===d.recId);
+      if(ok || mod){
+        const gruppo = ritocco || d.gruppo;
+        if(rec && rec.categoria!==gruppo){ rec.categoria=gruppo; await DB.aggiorna(rec); }
+        p.motivo = `voce|${gruppo}|${d.recId}`+(ritocco && ritocco!==d.gruppo?'|spostata':'');
+        p.stato='ok';
+        try{ await DB.aggiornaProposta(p); }catch(e){ await DB.rispondi(p.id,'ok'); }
+        integraVoci();
+        toast(`«${p.nomeProposto}» è nel dizionario, in ${categoriaDi(gruppo).nome}`);
+      } else {
+        p.stato='no'; await DB.rispondi(p.id,'no');
+        toast(`Non aggiunto: la recensione di ${p.daNome} resta in ${categoriaDi(d.gruppo).nome}`);
+      }
+    } else if(propostaCompagnia(p)){
       if(ok){
         const d=dettagliCompagnia(p), rec=S.recensioni.find(r=>r.id===d.recId);
         if(rec){
@@ -5214,12 +5412,13 @@ document.addEventListener('click', async e=>{
         p.stato='no'; await DB.rispondi(p.id,'no');
         toast(`Non aggiunta: la recensione resta con «${p.nomeAttuale}»`);
       }
-    } else if(ok){
-      S.recensioni.forEach(r=>{ if(r.luogoId===p.luogoId) r.luogo=p.nomeProposto; });
-      await DB.rinominaLuogo(p.luogoId, p.nomeProposto);
-      if(!stessoNome(p.nomeAttuale, p.nomeProposto)){ try{ await DB.segnaNomePrima(p.luogoId, p.nomeAttuale); }catch(e){} }
+    } else if(ok || mod){
+      const nome = ritocco || p.nomeProposto;
+      S.recensioni.forEach(r=>{ if(r.luogoId===p.luogoId) r.luogo=nome; });
+      await DB.rinominaLuogo(p.luogoId, nome);
+      if(!stessoNome(p.nomeAttuale, nome)){ try{ await DB.segnaNomePrima(p.luogoId, p.nomeAttuale); }catch(e){} }
       p.stato='ok'; await DB.rispondi(p.id,'ok');
-      toast('Rinominato per tutti: adesso è '+p.nomeProposto);
+      toast(ritocco && ritocco!==p.nomeProposto ? `Rinominato per tutti in «${nome}», con il tuo ritocco` : 'Rinominato per tutti: adesso è '+nome);
     } else {
       p.stato='no'; await DB.rispondi(p.id,'no');
       toast('Rifiutata: il posto resta '+p.nomeAttuale);
@@ -5279,7 +5478,7 @@ function conScadenza(promessa, ms, ripiego){
   caricaCoda();
   await conScadenza(inizializzaSessione(), 12000, null);
   S.proposte = await conScadenza(DB.caricaProposte(), 12000, []);
-  integraCompagnie();
+  integraCompagnie(); integraVoci();
   const stati = await conScadenza(DB.caricaStati(), 12000, []);
   S.stati = new Map(stati.map(x=>[x.luogoId,x]));
   S.recensioni = await conScadenza(DB.carica(), 15000, null);
@@ -5294,6 +5493,7 @@ function conScadenza(promessa, ms, ripiego){
     mostraIo(); avviaMappaSeServe();
     try{ await collegaVecchioProfilo(); }catch(e){ console.warn(e); }
     try{ await controllaGestore(); }catch(e){ console.warn(e); }
+    setTimeout(apriRecensioneRichiesta, 400);
   } else { mostraIo(); apriIngresso(); }
   vaiA(vistaDaRiprendere() || 'registra');
   setTimeout(mostraBanner, 1600);
